@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jake Roberts · Portfolio
 
-## Getting Started
+Personal site for Jake Roberts (B.Tech CSE, SRM IST, class of 2027): AI engineering first, then SDE, then data science.
 
-First, run the development server:
+Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS v4 · GSAP ScrollTrigger · Framer Motion · Lenis · Resend · Vercel.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local   # fill in the Resend keys to make the contact form send
+npm run dev                  # http://localhost:3000
+npm run build && npm start   # production build
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| What | Where |
+|---|---|
+| Name, role, links, email, time zone | `src/lib/site.ts` |
+| Projects, case studies, internship | `src/lib/projects.ts` |
+| Design tokens (colours, type scale, spacing) | `src/app/globals.css` (`@theme`) |
+| Home sections | `src/components/home/*` |
+| Intro (stick figure shoving the orange sheet) | `src/components/intro/*` |
+| Menu, header, footer | `src/components/layout/*` |
+| Sound, page transitions, smooth scroll, toasts | `src/components/providers/*` |
+| Contact API (zod, rate limit, honeypot, Resend) | `src/app/api/contact/route.ts` |
+| OG images, sitemap, robots, icon | `src/app/opengraph-image.tsx`, `src/app/work/[slug]/opengraph-image.tsx`, `src/app/sitemap.ts`, `src/app/robots.ts`, `src/app/icon.svg` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Text written as `[TODO: ...]` renders as a highlighted chip on the site, so unfinished content is easy to spot. Search the repo for `TODO` to find them all.
 
-## Learn More
+Still needed: email address, LinkedIn URL, `public/resume.pdf`, photos for `/human`, project outcomes/metrics, stacks, repo and demo URLs, game names, values.
 
-To learn more about Next.js, take a look at the following resources:
+## Environment variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+See `.env.example`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Key | Needed for |
+|---|---|
+| `RESEND_API_KEY` | Sending contact-form email |
+| `CONTACT_TO_EMAIL` | The inbox that receives messages |
+| `CONTACT_FROM_EMAIL` | Sender. Use an address on a domain verified in Resend. `onboarding@resend.dev` works for testing but only delivers to your own Resend account email |
+| `NEXT_PUBLIC_SITE_URL` | Optional. Canonical URL for metadata and sitemap. On Vercel the production domain is used automatically |
 
-## Deploy on Vercel
+Without the Resend keys the form shows a friendly "not set up yet" message and the email/mailto fallback still works.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy to Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push this folder to a GitHub repository.
+2. In Vercel: **Add New → Project**, import the repo. The framework preset (Next.js) is detected; no build settings to change.
+3. Add the environment variables above under **Settings → Environment Variables**.
+4. Deploy. Add a custom domain under **Settings → Domains** if you have one.
+
+Note on rate limiting: the contact route limits each IP to 5 messages per 10 minutes, held in memory. On Vercel that limit is per function instance, which is fine for a personal site. For a strict global limit, swap `src/lib/rate-limit.ts` for Upstash Redis.
+
+## Accessibility and motion
+
+- `prefers-reduced-motion` turns off the intro, smooth scroll, parallax, carousel transitions, marquee and entrance animations.
+- The menu is a modal dialog with a focus trap; the page behind it is inert.
+- Sound is off by default and only starts after the visitor turns it on.
+- axe-core reports 0 violations on every route at desktop and phone width.
