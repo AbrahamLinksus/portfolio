@@ -1,7 +1,7 @@
 // Project data for the home carousel, /work and /work/[slug].
 // Anything written as "[TODO: ...]" renders as a highlighted placeholder.
 
-export type ProjectSlug = "crosscheck" | "study-copilot" | "triageiq" | "recall" | "queuedup";
+export type ProjectSlug = "study-copilot" | "triageiq" | "recall" | "queuedup";
 
 export type Project = {
   slug: ProjectSlug;
@@ -28,26 +28,6 @@ export type Project = {
 };
 
 export const projects: Project[] = [
-  {
-    slug: "crosscheck",
-    title: "Crosscheck",
-    category: "AI · Retrieval",
-    summary: "Contradiction-aware RAG over SEC filings.",
-    outcome: "Flags when two filings disagree instead of quietly picking one. [TODO: metric]",
-    tags: ["RAG", "SEC filings", "[TODO: stack]"],
-    role: "[TODO: role]",
-    timeline: "[TODO: dates]",
-    status: "[TODO: live / archived]",
-    problem: "[TODO: 2–3 sentences on who has the problem and why it matters]",
-    built:
-      "A retrieval pipeline over SEC filings that surfaces conflicting statements side by side. [TODO: key features and the hardest decision]",
-    stack: ["RAG", "[TODO: stack]"],
-    architecture: ["SEC filings", "Chunk + embed", "Retriever", "Contradiction check", "Answer + sources"],
-    architectureCore: 3,
-    result: "[TODO: metric or outcome]",
-    repo: "https://github.com/AbrahamLinksus", // [TODO] exact repo URL
-    demo: "",
-  },
   {
     slug: "study-copilot",
     title: "Study Copilot",
