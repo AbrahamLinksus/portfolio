@@ -38,7 +38,7 @@ export default async function CaseStudy({ params }: PageProps<"/work/[slug]">) {
   const meta = [
     ["Role", p.role],
     ["Timeline", p.timeline],
-    ["Stack", p.stack.filter((s) => !isTodo(s)).join(", ") || p.stack[0]],
+    ["Stack", p.tags.filter((t) => !isTodo(t)).join(", ") || p.tags[0]],
     ["Status", p.status],
   ];
 
@@ -146,11 +146,7 @@ export default async function CaseStudy({ params }: PageProps<"/work/[slug]">) {
                 >
                   Live demo ↗
                 </a>
-              ) : (
-                <span className="label inline-flex items-center gap-2.5 rounded-full border border-dashed border-rim px-[22px] py-3.5 text-fog">
-                  Live demo <span className="todo">[TODO: url]</span>
-                </span>
-              )}
+              ) : null}
             </div>
           </Section>
 

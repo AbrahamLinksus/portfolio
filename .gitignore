@@ -45,3 +45,5 @@ next-env.d.ts
 
 # local server logs
 *.log
+# stray screenshots at the repo root
+/*.png
