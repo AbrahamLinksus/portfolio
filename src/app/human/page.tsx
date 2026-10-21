@@ -13,7 +13,7 @@ const STORY = [
   "[TODO: what you do when you're not coding]",
 ];
 
-const FACTS = ["Coimbatore → Chennai", "CGPA 8.14", "LeetCode regular", "In bed by 10", "Badminton", "Drums", "Bikes", "[TODO: fact]"];
+const FACTS = ["Coimbatore → Chennai", "CGPA 8.14", "LeetCode regular", "In bed by 10", "Badminton", "Drums", "Bikes", "Runs LLMs locally"];
 
 // Swap `src` in when real photos exist (next/image, AVIF/WebP served automatically).
 const PHOTOS = [

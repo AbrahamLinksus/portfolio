@@ -119,7 +119,7 @@ export default async function CaseStudy({ params }: PageProps<"/work/[slug]">) {
                   </li>
                 ))}
               </ol>
-              <figcaption className="label mt-[18px] text-fog"><Copy text="Placeholder · [TODO: replace with the real architecture diagram]" /></figcaption>
+              <figcaption className="label mt-[18px] text-fog">Data flow, simplified</figcaption>
             </figure>
           </Section>
           <Section title="Result">

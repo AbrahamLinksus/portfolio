@@ -44,9 +44,9 @@ export const projects: Project[] = [
     outcome:
       "Time-aware ranking picks the current version of a revised handout 100% of the time, up from 67%, with no significant loss in retrieval quality.",
     tags: ["LangGraph", "Chroma", "Ollama"],
-    role: "[TODO: role]",
-    timeline: "[TODO: dates]",
-    status: "[TODO: live / archived]",
+    role: "Solo project",
+    timeline: "Aug 2026",
+    status: "In progress",
     problem:
       "Course material goes out of date: week 2's handout gets revised in week 10, and deadlines pass. A normal RAG system ranks by topic alone, so it happily answers from the stale version.",
     built:
@@ -78,9 +78,9 @@ export const projects: Project[] = [
     outcome:
       "Every action passes a four-rule gate, including a prompt-injection check, and 292 tests run against a real Postgres database.",
     tags: ["FastAPI", "pgvector", "Ollama"],
-    role: "[TODO: role]",
-    timeline: "[TODO: dates]",
-    status: "[TODO: live / archived]",
+    role: "Solo project",
+    timeline: "Sep 2026",
+    status: "Working, runs locally",
     problem:
       "An assistant that acts on your behalf is only useful if it knows when not to. A confidently wrong calendar event, or an action triggered by a prompt-injected email, is worse than doing nothing.",
     built:
@@ -102,9 +102,9 @@ export const projects: Project[] = [
     outcome:
       "Spots poisoned, replayed and flooding updates, then quarantines or removes the devices sending them while training keeps running.",
     tags: ["PyTorch", "FastAPI", "Federated learning"],
-    role: "[TODO: role]",
-    timeline: "[TODO: dates]",
-    status: "[TODO: live / archived]",
+    role: "Solo project",
+    timeline: "Feb – Apr 2026",
+    status: "Complete",
     problem:
       "In federated learning the server never sees the training data, only model updates. That keeps data private, but it also means one compromised device can quietly poison the shared model, replay stale updates or flood the server.",
     built:
@@ -125,9 +125,9 @@ export const projects: Project[] = [
       "Predicts the chance a Duolingo learner remembers a word at their next review, so a scheduler knows when to show it again.",
     outcome: "XGBoost AUC 0.652 vs 0.583 for the logistic baseline, on 23,218 held-out learners.",
     tags: ["PySpark", "XGBoost", "Calibration"],
-    role: "[TODO: role]",
-    timeline: "[TODO: dates]",
-    status: "[TODO: live / archived]",
+    role: "Solo project",
+    timeline: "Sep 2026",
+    status: "Complete",
     problem:
       "Spaced-repetition schedulers need a recall probability they can trust, not just a ranking, because they schedule the next review for when that probability hits a target.",
     built:
@@ -148,9 +148,9 @@ export const projects: Project[] = [
     outcome:
       "Rebuilt from scratch, replacing a hard-coded review schedule with the FSRS algorithm, plus database-enforced privacy between users.",
     tags: ["Next.js", "Postgres", "FSRS"],
-    role: "[TODO: role]",
-    timeline: "[TODO: dates]",
-    status: "[TODO: live / archived]",
+    role: "Solo project",
+    timeline: "Aug 2026 (v2 rebuild)",
+    status: "In progress",
     problem:
       "The first version's headline feature was fake. The \"spaced repetition\" was a fixed list of days (2, 5, 9, 16), and progress lived in the browser, so it didn't sync across devices.",
     built:
@@ -172,9 +172,9 @@ export const projects: Project[] = [
     outcome:
       "No cron and no dropped jobs: BullMQ delayed jobs, idempotent sends, and a Redis-backed rate limit that holds across workers.",
     tags: ["Express", "BullMQ", "Redis"],
-    role: "[TODO: role]",
-    timeline: "[TODO: dates]",
-    status: "[TODO: live / archived]",
+    role: "Solo project",
+    timeline: "Sep 2026",
+    status: "Live",
     problem:
       "Bulk email has to go out on schedule without sending anything twice, losing jobs when a server restarts, or going over each sender's hourly cap, even with several workers running at once.",
     built:
