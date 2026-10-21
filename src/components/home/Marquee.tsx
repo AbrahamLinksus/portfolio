@@ -2,9 +2,7 @@ type Tile = { text: string; note?: string; look?: "paper" | "game" };
 
 const TILES: Tile[] = [
   { text: "Coimbatore", note: "home" },
-  { text: "CGPA 8.14", note: "so far", look: "paper" },
-  { text: "LeetCode grinder", note: "daily" },
-  { text: "In bed by 10", note: "every night", look: "paper" },
+  { text: "LeetCode grinder", note: "daily", look: "paper" },
   { text: "Badminton", note: "racquet in the bag" },
   { text: "Drums", look: "paper" },
   { text: "Bikes", note: "helmet on" },
@@ -12,10 +10,10 @@ const TILES: Tile[] = [
   { text: "SRM IST", note: "class of 27" },
   { text: "Coffee", look: "paper" },
   { text: "RAG tinkerer" },
-  { text: "XGBoost > baseline", note: "0.652 AUC" },
+  { text: "XGBoost > baseline", note: "0.652 AUC", look: "paper" },
   { text: "[TODO: game]", look: "game" },
   { text: "TDD convert", note: "since Drylogic" },
-  { text: "Chennai", note: "for now" },
+  { text: "Chennai", note: "for now", look: "paper" },
 ];
 
 function Pad() {
