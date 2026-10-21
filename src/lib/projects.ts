@@ -1,7 +1,14 @@
 // Project data for the home carousel, /work and /work/[slug].
 // Anything written as "[TODO: ...]" renders as a highlighted placeholder.
 
-export type ProjectSlug = "study-copilot" | "triageiq" | "recall" | "queuedup";
+export type ProjectSlug =
+  | "study-copilot"
+  | "nextup"
+  | "fedlearn"
+  | "recall"
+  | "queuedup"
+  | "email-scheduler"
+  | "triageiq";
 
 export type Project = {
   slug: ProjectSlug;
@@ -63,6 +70,54 @@ export const projects: Project[] = [
     demo: "",
   },
   {
+    slug: "nextup",
+    title: "nextup",
+    category: "AI · Agents",
+    summary:
+      "A personal assistant that reads my Notion pages and Gmail, acts on what it's sure about, and queues the rest for review.",
+    outcome:
+      "Every action passes a four-rule gate, including a prompt-injection check, and 292 tests run against a real Postgres database.",
+    tags: ["FastAPI", "pgvector", "Ollama"],
+    role: "[TODO: role]",
+    timeline: "[TODO: dates]",
+    status: "[TODO: live / archived]",
+    problem:
+      "An assistant that acts on your behalf is only useful if it knows when not to. A confidently wrong calendar event, or an action triggered by a prompt-injected email, is worse than doing nothing.",
+    built:
+      "A deterministic pipeline that ingests Notion pages and Gmail threads, normalises dates before any model sees them, chunks and embeds the content, classifies each item, and has an operations agent propose a single action. A gate then decides: low classification confidence, low confidence on any field, a date in the past, or a suspected prompt injection all send the item to a review queue with the draft pre-filled. Alongside it, a conversational agent with tools answers questions and has to name the source of every claim. Webhooks are signature-verified, everything can run locally on Ollama, and calendar writes are dry runs until explicitly enabled.",
+    stack: ["Python", "FastAPI", "Postgres", "pgvector", "Ollama", "Anthropic Claude", "APScheduler", "pytest"],
+    architecture: ["Notion + Gmail", "Chunk + embed", "Classify", "Propose action", "Gate", "Act or queue"],
+    architectureCore: 4,
+    result:
+      "292 tests across 20 files run against a real Postgres with pgvector rather than mocks. CI fails if the database tests were skipped, and checks that the migrations apply from scratch and are a no-op the second time.",
+    repo: "https://github.com/AbrahamLinksus/nextup",
+    demo: "",
+  },
+  {
+    slug: "fedlearn",
+    title: "FedLearn",
+    category: "AI · Security",
+    summary:
+      "A federated-learning simulation where 100 smart-home devices train an anomaly detector together, and a reputation system catches the ones trying to sabotage it.",
+    outcome:
+      "Spots poisoned, replayed and flooding updates, then quarantines or removes the devices sending them while training keeps running.",
+    tags: ["PyTorch", "FastAPI", "Federated learning"],
+    role: "[TODO: role]",
+    timeline: "[TODO: dates]",
+    status: "[TODO: live / archived]",
+    problem:
+      "In federated learning the server never sees the training data, only model updates. That keeps data private, but it also means one compromised device can quietly poison the shared model, replay stale updates or flood the server.",
+    built:
+      "A FastAPI aggregator coordinating 100 simulated IoT clients, each training an LSTM autoencoder on its own sensor data. A security engine scores every update: one far larger than the baseline is flagged as poisoning, an identical repeat as a replay, and a burst of requests as a flood. Each flag cuts the client's reputation, which leads to monitoring, quarantine or removal. Attack scripts run targeted and bulk attacks over the REST API, and a Streamlit dashboard shows rounds, reputations and decisions live.",
+    stack: ["Python", "PyTorch", "FastAPI", "Streamlit", "Plotly", "pandas"],
+    architecture: ["100 IoT clients", "Local LSTM training", "Submit update", "Reputation check", "Aggregate", "Global model"],
+    architectureCore: 3,
+    result:
+      "Runs end to end locally with targeted and bulk poison, replay and flood attacks. Every decision (allow, monitor, quarantine, remove) is logged with the client's reputation score, how quickly it was caught, and how many neighbouring clients the block protected.",
+    repo: "https://github.com/AbrahamLinksus/fedLearn",
+    demo: "",
+  },
+  {
     slug: "recall",
     title: "Recall Prediction",
     category: "Machine learning",
@@ -107,6 +162,30 @@ export const projects: Project[] = [
       "A working path from sign-in to grading a card, where the interval updates and the outbox drains. It's covered by unit tests, integration tests against a real database (including a check that a query run without a user returns nothing), and one end-to-end test.",
     repo: "https://github.com/AbrahamLinksus/queuedup_v2",
     demo: "",
+  },
+  {
+    slug: "email-scheduler",
+    title: "ReachInbox Scheduler",
+    category: "Backend · Systems",
+    summary:
+      "An email-campaign scheduler that sends on time, survives restarts, and never breaks a sender's hourly limit.",
+    outcome:
+      "No cron and no dropped jobs: BullMQ delayed jobs, idempotent sends, and a Redis-backed rate limit that holds across workers.",
+    tags: ["Express", "BullMQ", "Redis"],
+    role: "[TODO: role]",
+    timeline: "[TODO: dates]",
+    status: "[TODO: live / archived]",
+    problem:
+      "Bulk email has to go out on schedule without sending anything twice, losing jobs when a server restarts, or going over each sender's hourly cap, even with several workers running at once.",
+    built:
+      "An Express API and a Next.js dashboard with Google sign-in. Each email is a BullMQ delayed job, with Postgres acting as the outbox: a relay moves due emails into Redis and a reconciler repairs anything that drifts. Workers claim jobs with a lease, run a guard chain (campaign status, suppression, sender health, rate limit) and send idempotently. Campaigns can be paused, resumed or cancelled, and anything over the hourly limit moves to the next window instead of being dropped. Prometheus metrics track queue depth, send lag and rate-limit hits.",
+    stack: ["TypeScript", "Express", "BullMQ", "Redis", "Postgres", "Drizzle", "Elasticsearch", "Next.js", "Docker"],
+    architecture: ["Next.js dashboard", "Express API", "Postgres outbox", "Relay", "BullMQ worker", "SMTP"],
+    architectureCore: 4,
+    result:
+      "Deployed with the dashboard on Vercel and the API on Render. Load-tested with 2,000 emails across several senders through a fake SMTP service, and the same code runs as API, worker or relay so each part scales on its own.",
+    repo: "https://github.com/AbrahamLinksus/reachinbox-scheduler",
+    demo: "https://reachinbox-scheduler-dusky.vercel.app",
   },
   {
     slug: "triageiq",
