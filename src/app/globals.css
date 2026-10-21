@@ -115,6 +115,32 @@
   }
 }
 
+/* ---------- hero stage ---------- */
+/*
+  Words and illustration share one coordinate system: every size inside is a
+  share of the stage width (cqi), so the layout never shifts between devices.
+  The stage is as wide as the screen allows, but never so wide that the hero
+  (stage + header + role lines, ~300px) overflows the viewport height.
+  0.8 = stage height / stage width.
+*/
+.hero-stage {
+  container-type: inline-size;
+  width: min(100%, 1100px, max(300px, calc((100svh - 300px) / 0.8)));
+}
+.hero-word {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 17cqi;
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  position: relative;
+  z-index: 2;
+}
+.hero-word-1 { text-align: left; padding-left: 5cqi; }
+.hero-word-2 { text-align: right; padding-right: 1cqi; color: var(--color-ember); }
+.hero-art { position: relative; z-index: 1; margin-block: 1.5cqi; }
+
 /* ---------- illustration ---------- */
 .ill .s {
   stroke: var(--color-bone);

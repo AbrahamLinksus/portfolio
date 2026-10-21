@@ -72,26 +72,24 @@ export function Hero() {
     <section
       ref={root}
       aria-label="Intro"
-      className="relative flex min-h-0 items-center overflow-hidden pt-24 pb-9 md:min-h-[clamp(640px,100vh,940px)] md:pt-[84px]"
+      className="relative flex min-h-svh flex-col justify-center overflow-hidden pt-[84px] pb-8"
     >
       <div className="site-wrap flex flex-col items-center text-center">
         <h1 className="sr-only">{site.name}</h1>
         <p className="label text-fog">{site.tagline}</p>
-        <span
-          aria-hidden="true"
-          className="relative z-[2] mt-[18px] block -translate-x-[14%] font-display text-[clamp(44px,13.5vw,110px)] leading-[0.86] font-extrabold tracking-[-0.05em] md:-translate-x-[24%] md:text-[clamp(60px,9vw,156px)]"
-        >
-          Jake
-        </span>
-        <div ref={art} className="ill relative z-[1] -mx-3 my-0.5 w-[calc(100%+24px)] md:mx-0 md:-mt-[1.2vw] md:-mb-[0.6vw] md:w-[min(900px,100%)]">
-          <HeadIllustration className="block h-auto w-full overflow-visible" />
+
+        {/* One stage, sized in container units, so the composition is identical on every screen. */}
+        <div className="hero-stage mt-4">
+          <span aria-hidden="true" className="hero-word hero-word-1">
+            Jake
+          </span>
+          <div ref={art} className="ill hero-art">
+            <HeadIllustration className="block h-auto w-full overflow-visible" />
+          </div>
+          <span aria-hidden="true" className="hero-word hero-word-2">
+            Roberts.
+          </span>
         </div>
-        <span
-          aria-hidden="true"
-          className="relative z-[2] block translate-x-[3%] font-display text-[clamp(44px,13.5vw,110px)] leading-[0.86] font-extrabold tracking-[-0.05em] text-ember md:translate-x-[20%] md:text-[clamp(60px,9vw,156px)]"
-        >
-          Roberts.
-        </span>
 
         <div className="mt-[26px] flex flex-col items-center gap-2.5">
           <p
