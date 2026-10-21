@@ -16,7 +16,7 @@ const KEYS: Key[] = [
   { key: "r", label: "Resume", path: "resume.pdf", href: site.resume, external: true },
 ];
 
-const COMMANDS = ["open work", "cat beliefs.txt", "./play --toy", "git push"];
+const COMMANDS = ["git push", "make coffee", "claude --new-session", "npm run badminton"];
 
 function TypedCommand() {
   const reduced = useReducedMotion();
