@@ -1,8 +1,8 @@
 import { Eyebrow } from "@/components/ui/Eyebrow";
 
 const BELIEFS = [
-  { title: "Ship small, then sharpen.", body: "A working v1 teaches more than a perfect plan ever will." },
-  { title: "Beat a baseline, or it didn't happen.", body: "Every model gets a dumb comparison and an honest metric." },
+  { title: "Code should outlive the hype.", body: "Frameworks come and go. Solid fundamentals stay." },
+  { title: "Step away, then solve it.", body: "The fix usually shows up on a walk, a ride or a badminton break." },
   { title: "Code is read more than it runs.", body: "Clear names, small functions. Future me is a user too." },
 ];
 
