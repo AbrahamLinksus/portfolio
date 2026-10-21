@@ -30,7 +30,7 @@ npm run lint
 
 Text written as `[TODO: ...]` renders as a highlighted chip on the site, so unfinished content is easy to spot. Search the repo for `TODO` to find them all.
 
-Still needed: email address, LinkedIn URL, `public/resume.pdf`, photos for `/human`, project outcomes/metrics, stacks, repo and demo URLs, game names, values.
+Still needed: email address, `public/resume.pdf`, photos for `/human`, project outcomes/metrics, stacks, repo and demo URLs, game names, values.
 
 ## Environment variables
 

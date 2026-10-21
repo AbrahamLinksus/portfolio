@@ -31,20 +31,14 @@ export function Footer() {
             <ul className="mt-3 flex flex-col">
               {links.map((l) => (
                 <li key={l.label}>
-                  {l.href ? (
-                    <a
-                      href={l.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex justify-between border-b border-rim py-2 transition-colors hover:text-ember"
-                    >
-                      {l.label} <span aria-hidden="true">↗</span>
-                    </a>
-                  ) : (
-                    <span className="flex justify-between border-b border-rim py-2 text-fog">
-                      {l.label} <span className="todo">[TODO: url]</span>
-                    </span>
-                  )}
+                  <a
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex justify-between border-b border-rim py-2 transition-colors hover:text-ember"
+                  >
+                    {l.label} <span aria-hidden="true">↗</span>
+                  </a>
                 </li>
               ))}
             </ul>

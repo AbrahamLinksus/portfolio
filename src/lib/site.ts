@@ -13,7 +13,7 @@ export const site = {
   socials: {
     github: "https://github.com/AbrahamLinksus",
     leetcode: "https://leetcode.com/u/abrahamlinksus/",
-    linkedin: "", // [TODO] LinkedIn URL
+    linkedin: "https://www.linkedin.com/in/jake-roberts05/",
   },
 } as const;
 

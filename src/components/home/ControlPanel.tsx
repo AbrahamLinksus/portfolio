@@ -72,7 +72,7 @@ export function ControlPanel() {
   const externals = [
     { label: "github", value: "AbrahamLinksus", href: site.socials.github },
     { label: "leetcode", value: "abrahamlinksus", href: site.socials.leetcode },
-    { label: "linkedin", value: "[TODO: url]", href: site.socials.linkedin },
+    { label: "linkedin", value: "jake-roberts05", href: site.socials.linkedin },
   ];
 
   return (
@@ -136,20 +136,14 @@ export function ControlPanel() {
               <ul className="col-span-2 grid gap-2.5 sm:grid-cols-3 md:gap-3">
                 {externals.map((x) => (
                   <li key={x.label} className="min-w-0">
-                    {x.href ? (
-                      <a
-                        href={x.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex flex-col gap-1 rounded-xl border border-dashed border-rim p-3.5 font-mono text-xs text-fog transition-colors hover:border-ember hover:text-ember-soft"
-                      >
-                        {x.label} <b className="text-[13px] font-semibold break-all text-bone">{x.value} ↗</b>
-                      </a>
-                    ) : (
-                      <span className="flex flex-col gap-1 rounded-xl border border-dashed border-rim p-3.5 font-mono text-xs text-fog">
-                        {x.label} <span className="todo self-start">{x.value}</span>
-                      </span>
-                    )}
+                    <a
+                      href={x.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex flex-col gap-1 rounded-xl border border-dashed border-rim p-3.5 font-mono text-xs text-fog transition-colors hover:border-ember hover:text-ember-soft"
+                    >
+                      {x.label} <b className="text-[13px] font-semibold break-all text-bone">{x.value} ↗</b>
+                    </a>
                   </li>
                 ))}
               </ul>
