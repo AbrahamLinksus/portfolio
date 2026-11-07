@@ -6,10 +6,11 @@ export const music = {
   ],
   genre: 'Prog, by a mile',
   topArtists: ['Dream Theater', 'Pink Floyd', 'Tool', 'Toto', 'Steven Wilson'],
-  soundtrack: { artist: 'Pink Floyd', line: 'Full albums, start to finish, while I build.' },
-  drummers: [
-    { name: 'Mike Portnoy', band: 'Dream Theater' },
-    { name: 'Danny Carey', band: 'Tool' },
+  soundtrack: [
+    { album: 'The Raven That Refused to Sing', artist: 'Steven Wilson' },
+    { album: 'Metropolis Pt. 2: Scenes from a Memory', artist: 'Dream Theater' },
+    { album: 'The Dark Side of the Moon', artist: 'Pink Floyd' },
+    { album: '10,000 Days', artist: 'Tool' },
   ],
 };
 
@@ -41,12 +42,12 @@ export const biking = {
     { from: 'Coimbatore', name: 'Valparai', lat: 10.327, lon: 76.955, note: 'Anamalai hills and tea estates', label: 'left' as const },
     { from: 'Coimbatore', name: 'Alappuzha', lat: 9.4981, lon: 76.3388, note: 'Backwaters on the Kerala coast', label: 'left' as const, bend: -0.12 },
     { from: 'Coimbatore', name: 'Kanyakumari', lat: 8.0883, lon: 77.5385, note: 'The southern tip of India', label: 'right' as const },
-    { from: 'Chennai', name: 'Tada', lat: 13.5867, lon: 79.8947, note: 'Just over the Andhra border', label: 'left' as const },
+    { from: 'Chennai', name: 'Tada', lat: 13.5867, lon: 79.8947, note: 'Just over the Andhra border', label: 'left' as const, inList: false },
     { from: 'Chennai', name: 'Sriharikota', lat: 13.7199, lon: 80.2304, note: 'Island home of the ISRO launch centre', label: 'above' as const },
     { from: 'Chennai', name: 'Vellore', lat: 12.9165, lon: 79.1325, note: 'Fort city on the Palar', label: 'left' as const, offset: [-18, -26] as [number, number] },
     { from: 'Chennai', name: 'Jawadhu Hills', lat: 12.57, lon: 78.88, note: 'Eastern Ghats, near Tiruvannamalai', label: 'left' as const, offset: [-12, 34] as [number, number] },
     { from: 'Chennai', name: 'Yelagiri', lat: 12.5786, lon: 78.6399, note: 'Hill station in the Eastern Ghats', label: 'left' as const },
-    { from: 'Chennai', name: 'Athimoor forests', lat: 12.53, lon: 79.02, note: 'Forest roads near Polur', label: 'right' as const, offset: [16, 34] as [number, number] },
+    { from: 'Chennai', name: 'Athimoor forests', lat: 12.53, lon: 79.02, note: 'Forest roads near Polur', label: 'right' as const, offset: [16, 34] as [number, number], inList: false },
   ],
 };
 

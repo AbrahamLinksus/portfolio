@@ -63,30 +63,22 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
         </ol>
       </section>
 
-      <div class="two">
-        <section aria-labelledby="sound-title">
-          <div class="sec-head">
-            <h2 id="sound-title" class="display sec-title sm">Coding soundtrack</h2>
-          </div>
-          <p class="item-name">{music.soundtrack.artist}</p>
-          <p class="item-note">{music.soundtrack.line}</p>
-        </section>
-        <section aria-labelledby="drummers-title">
-          <div class="sec-head">
-            <h2 id="drummers-title" class="display sec-title sm">Drummers I study</h2>
-          </div>
-          <ul class="rows">
-            {
-              music.drummers.map((d) => (
-                <li>
-                  <span class="item-name">{d.name}</span>
-                  <span class="label">{d.band}</span>
-                </li>
-              ))
-            }
-          </ul>
-        </section>
-      </div>
+      <section aria-labelledby="sound-title">
+        <div class="sec-head">
+          <h2 id="sound-title" class="display sec-title">Coding soundtrack</h2>
+          <span class="label">Full albums, start to finish</span>
+        </div>
+        <ul class="albums">
+          {
+            music.soundtrack.map((a) => (
+              <li>
+                <span class="item-name">{a.album}</span>
+                <span class="label">{a.artist}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
     </div>
 
     <!-- BIKING -->
@@ -123,7 +115,7 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
                   <h3 class="list-head">From {h.name}</h3>
                   <ul class="rows routes">
                     {biking.routes
-                      .filter((r) => r.from === h.name)
+                      .filter((r) => r.from === h.name && r.inList !== false)
                       .map((r) => (
                         <li>
                           <span class="item-name">{r.name}</span>
@@ -336,10 +328,26 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
   .first .name {
     font-size: clamp(24px, 2.6vw, 32px);
   }
-  .two {
+  .albums {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .albums li {
+    display: grid;
+    align-content: space-between;
+    gap: 18px;
+    min-height: 150px;
+    padding: 18px;
+    border: 1.5px solid var(--line);
+    border-top: 4px solid var(--c);
+    border-radius: 16px;
+  }
+  .albums .item-name {
+    font-size: clamp(18px, 1.8vw, 22px);
   }
   .rows,
   .routes {
@@ -489,9 +497,11 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
   }
 
   @media (max-width: 900px) {
-    .bike,
-    .two {
+    .bike {
       grid-template-columns: 1fr;
+    }
+    .albums {
+      grid-template-columns: 1fr 1fr;
     }
     .top5 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
