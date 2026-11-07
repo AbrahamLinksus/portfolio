@@ -5,7 +5,7 @@ year: 2026
 status: Live
 roles: [Software]
 stack: [TypeScript, Express, BullMQ, Redis, Postgres, Drizzle, Elasticsearch, Next.js]
-skills: ['TypeScript', 'Node.js / Express', 'Next.js / React', 'PostgreSQL', 'SQL', 'Redis / BullMQ', 'Elasticsearch', 'Docker', 'Distributed systems', 'Testing', 'Software architecture']
+skills: ['TypeScript', 'Node.js / Express', 'Next.js / React', 'PostgreSQL', 'SQL', 'Redis / BullMQ', 'Elasticsearch', 'Docker', 'Distributed systems', 'Software architecture', 'Testing & TDD', 'REST APIs', 'Database design (ER, normalization, indexing)', 'Design patterns / SOLID']
 repo: https://github.com/AbrahamLinksus/reachinbox-scheduler
 live: https://reachinbox-scheduler-dusky.vercel.app
 featured: true
