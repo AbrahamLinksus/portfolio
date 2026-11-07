@@ -13,61 +13,41 @@ export const music = {
   ],
 };
 
-export type Ride = { name: string; lat: number; lon: number; note: string; longest?: boolean; label?: 'left' | 'right' | 'above' | 'below' | 'below-left' | 'right-up'; bend?: number };
-export type RideBase = {
-  from: string;
-  home: { name: string; lat: number; lon: number; tag: string };
-  homeLabel?: 'left' | 'right';
-  view: { lon0: number; lon1: number; lat0: number; lat1: number };
-  regions: { text: string; lat: number; lon: number; rotate?: number; sea?: boolean }[];
-  rides: Ride[];
-};
-
 export const biking = {
+  about: [
+    "Hill stations are my favourite kind of ride. The climb up is the best part: the hairpins, the air turning cold, the view opening up a little more at every bend.",
+    "Riding clears my mind like nothing else does. Out on the road it is just me, the bike and the next corner, and whatever I was stuck on usually sorts itself out by the time I get back.",
+  ],
   stats: [
     { value: '5', label: 'years riding' },
     { value: '30,000', label: 'km on the clock (roughly)' },
   ],
-  longest: { from: 'Coimbatore', to: 'Kanyakumari' },
-  bases: [
-    {
-      from: 'Coimbatore',
-      home: { name: 'Coimbatore', lat: 11.0168, lon: 76.9558, tag: 'HOME' },
-      view: { lon0: 75.5, lon1: 78.4, lat0: 7.85, lat1: 11.95 },
-      regions: [
-        { text: 'KERALA', lat: 10.75, lon: 76.15, rotate: -62 },
-        { text: 'TAMIL NADU', lat: 10.0, lon: 77.6 },
-        { text: 'KARNATAKA', lat: 11.85, lon: 75.75 },
-        { text: 'ARABIAN SEA', lat: 9.0, lon: 75.6, sea: true },
-      ],
-      rides: [
-        { name: 'Ooty', lat: 11.4102, lon: 76.695, note: 'The Nilgiris hill station', label: 'right' },
-        { name: 'Bandipur', lat: 11.668, lon: 76.63, note: 'National park on the Karnataka border', label: 'left' },
-        { name: 'Valparai', lat: 10.327, lon: 76.955, note: 'Anamalai hills and tea estates', label: 'left' },
-        { name: 'Alappuzha', lat: 9.4981, lon: 76.3388, note: 'Backwaters on the Kerala coast', label: 'right', bend: -0.15 },
-        { name: 'Kanyakumari', lat: 8.0883, lon: 77.5385, note: 'The southern tip of India', longest: true, label: 'right' },
-      ],
-    },
-    {
-      from: 'Chennai',
-      home: { name: 'Chennai', lat: 13.0827, lon: 80.2707, tag: 'COLLEGE' },
-      homeLabel: 'left',
-      view: { lon0: 78.2, lon1: 80.75, lat0: 12.2, lat1: 13.95 },
-      regions: [
-        { text: 'TAMIL NADU', lat: 12.3, lon: 79.3 },
-        { text: 'ANDHRA PRADESH', lat: 13.85, lon: 78.4 },
-        { text: 'BAY OF BENGAL', lat: 12.45, lon: 80.3, rotate: -70, sea: true },
-      ],
-      rides: [
-        { name: 'Tada', lat: 13.5867, lon: 79.8947, note: 'Just over the Andhra border', label: 'left' },
-        { name: 'Sriharikota', lat: 13.7199, lon: 80.2304, note: 'Island home of the ISRO launch centre', label: 'left' },
-        { name: 'Vellore', lat: 12.9165, lon: 79.1325, note: 'Fort city on the Palar', label: 'above' },
-        { name: 'Jawadhu Hills', lat: 12.57, lon: 78.88, note: 'Eastern Ghats, near Tiruvannamalai', label: 'below-left', bend: 0 },
-        { name: 'Yelagiri', lat: 12.5786, lon: 78.6399, note: 'Hill station in the Eastern Ghats', label: 'left', bend: -0.14 },
-        { name: 'Athimoor forests', lat: 12.53, lon: 79.02, note: 'Forest roads near Polur', label: 'right-up', bend: 0.7 },
-      ],
-    },
-  ] as RideBase[],
+  homes: [
+    { name: 'Coimbatore', lat: 11.0168, lon: 76.9558, tag: 'HOME' },
+    { name: 'Chennai', lat: 13.0827, lon: 80.2707, tag: 'COLLEGE' },
+  ],
+  view: { lon0: 75.4, lon1: 80.9, lat0: 7.85, lat1: 14.0 },
+  regions: [
+    { text: 'KERALA', lat: 9.0, lon: 76.9, rotate: -62 },
+    { text: 'TAMIL NADU', lat: 10.3, lon: 78.4 },
+    { text: 'KARNATAKA', lat: 13.4, lon: 76.2 },
+    { text: 'ANDHRA PRADESH', lat: 13.75, lon: 77.9 },
+    { text: 'ARABIAN SEA', lat: 11.0, lon: 75.45, sea: true },
+    { text: 'BAY OF BENGAL', lat: 11.0, lon: 80.4, rotate: -70, sea: true },
+  ],
+  routes: [
+    { from: 'Coimbatore', name: 'Ooty', lat: 11.4102, lon: 76.695, note: 'The Nilgiris hill station', label: 'right' as const },
+    { from: 'Coimbatore', name: 'Bandipur', lat: 11.668, lon: 76.63, note: 'National park on the Karnataka border', label: 'left' as const },
+    { from: 'Coimbatore', name: 'Valparai', lat: 10.327, lon: 76.955, note: 'Anamalai hills and tea estates', label: 'left' as const },
+    { from: 'Coimbatore', name: 'Alappuzha', lat: 9.4981, lon: 76.3388, note: 'Backwaters on the Kerala coast', label: 'left' as const, bend: -0.12 },
+    { from: 'Coimbatore', name: 'Kanyakumari', lat: 8.0883, lon: 77.5385, note: 'The southern tip of India', label: 'right' as const },
+    { from: 'Chennai', name: 'Tada', lat: 13.5867, lon: 79.8947, note: 'Just over the Andhra border', label: 'left' as const },
+    { from: 'Chennai', name: 'Sriharikota', lat: 13.7199, lon: 80.2304, note: 'Island home of the ISRO launch centre', label: 'above' as const },
+    { from: 'Chennai', name: 'Vellore', lat: 12.9165, lon: 79.1325, note: 'Fort city on the Palar', label: 'left' as const, offset: [-18, -26] as [number, number] },
+    { from: 'Chennai', name: 'Jawadhu Hills', lat: 12.57, lon: 78.88, note: 'Eastern Ghats, near Tiruvannamalai', label: 'left' as const, offset: [-12, 34] as [number, number] },
+    { from: 'Chennai', name: 'Yelagiri', lat: 12.5786, lon: 78.6399, note: 'Hill station in the Eastern Ghats', label: 'left' as const },
+    { from: 'Chennai', name: 'Athimoor forests', lat: 12.53, lon: 79.02, note: 'Forest roads near Polur', label: 'right' as const, offset: [16, 34] as [number, number] },
+  ],
 };
 
 export const drums = {

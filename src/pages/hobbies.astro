@@ -12,7 +12,6 @@ const tabs = [
   { id: 'drums', label: 'Drums', color: 'var(--pink)' },
   { id: 'badminton', label: 'Badminton', color: 'var(--lime)' },
 ];
-const bikeFacts = [...biking.stats, { value: `${biking.longest.from} → ${biking.longest.to}`, label: 'longest ride', wide: true }];
 const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite to play' }];
 ---
 
@@ -92,45 +91,54 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
 
     <!-- BIKING -->
     <div class="panel" role="tabpanel" id="panel-biking" aria-labelledby="tab-biking" tabindex="0" style="--c: var(--orange)" hidden>
+      <div class="about">
+        {biking.about.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
+      </div>
       <dl class="facts">
         {
-          bikeFacts.map((f) => (
-            <div class:list={['fact', { wide: 'wide' in f }]}>
+          biking.stats.map((f) => (
+            <div class="fact">
               <dt>{f.label}</dt>
               <dd class="display">{f.value}</dd>
             </div>
           ))
         }
       </dl>
-      {
-        biking.bases.map((base) => (
-          <section aria-labelledby={`from-${base.from}`}>
-            <div class="sec-head">
-              <h2 id={`from-${base.from}`} class="display sec-title sm">From {base.from}</h2>
-              <span class="label">{base.rides.length} rides</span>
+      <section aria-labelledby="rides-title">
+        <div class="sec-head">
+          <h2 id="rides-title" class="display sec-title">Where I ride</h2>
+          <span class="label">From Coimbatore and Chennai</span>
+        </div>
+        <div class="bike">
+          <figure class="map">
+            <div class="map-scroll">
+              <RideMap homes={biking.homes} places={biking.routes} view={biking.view} regions={biking.regions} />
             </div>
-            <div class="bike">
-              <figure class="map">
-                <RideMap home={base.home} homeLabel={base.homeLabel} places={base.rides} view={base.view} regions={base.regions} />
-                <figcaption class="cap">Straight-line distances from {base.from}. Roads are longer.</figcaption>
-              </figure>
-              <ol class="routes">
-                {base.rides.map((r, i) => (
-                  <li>
-                    <span class="rn">{String(i + 1).padStart(2, '0')}</span>
-                    <span>
-                      <span class="item-name">{r.name}</span>
-                      <span class="item-note">
-                        {r.note} · {km(base.home, r)} km{r.longest ? ' · longest ride' : ''}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </section>
-        ))
-      }
+            <figcaption class="cap"><span class="swipe">Swipe the map to see Chennai →<br /></span>Straight-line distances from each starting point. Roads are longer.</figcaption>
+          </figure>
+          <div class="ride-lists">
+            {
+              biking.homes.map((h) => (
+                <div>
+                  <h3 class="list-head">From {h.name}</h3>
+                  <ul class="rows routes">
+                    {biking.routes
+                      .filter((r) => r.from === h.name)
+                      .map((r) => (
+                        <li>
+                          <span class="item-name">{r.name}</span>
+                          <span class="item-note">
+                            {r.note} · {km(h, r)} km
+                          </span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </section>
     </div>
 
     <!-- DRUMS -->
@@ -352,24 +360,24 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     padding-top: 0;
   }
   .routes li {
-    display: grid;
-    grid-template-columns: 48px 1fr;
-    align-items: baseline;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--line);
+    display: block;
   }
-  .routes li:first-child {
-    padding-top: 0;
+  .ride-lists {
+    display: grid;
+    gap: 32px;
+  }
+  .list-head {
+    margin: 0 0 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c);
   }
   .routes .item-name,
   .routes .item-note {
     display: block;
-  }
-  .rn {
-    font-family: var(--font-display);
-    font-size: 30px;
-    line-height: 1;
-    color: var(--c);
   }
 
   /* Facts strip (biking, drums) */
@@ -423,6 +431,14 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     border-radius: 18px;
     overflow: hidden;
     border: 1px solid var(--line);
+  }
+  .map-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .swipe {
+    display: none;
+    color: var(--c);
   }
   .cap {
     padding: 10px 16px;
@@ -521,6 +537,13 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     }
     .photos {
       grid-template-columns: 1fr;
+    }
+    .swipe {
+      display: inline;
+    }
+    .map-scroll :global(.ridemap) {
+      width: 640px;
+      max-width: none;
     }
     .photo {
       aspect-ratio: 4 / 3;

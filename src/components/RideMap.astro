@@ -1,25 +1,32 @@
 ---
-// Stylised map of rides from one starting point. Places are plotted from real coordinates;
-// the coastline is a rough sketch for orientation only.
+// Stylised map of rides from one or more starting points. Places are plotted from real
+// coordinates; the coastline is a rough sketch for orientation only.
 import { km } from '../lib/geo';
 
-type Side = 'left' | 'right' | 'above' | 'below' | 'below-left' | 'right-up';
+type Side = 'left' | 'right' | 'above' | 'below';
+interface Home {
+  name: string;
+  lat: number;
+  lon: number;
+  tag: string;
+}
 interface Place {
   name: string;
   lat: number;
   lon: number;
-  longest?: boolean;
+  from: string;
   label?: Side;
+  /** Move the label away from the pin (with a pointer line), in map units. */
+  offset?: [number, number];
   bend?: number;
 }
 interface Props {
-  home: { name: string; lat: number; lon: number; tag: string };
+  homes: Home[];
   places: Place[];
   view: { lon0: number; lon1: number; lat0: number; lat1: number };
   regions?: { text: string; lat: number; lon: number; rotate?: number; sea?: boolean }[];
-  homeLabel?: Side;
 }
-const { home, places, view, regions = [], homeLabel = 'right' } = Astro.props;
+const { homes, places, view, regions = [] } = Astro.props;
 
 const PAD = 30, INNER = 640;
 const KX = INNER / (view.lon1 - view.lon0);
@@ -27,7 +34,6 @@ const KY = KX / Math.cos((((view.lat0 + view.lat1) / 2) * Math.PI) / 180);
 const x = (lon: number) => PAD + (lon - view.lon0) * KX;
 const y = (lat: number) => PAD + (view.lat1 - lat) * KY;
 const W = Math.ceil(INNER + PAD * 2), H = Math.ceil((view.lat1 - view.lat0) * KY + PAD * 2);
-const uid = home.name.toLowerCase().replace(/[^a-z]/g, '');
 
 // Rough coastline of the southern peninsula: west coast north to south, then east coast back up.
 const coast: [number, number][] = [
@@ -36,42 +42,40 @@ const coast: [number, number][] = [
   [15.5, 73.8],
 ];
 const land = 'M' + coast.map(([la, lo]) => `${x(lo).toFixed(1)},${y(la).toFixed(1)}`).join('L') + 'Z';
-const hx = x(home.lon), hy = y(home.lat);
 
-// Label offsets for each side of a pin: name line, then distance line.
-const place = (px: number, py: number, side: Side, gap = 14) => {
-  if (side === 'left') return { tx: px - gap, ny: py - 2, dy: py + 14, anchor: 'end' };
-  if (side === 'above') return { tx: px, ny: py - 28, dy: py - 13, anchor: 'middle' };
-  if (side === 'right-up') return { tx: px + gap, ny: py - 10, dy: py + 5, anchor: 'start' };
-  if (side === 'below-left') return { tx: px + 8, ny: py + 34, dy: py + 49, anchor: 'end' };
-  if (side === 'below') return { tx: px, ny: py + 27, dy: py + 42, anchor: 'middle' };
-  return { tx: px + gap, ny: py - 2, dy: py + 14, anchor: 'start' };
+// Name line, then distance line, on the chosen side of a point.
+const lines = (px: number, py: number, side: Side, gap = 13) => {
+  if (side === 'left') return { tx: px - gap, ny: py - 1, dy: py + 14, anchor: 'end' };
+  if (side === 'above') return { tx: px, ny: py - 24, dy: py - 10, anchor: 'middle' };
+  if (side === 'below') return { tx: px, ny: py + 25, dy: py + 39, anchor: 'middle' };
+  return { tx: px + gap, ny: py - 1, dy: py + 14, anchor: 'start' };
 };
 
-const routes = places.map((p, i) => {
+const homeAt = Object.fromEntries(homes.map((h) => [h.name, { ...h, hx: x(h.lon), hy: y(h.lat) }]));
+const routes = places.map((p) => {
+  const h = homeAt[p.from];
   const px = x(p.lon), py = y(p.lat);
-  const k = p.bend ?? 0.15;
-  const mx = (hx + px) / 2 + (py - hy) * k, my = (hy + py) / 2 - (px - hx) * k;
+  const k = p.bend ?? 0.12;
+  const mx = (h.hx + px) / 2 + (py - h.hy) * k, my = (h.hy + py) / 2 - (px - h.hx) * k;
+  const side = p.label ?? 'right';
+  const ax = px + (p.offset?.[0] ?? 0), ay = py + (p.offset?.[1] ?? 0);
   return {
-    ...p, px, py,
-    d: `M${hx.toFixed(1)},${hy.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${px.toFixed(1)},${py.toFixed(1)}`,
-    dist: km(home, p),
-    l: place(px, py, p.label ?? 'right'),
-    n: String(i + 1).padStart(2, '0'),
-    side: p.label ?? 'right',
+    ...p, px, py, ax, ay,
+    d: `M${h.hx.toFixed(1)},${h.hy.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${px.toFixed(1)},${py.toFixed(1)}`,
+    dist: km(h, p),
+    l: lines(ax, ay, side, p.offset ? 4 : 13),
   };
 });
-const hl = place(hx, hy, homeLabel, 18);
 ---
 
-<svg class="ridemap" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Ride map from ${home.name}: ${routes.map((r) => `${r.name}, ${r.dist} km away`).join('; ')}`}>
+<svg class="ridemap" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Ride map. ${homes.map((h) => `From ${h.name}: ${routes.filter((r) => r.from === h.name).map((r) => `${r.name}, ${r.dist} km`).join(', ')}`).join('. ')}`}>
   <defs>
-    <pattern id={`grid-${uid}`} width="40" height="40" patternUnits="userSpaceOnUse">
+    <pattern id="ride-grid" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M40 0H0V40" fill="none" stroke="rgba(242,236,228,.06)" stroke-width="1"></path>
     </pattern>
   </defs>
   <rect width={W} height={H} class="sea"></rect>
-  <rect width={W} height={H} fill={`url(#grid-${uid})`}></rect>
+  <rect width={W} height={H} fill="url(#ride-grid)"></rect>
   <path d={land} class="land"></path>
   {
     regions.map((r) => (
@@ -80,24 +84,27 @@ const hl = place(hx, hy, homeLabel, 18);
       </text>
     ))
   }
-  {routes.map((r) => <path d={r.d} class:list={['route', { longest: r.longest }]} />)}
+  {routes.map((r) => <path d={r.d} class="route" />)}
+  {routes.filter((r) => r.offset).map((r) => <line x1={r.px} y1={r.py} x2={r.ax} y2={r.ay} class="leader" />)}
   {
     routes.map((r) => (
-      <g class:list={['pin', { longest: r.longest }]}>
-        <circle cx={r.px} cy={r.py} r={r.longest ? 8 : 6} />
+      <g class="pin">
+        <circle cx={r.px} cy={r.py} r="5.5" />
         <text class="pn" x={r.l.tx} y={r.l.ny} text-anchor={r.l.anchor}>{r.name}</text>
-        <text class="pnum" x={r.l.tx} y={['left', 'right', 'right-up'].includes(r.side) ? r.py + 9 : r.l.ny} text-anchor={r.l.anchor}>{r.n}</text>
-        <text class="pd" x={r.l.tx} y={r.l.dy} text-anchor={r.l.anchor}>
-          {r.longest ? 'LONGEST RIDE · ' : ''}{r.dist} KM
-        </text>
+        <text class="pd" x={r.l.tx} y={r.l.dy} text-anchor={r.l.anchor}>{r.dist} KM</text>
       </g>
     ))
   }
-  <g class="home">
-    <circle cx={hx} cy={hy} r="13" class="halo"></circle>
-    <circle cx={hx} cy={hy} r="7"></circle>
-    <text class="hn" x={hl.tx} y={hy + 5} text-anchor={hl.anchor}>{home.name.toUpperCase()} · {home.tag}</text>
-  </g>
+  {
+    Object.values(homeAt).map((h) => (
+      <g class="home">
+        <circle cx={h.hx} cy={h.hy} r="13" class="halo" />
+        <circle cx={h.hx} cy={h.hy} r="7" />
+        <text class="hn" x={h.hx + 18} y={h.hy - 1}>{h.name.toUpperCase()}</text>
+        <text class="ht" x={h.hx + 18} y={h.hy + 14}>{h.tag}</text>
+      </g>
+    ))
+  }
 </svg>
 
 <style>
@@ -126,13 +133,13 @@ const hl = place(hx, hy, homeLabel, 18);
   .route {
     fill: none;
     stroke: #ff8a1f;
-    stroke-width: 2.5;
+    stroke-width: 2.2;
     stroke-dasharray: 2 6;
     stroke-linecap: round;
   }
-  .route.longest {
-    stroke-width: 3.5;
-    stroke-dasharray: none;
+  .leader {
+    stroke: rgba(242, 236, 228, 0.45);
+    stroke-width: 1;
   }
   .pin circle {
     fill: #ff8a1f;
@@ -142,7 +149,7 @@ const hl = place(hx, hy, homeLabel, 18);
   .pn {
     font-family: var(--font-sticker);
     font-weight: 800;
-    font-size: 16px;
+    font-size: 15px;
     text-transform: uppercase;
     fill: #f2ece4;
     paint-order: stroke;
@@ -150,7 +157,8 @@ const hl = place(hx, hy, homeLabel, 18);
     stroke-width: 4px;
     stroke-linejoin: round;
   }
-  .pd {
+  .pd,
+  .ht {
     font-family: var(--font-mono);
     font-size: 10.5px;
     letter-spacing: 0.06em;
@@ -158,15 +166,6 @@ const hl = place(hx, hy, homeLabel, 18);
     paint-order: stroke;
     stroke: #151313;
     stroke-width: 4px;
-  }
-  .pnum {
-    display: none;
-    font-family: var(--font-display);
-    font-size: 30px;
-    fill: #f2ece4;
-    paint-order: stroke;
-    stroke: #151313;
-    stroke-width: 6px;
   }
   .home circle {
     fill: #f2ece4;
@@ -176,29 +175,12 @@ const hl = place(hx, hy, homeLabel, 18);
   }
   .hn {
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-weight: 500;
+    font-size: 12.5px;
     letter-spacing: 0.08em;
     fill: #f2ece4;
     paint-order: stroke;
     stroke: #151313;
     stroke-width: 4px;
-  }
-  @media (max-width: 600px) {
-    .pn {
-      display: none;
-    }
-    .pnum {
-      display: inline;
-    }
-    .pd {
-      display: none;
-    }
-    .hn {
-      font-size: 18px;
-      stroke-width: 6px;
-    }
-    .region {
-      font-size: 16px;
-    }
   }
 </style>
