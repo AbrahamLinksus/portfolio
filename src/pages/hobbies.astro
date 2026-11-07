@@ -41,6 +41,9 @@ const tabs = [
 
     <!-- MUSIC -->
     <div class="panel" role="tabpanel" id="panel-music" aria-labelledby="tab-music" tabindex="0" style="--c: var(--teal)">
+      <div class="about">
+        {music.about.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
+      </div>
       <div class="stats">
         {
           music.stats.map((s) => (
@@ -396,10 +399,23 @@ const tabs = [
     border: 1px solid var(--line);
   }
 
+  .about {
+    display: grid;
+    gap: 14px;
+    max-width: 68ch;
+  }
+  .about p {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+  .about p.lead,
   .lead {
     margin: 0;
     max-width: 40ch;
     font-size: clamp(22px, 2.6vw, 30px);
+    color: var(--fg);
     line-height: 1.35;
   }
   .photos {
