@@ -12,7 +12,7 @@ export const site = {
 
 // Roles I'm open to, in priority order. Shown on the homepage.
 export const roles = [
-  { rank: '01', role: 'Software Engineer', tag: 'Top priority', pun: "It works on my machine. Let's get it working on yours.", color: 'var(--pink)' },
+  { rank: '01', role: 'Software Engineer', tag: 'Top priority', pun: 'Works on my machine. Works in prod.', color: 'var(--pink)' },
   { rank: '02', role: 'AI Engineer', tag: 'Also yes', pun: 'My attention is all yours.', color: 'var(--teal)' },
   { rank: '03', role: 'Data Scientist', tag: "Wouldn't mind", pun: "Statistically, I'm likely to say yes.", color: 'var(--yellow)' },
 ];
