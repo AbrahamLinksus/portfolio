@@ -1,0 +1,366 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProjects, colorVar } from '../../lib/projects';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: {
+      project,
+      index: i,
+      prev: projects[i - 1] ?? projects[projects.length - 1],
+      next: projects[i + 1] ?? projects[0],
+    },
+  }));
+}
+
+const { project, index, prev, next } = Astro.props;
+const p = project.data;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={p.title} description={p.summary}>
+  <article style={`--c: ${colorVar(p.color)}`}>
+    <header class="head container">
+      <a class="back" href="/projects">← All projects</a>
+      <div class="title-row">
+        <span class="letter" aria-hidden="true">{p.letter}</span>
+        <div class="title-block">
+          <span class="label">Case study {String(index + 1).padStart(2, '0')} · {p.year}</span>
+          <h1 class="display title">{p.title}</h1>
+        </div>
+      </div>
+      <p class="summary">{p.summary}</p>
+      <dl class="meta">
+        <div><dt>Status</dt><dd>{p.status}</dd></div>
+        <div><dt>Shows off</dt><dd>{p.roles.join(', ')}</dd></div>
+        <div><dt>Stack</dt><dd>{p.stack.join(' · ')}</dd></div>
+      </dl>
+      <div class="links">
+        {p.live && <a class="btn primary" href={p.live} rel="noopener">See it live ↗</a>}
+        <a class="btn" href={p.repo} rel="noopener">View the code ↗</a>
+      </div>
+    </header>
+
+    {
+      p.highlights.length > 0 && (
+        <section class="container">
+          <ul class="highlights">
+            {p.highlights.map((h) => (
+              <li>
+                <span class="hv">{h.value}</span>
+                <span class="hl">{h.label}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class="container">
+      <div class="prose">
+        <Content />
+      </div>
+
+      {
+        p.skills.length > 0 && (
+          <section class="skills">
+            <span class="label">Skills used</span>
+            <ul>
+              {p.skills.map((s) => (
+                <li>
+                  <a href="/skills">{s}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <nav class="pager" aria-label="More projects">
+        <a href={`/projects/${prev.id}`} style={`--pc: ${colorVar(prev.data.color)}`}>
+          <span class="label">← Previous</span>
+          <span class="pt">{prev.data.title}</span>
+        </a>
+        <a class="right" href={`/projects/${next.id}`} style={`--pc: ${colorVar(next.data.color)}`}>
+          <span class="label">Next →</span>
+          <span class="pt">{next.data.title}</span>
+        </a>
+      </nav>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .head {
+    display: grid;
+    gap: 20px;
+    padding-top: 16px;
+    padding-bottom: 32px;
+  }
+  .back {
+    justify-self: start;
+    font-size: 13px;
+    text-decoration: none;
+    color: var(--muted);
+  }
+  .back:hover {
+    color: var(--fg);
+  }
+  .title-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+  }
+  .letter {
+    flex: none;
+    width: clamp(96px, 16vw, 180px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--c);
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: clamp(64px, 11vw, 124px);
+    line-height: 1;
+    transform: rotate(-6deg);
+  }
+  .title-block {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+  }
+  .title {
+    font-size: clamp(44px, 8vw, 104px);
+    overflow-wrap: anywhere;
+  }
+  .summary {
+    margin: 0;
+    max-width: 60ch;
+    font-size: 19px;
+    line-height: 1.45;
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 24px;
+    margin: 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .meta div {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+  dt {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  dd {
+    margin: 0;
+    font-size: 14px;
+  }
+  .links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: 1.5px solid var(--fg);
+    text-decoration: none;
+  }
+  .btn.primary {
+    background: var(--c);
+    border-color: var(--c);
+    color: var(--ink);
+  }
+  .highlights {
+    list-style: none;
+    margin: 0 0 48px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .highlights li {
+    display: grid;
+    gap: 6px;
+    padding: 20px;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .hv {
+    font-family: var(--font-display);
+    font-size: 48px;
+    line-height: 1;
+    color: var(--c);
+  }
+  .hl {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .prose {
+    max-width: 68ch;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .prose :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1;
+    margin: 56px 0 16px;
+  }
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .prose :global(h2)::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--c);
+    margin-right: 14px;
+    vertical-align: 0.15em;
+  }
+  .prose :global(p),
+  .prose :global(ul) {
+    margin: 0 0 16px;
+  }
+  .prose :global(ul) {
+    padding-left: 20px;
+  }
+  .prose :global(li) {
+    margin-bottom: 8px;
+  }
+  .prose :global(li::marker) {
+    color: var(--c);
+  }
+  .prose :global(strong) {
+    font-weight: 600;
+  }
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin: 8px 0 24px;
+    display: block;
+    overflow-x: auto;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    text-align: left;
+    padding: 10px 14px 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+  .prose :global(th) {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .skills {
+    margin-top: 48px;
+    display: grid;
+    gap: 12px;
+  }
+  .skills ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skills a {
+    display: inline-block;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: 1.5px solid var(--line);
+    text-decoration: none;
+  }
+  .skills a:hover {
+    border-color: var(--c);
+    background: var(--c);
+    color: var(--ink);
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 64px;
+  }
+  .pager a {
+    display: grid;
+    gap: 6px;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1.5px solid var(--line);
+    text-decoration: none;
+    transition: background-color 0.25s ease;
+  }
+  .pager a:hover {
+    background: var(--pc);
+    border-color: var(--pc);
+    color: var(--ink);
+  }
+  .pager a:hover .label {
+    color: var(--ink);
+  }
+  .pager .right {
+    text-align: right;
+  }
+  .pt {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 18px;
+  }
+
+  @media (max-width: 640px) {
+    .title-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .meta {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .pager {
+      grid-template-columns: 1fr;
+    }
+    .pager .right {
+      text-align: left;
+    }
+  }
+</style>

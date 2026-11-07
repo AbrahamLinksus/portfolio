@@ -1,0 +1,120 @@
+---
+import { colorVar, type Project } from '../lib/projects';
+interface Props {
+  project: Project;
+  index: number;
+}
+const { project, index } = Astro.props;
+const p = project.data;
+---
+
+<a
+  class="card"
+  href={`/projects/${project.id}`}
+  style={`--c: ${colorVar(p.color)}`}
+  data-roles={p.roles.join(' ')}
+>
+  <span class="top">
+    <span class="num">{String(index + 1).padStart(2, '0')}</span>
+    <span class="status">{p.status}</span>
+  </span>
+  <span class="letter" aria-hidden="true">{p.letter}</span>
+  <span class="title">{p.title}</span>
+  <span class="summary">{p.summary}</span>
+  <span class="roles">{p.roles.map((r) => <span class="role">{r}</span>)}</span>
+  <span class="stack">{p.stack.slice(0, 4).join(' · ')}</span>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    text-decoration: none;
+    min-width: 0;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .card:hover,
+  .card:focus-visible {
+    background: var(--c);
+    border-color: var(--c);
+    color: var(--ink);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .status {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 99px;
+    border: 1px solid currentColor;
+  }
+  .letter {
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 104px;
+    line-height: 1;
+    height: 104px;
+    overflow: hidden;
+    color: var(--c);
+    margin: 0 0 6px;
+  }
+  .card:hover .letter,
+  .card:focus-visible .letter,
+  .card:hover .num,
+  .card:focus-visible .num,
+  .card:hover .summary,
+  .card:focus-visible .summary,
+  .card:hover .stack,
+  .card:focus-visible .stack {
+    color: var(--ink);
+  }
+  .title {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 22px;
+    line-height: 1.05;
+  }
+  .summary {
+    font-size: 14px;
+    color: var(--muted);
+    flex: 1;
+  }
+  .roles {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .role {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--c);
+    color: var(--ink);
+  }
+  .card:hover .role,
+  .card:focus-visible .role {
+    background: var(--ink);
+    color: var(--c);
+  }
+  .stack {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+</style>

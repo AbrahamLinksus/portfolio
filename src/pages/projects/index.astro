@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../lib/projects';
+
+const projects = await getProjects();
+const filters = [
+  { key: 'all', label: 'All' },
+  { key: 'Software', label: 'Software' },
+  { key: 'AI', label: 'AI' },
+  { key: 'Data', label: 'Data' },
+];
+---
+
+<BaseLayout
+  title="Projects"
+  description="Case studies of things Jake Roberts has built: the problem, the process, and the results."
+>
+  <PageIntro
+    number="01"
+    title="Projects"
+    lede="Case studies of things I've built: the problem, the decisions, and what I learned. Filter by the kind of role you're hiring for."
+  />
+  <section class="container">
+    <div class="filters" role="group" aria-label="Filter projects by role">
+      {
+        filters.map((f, i) => (
+          <button type="button" class="filter" data-filter={f.key} aria-pressed={i === 0 ? 'true' : 'false'}>
+            {f.label}
+          </button>
+        ))
+      }
+      <span class="count" aria-live="polite"><span data-count>{projects.length}</span> projects</span>
+    </div>
+    <div class="grid">
+      {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .filter {
+    all: unset;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 99px;
+    border: 1.5px solid var(--line);
+  }
+  .filter[aria-pressed='true'] {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+  .filter:focus-visible {
+    outline: 2px solid var(--pink);
+    outline-offset: 2px;
+  }
+  .count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 16px;
+  }
+  .grid :global(.card[hidden]) {
+    display: none;
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('.grid .card');
+  const count = document.querySelector('[data-count]');
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.filter!;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      let shown = 0;
+      cards.forEach((card) => {
+        const match = key === 'all' || (card.dataset.roles ?? '').split(' ').includes(key);
+        card.hidden = !match;
+        if (match) shown++;
+      });
+      if (count) count.textContent = String(shown);
+    }),
+  );
+</script>
