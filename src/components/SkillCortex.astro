@@ -1,0 +1,830 @@
+---
+// The Skill Cortex: a rotatable neural map of skills across eight regions of work.
+// Data is assembled at build time from skills.ts, cortex.ts and the projects collection.
+import { skillGroups, skillSlug } from '../data/skills';
+import { regions, workOf, extraNeurons } from '../data/cortex';
+import { getProjects } from '../lib/projects';
+
+const LEVEL_KEY = { Advanced: 'A', Comfortable: 'C', Learning: 'L' } as const;
+const projects = await getProjects();
+const projIndex = new Map(projects.map((p, i) => [p.id, i]));
+const regionKeys = Object.keys(regions);
+
+function checkWork(name: string, work: string | undefined) {
+  if (!work) throw new Error(`SkillCortex: no regions of work for "${name}" (add it to workOf in cortex.ts)`);
+  for (const ch of work) if (!regionKeys.includes(ch)) throw new Error(`SkillCortex: unknown region "${ch}" for "${name}"`);
+  return work;
+}
+
+type Neuron = { name: string; cat: number; lvl: 'A' | 'C' | 'L'; work: string; confirmed: boolean; projects: number[]; parent: string | null; slug: string | null };
+const neurons: Neuron[] = [];
+const main = new Map<string, Neuron>();
+skillGroups.forEach((g, gi) =>
+  g.skills.forEach((s) => {
+    const n: Neuron = {
+      name: s.name,
+      cat: gi,
+      lvl: LEVEL_KEY[s.level],
+      work: checkWork(s.name, workOf[s.name]),
+      confirmed: true,
+      projects: projects.flatMap((p, pi) => (p.data.skills.includes(s.name) ? [pi] : [])),
+      parent: null,
+      slug: skillSlug(s.name),
+    };
+    neurons.push(n);
+    main.set(s.name, n);
+  }),
+);
+for (const x of extraNeurons) {
+  const parent = x.parent ? main.get(x.parent) : undefined;
+  if (x.parent && !parent) throw new Error(`SkillCortex: "${x.name}" has unknown parent "${x.parent}"`);
+  if (!parent && (x.cat === undefined || !x.level)) throw new Error(`SkillCortex: "${x.name}" needs a parent, or a cat and level`);
+  neurons.push({
+    name: x.name,
+    cat: parent ? parent.cat : x.cat!,
+    lvl: parent ? parent.lvl : LEVEL_KEY[x.level!],
+    work: checkWork(x.name, x.work),
+    confirmed: x.confirmed !== false,
+    projects: (x.projects ?? []).map((slug) => {
+      const i = projIndex.get(slug);
+      if (i === undefined) throw new Error(`SkillCortex: "${x.name}" lists unknown project "${slug}"`);
+      return i;
+    }),
+    parent: parent ? parent.name : null,
+    slug: parent ? parent.slug : null,
+  });
+}
+
+const data = {
+  cats: skillGroups.map((g) => g.title),
+  regions,
+  neurons,
+  projects: projects.map((p) => ({ L: p.data.letter, name: p.data.title, id: p.id })),
+};
+---
+
+<section class="cortex" aria-labelledby="cortex-title">
+  <div class="c-head">
+    <h2 id="cortex-title" class="display c-title">Skill cortex</h2>
+    <p class="c-lede">
+      A map of how I think. The left hemisphere builds, the right hemisphere learns. Each neuron is a skill,
+      sitting in the regions of work that use it. Skills that serve many regions sink toward the middle and
+      become the bridge. Synapses join skills I've used together in a real project.
+    </p>
+  </div>
+
+  <div class="roles" role="group" aria-label="Light up a role">
+    <button type="button" class="rbtn" data-role="all" aria-pressed="true" style="--rc: var(--fg)">Whole brain</button>
+    <button type="button" class="rbtn" data-role="swe" aria-pressed="false" style="--rc: var(--pink)">Software Engineer</button>
+    <button type="button" class="rbtn" data-role="ai" aria-pressed="false" style="--rc: var(--teal)">AI Engineer</button>
+    <button type="button" class="rbtn" data-role="data" aria-pressed="false" style="--rc: var(--yellow)">Data Scientist</button>
+  </div>
+
+  <div class="stage">
+    <div class="panel">
+      <canvas class="brain" tabindex="0" aria-label="Rotatable neural map of skills. Use arrow keys to rotate. The full skill list follows below."></canvas>
+      <div class="hud">
+        <div class="hgroup" role="group" aria-label="Camera">
+          <button type="button" class="vbtn" data-view="front" aria-pressed="true">Front</button>
+          <button type="button" class="vbtn" data-view="top" aria-pressed="false">Top</button>
+          <button type="button" class="vbtn" data-view="left" aria-pressed="false">Left: build</button>
+          <button type="button" class="vbtn" data-view="right" aria-pressed="false">Right: learn</button>
+        </div>
+        <div class="hgroup">
+          <button type="button" class="vbtn" data-toggle="pulse" aria-pressed="true">Signals</button>
+          <button type="button" class="vbtn" data-toggle="spin" aria-pressed="true">Spin</button>
+        </div>
+      </div>
+      <p class="hint">Drag to rotate · hover a neuron · click to pin</p>
+      <p class="hemis">← builds · learns →</p>
+    </div>
+
+    <div class="rail">
+      <div class="card detail" aria-live="polite" data-detail></div>
+      <div class="card">
+        <h3>Regions of work <small>strength</small></h3>
+        <div class="works" data-works></div>
+      </div>
+      <div class="card">
+        <h3>Neuron type <small>shade = level</small></h3>
+        <div class="types" data-types></div>
+        <div class="keyrow"><span>light: learning</span><span>mid: comfortable</span><span>dark: advanced</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="dims">
+    <li><b>Position</b>Eight regions of work. A neuron sits between the regions that use it, so shared fundamentals end up in the middle.</li>
+    <li><b>Color & shape</b>The kind of skill: languages, frameworks, data & infra, AI & data, engineering, core CS.</li>
+    <li><b>Shade & size</b>Darker is stronger. Bigger means more of my projects use it. A dashed ring means the level isn't confirmed yet.</li>
+    <li><b>Synapses & signals</b>A line joins two skills used together in a project. Small neurons are parts of a bigger skill.</li>
+  </ul>
+
+  <script type="application/json" data-cortex set:html={JSON.stringify(data)} />
+</section>
+
+<style>
+  .cortex {
+    display: grid;
+    gap: 18px;
+  }
+  .c-head {
+    display: grid;
+    gap: 10px;
+  }
+  .c-title {
+    font-size: clamp(40px, 6vw, 64px);
+  }
+  .c-lede {
+    margin: 0;
+    max-width: 72ch;
+    color: var(--muted);
+  }
+  .roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .rbtn {
+    all: unset;
+    cursor: pointer;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 13.5px;
+    padding: 9px 15px;
+    border-radius: 12px;
+    border: 2px solid var(--rc);
+  }
+  .rbtn[aria-pressed='true'] {
+    background: var(--rc);
+    color: var(--bg);
+  }
+  .rbtn:not([data-role='all'])[aria-pressed='true'] {
+    color: var(--ink);
+  }
+  .rbtn:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+  }
+
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 16px;
+    align-items: start;
+  }
+  .panel {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background-color: var(--panel);
+    background-image:
+      radial-gradient(ellipse at 50% 52%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 62%),
+      linear-gradient(var(--panel-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--panel-grid) 1px, transparent 1px);
+    background-size: 100% 100%, 40px 40px, 40px 40px;
+    color: var(--ink);
+  }
+  :global(:root[data-theme='light']) .panel {
+    box-shadow: inset 0 0 0 1px var(--panel-grid);
+  }
+  .brain {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 660px;
+    cursor: grab;
+    touch-action: none;
+  }
+  .brain:active {
+    cursor: grabbing;
+  }
+  .brain:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: -3px;
+  }
+  .hud {
+    position: absolute;
+    z-index: 2;
+    left: 14px;
+    top: 12px;
+    right: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    pointer-events: none;
+  }
+  .hgroup {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .vbtn {
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    border-radius: 99px;
+    background: rgba(17, 17, 18, 0.06);
+    color: var(--ink);
+    border: 1px solid rgba(17, 17, 18, 0.2);
+  }
+  .vbtn:hover,
+  .vbtn[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--panel);
+  }
+  .vbtn:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .hint,
+  .hemis {
+    position: absolute;
+    z-index: 2;
+    bottom: 12px;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #6a655f;
+    pointer-events: none;
+  }
+  .hint {
+    left: 14px;
+  }
+  .hemis {
+    right: 14px;
+  }
+
+  .rail {
+    display: grid;
+    gap: 12px;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    background: var(--surface);
+  }
+  .card h3 {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 13px;
+    margin: 0 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .card h3 small {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 10.5px;
+    color: var(--muted);
+    text-transform: none;
+  }
+  .detail {
+    min-height: 200px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .detail :global(.name) {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 30px;
+    line-height: 1;
+    color: var(--fg);
+    margin-bottom: 10px;
+  }
+  .detail :global(dl) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 5px 12px;
+    margin: 0;
+  }
+  .detail :global(dt) {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-top: 2px;
+  }
+  .detail :global(dd) {
+    margin: 0;
+    color: var(--fg);
+  }
+  .detail :global(.flag) {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 99px;
+    border: 1px dashed var(--muted);
+    color: var(--muted);
+    margin-left: 6px;
+  }
+  .detail :global(.more) {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--fg);
+  }
+  .works,
+  .types {
+    display: grid;
+    gap: 3px;
+  }
+  .works :global(.wbtn) {
+    all: unset;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3px 10px;
+    padding: 7px 8px;
+    border-radius: 8px;
+  }
+  .works :global(.wbtn:hover),
+  .works :global(.wbtn:focus-visible),
+  .works :global(.wbtn.on) {
+    background: var(--bg);
+  }
+  .works :global(.wn) {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .works :global(.wc) {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .works :global(.wb) {
+    grid-column: 1 / -1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .works :global(.wb span) {
+    display: block;
+    height: 100%;
+    background: var(--fg);
+    border-radius: 2px;
+  }
+  .types :global(.tbtn) {
+    all: unset;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 6px;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .types :global(.tbtn:hover),
+  .types :global(.tbtn:focus-visible) {
+    background: var(--bg);
+  }
+  .types :global(.tbtn[aria-pressed='false']) {
+    opacity: 0.35;
+  }
+  .types :global(canvas) {
+    width: 20px;
+    height: 20px;
+  }
+  .types :global(.shades) {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .types :global(.shades i) {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: block;
+  }
+  .keyrow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .dims {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .dims li {
+    font-size: 12.5px;
+    color: var(--muted);
+    border-top: 2px solid var(--line);
+    padding-top: 8px;
+  }
+  .dims b {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg);
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  @media (max-width: 1000px) {
+    .stage {
+      grid-template-columns: 1fr;
+    }
+    .brain {
+      height: 560px;
+    }
+    .dims {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    .brain {
+      height: 430px;
+    }
+    .vbtn {
+      font-size: 9.5px;
+      padding: 4px 7px;
+    }
+    .hint,
+    .hemis {
+      display: none;
+    }
+    .dims {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  type Lvl = 'A' | 'C' | 'L';
+  type N = { name: string; cat: number; lvl: Lvl; work: string; confirmed: boolean; projects: number[]; parent: string | null; slug: string | null; id?: number; p?: number[] };
+  type Region = { name: string; p: number[]; roles: string[] };
+  type Data = { cats: string[]; regions: Record<string, Region>; neurons: N[]; projects: { L: string; name: string; id: string }[] };
+
+  // Category colors (validated for contrast and color-blind separation on the cream panel), in category order.
+  const CAT_STYLE = [
+    { hex: '#E8336A', shape: 'circle' },
+    { hex: '#159A90', shape: 'square' },
+    { hex: '#C79A00', shape: 'diamond' },
+    { hex: '#7552C9', shape: 'triangle' },
+    { hex: '#E8700A', shape: 'hex' },
+    { hex: '#2D6FD6', shape: 'star' },
+  ];
+  const ROLES: Record<string, { name: string; c: string }> = {
+    swe: { name: 'Software Engineer', c: '#E8336A' },
+    ai: { name: 'AI Engineer', c: '#159A90' },
+    data: { name: 'Data Scientist', c: '#C79A00' },
+  };
+  const LV: Record<Lvl, string> = { A: 'Advanced', C: 'Comfortable', L: 'Learning' };
+  const W8: Record<Lvl, number> = { A: 3, C: 2, L: 1 };
+
+  function mix(hex: string, to: string, t: number) {
+    const a = parseInt(hex.slice(1), 16), b = parseInt(to.slice(1), 16);
+    return 'rgb(' + [16, 8, 0].map((sh) => Math.round(((a >> sh) & 255) * (1 - t) + ((b >> sh) & 255) * t)).join(',') + ')';
+  }
+  const rgb = (h: string) => { const n = parseInt(h.slice(1), 16); return ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255); };
+  const esc = (t: string) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const hash = (n: number) => { const x = Math.sin(n * 127.1) * 43758.5453; return x - Math.floor(x); };
+
+  function shapePath(c: CanvasRenderingContext2D, shape: string, x: number, y: number, r: number) {
+    c.beginPath();
+    if (shape === 'circle') c.arc(x, y, r, 0, Math.PI * 2);
+    else if (shape === 'square') c.rect(x - r * 0.86, y - r * 0.86, r * 1.72, r * 1.72);
+    else if (shape === 'diamond') { c.moveTo(x, y - r * 1.2); c.lineTo(x + r * 1.2, y); c.lineTo(x, y + r * 1.2); c.lineTo(x - r * 1.2, y); c.closePath(); }
+    else if (shape === 'triangle') { c.moveTo(x, y - r * 1.25); c.lineTo(x + r * 1.15, y + r * 0.8); c.lineTo(x - r * 1.15, y + r * 0.8); c.closePath(); }
+    else if (shape === 'hex') { for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + (i * Math.PI) / 3; if (i) c.lineTo(x + r * 1.05 * Math.cos(a), y + r * 1.05 * Math.sin(a)); else c.moveTo(x + r * 1.05 * Math.cos(a), y + r * 1.05 * Math.sin(a)); } c.closePath(); }
+    else { for (let j = 0; j < 10; j++) { const b = -Math.PI / 2 + (j * Math.PI) / 5, rr = j % 2 ? r * 0.55 : r * 1.28; if (j) c.lineTo(x + rr * Math.cos(b), y + rr * Math.sin(b)); else c.moveTo(x + rr * Math.cos(b), y + rr * Math.sin(b)); } c.closePath(); }
+  }
+
+  document.querySelectorAll<HTMLElement>('.cortex').forEach((root) => {
+    const data: Data = JSON.parse(root.querySelector('[data-cortex]')!.textContent!);
+    const S = data.neurons.map((n, i) => ({ ...n, id: i }));
+    const REG = data.regions;
+    const PROJ = data.projects;
+    const shades = CAT_STYLE.map((c) => ({ L: mix(c.hex, '#FFFFFF', 0.55), C: mix(c.hex, '#000000', 0.05), A: mix(c.hex, '#000000', 0.48) }));
+
+    // Synapses: skills used together in a project, plus a branch from every part to its parent skill.
+    const synMap = new Map<string, { a: N; b: N; w: number }>();
+    const link = (a: N, b: N, w: number) => {
+      const k = Math.min(a.id!, b.id!) + '-' + Math.max(a.id!, b.id!);
+      const e = synMap.get(k);
+      if (e) e.w += w; else synMap.set(k, { a, b, w });
+    };
+    PROJ.forEach((_, pi) => {
+      const members = S.filter((s) => s.projects.includes(pi) && !s.parent);
+      for (let i = 0; i < members.length; i++) for (let j = i + 1; j < members.length; j++) link(members[i], members[j], 1);
+    });
+    const byName = new Map(S.map((s) => [s.name, s]));
+    S.forEach((s) => { if (s.parent) link(s, byName.get(s.parent)!, 1); });
+    const SYN = [...synMap.values()];
+
+    // Layout: single-region skills form a lobe around their region; shared skills sit between regions.
+    const combos: Record<string, N[]> = {};
+    S.forEach((s) => (combos[s.work] ??= []).push(s));
+    Object.entries(combos).forEach(([k, g]) => {
+      const regs = k.split('').map((c) => REG[c].p);
+      let c = [0, 0, 0];
+      regs.forEach((p) => { c[0] += p[0]; c[1] += p[1]; c[2] += p[2]; });
+      c = c.map((v) => v / regs.length);
+      const pull = regs.length === 1 ? 1 : Math.max(0.6, 1 - 0.07 * (regs.length - 1));
+      c = c.map((v) => v * pull);
+      const n = g.length;
+      const rad = regs.length === 1 ? 0.17 + 0.075 * Math.cbrt(n) : 0.09 + 0.055 * Math.cbrt(n);
+      g.sort((a, b) => a.cat - b.cat || 'ACL'.indexOf(a.lvl) - 'ACL'.indexOf(b.lvl) || a.id! - b.id!);
+      g.forEach((s, i) => {
+        const y = n === 1 ? 0 : 1 - (i / (n - 1)) * 2, rr = Math.sqrt(Math.max(0, 1 - y * y)), th = i * 2.39996 + hash(s.id!) * 0.6;
+        const R = n === 1 ? 0.03 : rad * (0.85 + 0.3 * hash(s.id! + 7));
+        s.p = [c[0] + Math.cos(th) * rr * R, c[1] + y * R * 0.8, c[2] + Math.sin(th) * rr * R];
+      });
+    });
+
+    const regionList = Object.entries(REG).map(([k, r]) => {
+      const skills = S.filter((s) => s.work.includes(k));
+      return { k, ...r, skills, strength: skills.reduce((t, s) => t + W8[s.lvl], 0), proven: skills.filter((s) => s.projects.length).length };
+    });
+    const maxStrength = Math.max(...regionList.map((r) => r.strength));
+
+    // Canvas & camera
+    const cv = root.querySelector<HTMLCanvasElement>('canvas.brain')!;
+    const ctx = cv.getContext('2d')!;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    let Wc = 0, Hc = 0;
+    const resize = () => { const r = cv.getBoundingClientRect(); Wc = r.width; Hc = r.height; cv.width = Math.round(Wc * dpr); cv.height = Math.round(Hc * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    window.addEventListener('resize', resize);
+    resize();
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cam = { yaw: 0.22, pitch: -0.24 }, vel = { yaw: 0, pitch: 0 };
+    let target: { yaw: number; pitch: number } | null = null, spin = !reduce, pulsesOn = !reduce;
+
+    const project = (p: number[]) => {
+      const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw), cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+      let x = p[0] * cy - p[2] * sy, z = p[0] * sy + p[2] * cy;
+      const y = p[1] * cp - z * sp; z = p[1] * sp + z * cp;
+      const small = Wc < 560, scale = Math.min(Wc * (small ? 0.36 : 0.3), Hc * 0.42), f = 4.4 / (4.4 + z);
+      return { x: Wc / 2 + x * scale * f, y: Hc / 2 + (small ? 22 : 10) - y * scale * f, f, z };
+    };
+
+    let catOn = CAT_STYLE.map(() => true), role = 'all', region: string | null = null;
+    let hover: N | null = null, pinned: N | null = null;
+    const lit = (s: N) => {
+      if (!catOn[s.cat]) return false;
+      if (region) return s.work.includes(region);
+      if (role === 'all') return true;
+      return s.work.split('').some((k) => REG[k].roles.includes(role));
+    };
+    const regionLit = (k: string) => (region ? region === k : role === 'all' || REG[k].roles.includes(role));
+    const accentRgb = () => (role === 'all' && !region ? '17,17,18' : rgb(role === 'all' ? '#111112' : ROLES[role].c));
+
+    let pulses: { e: { a: N; b: N; w: number }; t: number; dir: number; sp: number }[] = [];
+    const spawn = () => {
+      const pool = SYN.filter((e) => lit(e.a) && lit(e.b));
+      if (pool.length) pulses.push({ e: pool[Math.floor(Math.random() * pool.length)], t: 0, dir: Math.random() < 0.5 ? 1 : -1, sp: 0.008 + Math.random() * 0.01 });
+    };
+    const ctrl = (a: number[], b: number[]) => [(a[0] + b[0]) * 0.32, (a[1] + b[1]) * 0.42 + 0.08, (a[2] + b[2]) * 0.32];
+    const qpt = (a: number[], c: number[], b: number[], t: number) => { const u = 1 - t; return [0, 1, 2].map((i) => u * u * a[i] + 2 * u * t * c[i] + t * t * b[i]); };
+
+    let placed: { s: N; x: number; y: number; r: number }[] = [];
+    function draw() {
+      ctx.clearRect(0, 0, Wc, Hc);
+      const focus = hover || pinned;
+      const acc = accentRgb();
+
+      ctx.setLineDash([2, 5]); ctx.strokeStyle = 'rgba(17,17,18,.18)'; ctx.lineWidth = 1; ctx.beginPath();
+      for (let i = 0; i <= 60; i++) { const a = (i / 60) * Math.PI * 2, q = project([0, Math.sin(a) * 0.9, Math.cos(a)]); if (i) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y); }
+      ctx.stroke(); ctx.setLineDash([]);
+
+      const regs = regionList.map((r) => ({ r, q: project(r.p) }));
+      regs.forEach(({ r, q }) => {
+        const on = regionLit(r.k), rad = (26 + (70 * r.strength) / maxStrength) * q.f;
+        const g = ctx.createRadialGradient(q.x, q.y, 0, q.x, q.y, rad);
+        const col = on ? acc : '17,17,18';
+        g.addColorStop(0, 'rgba(' + col + ',' + (on ? 0.13 : 0.03) + ')'); g.addColorStop(1, 'rgba(' + col + ',0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(q.x, q.y, rad, 0, Math.PI * 2); ctx.fill();
+        if (r.proven === 0 || r.strength < maxStrength * 0.3) {
+          ctx.setLineDash([3, 4]); ctx.strokeStyle = 'rgba(17,17,18,' + (on ? 0.3 : 0.1) + ')'; ctx.beginPath(); ctx.arc(q.x, q.y, rad * 0.7, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+        }
+      });
+
+      S.forEach((s) => {
+        const sq = project(s.p!);
+        s.work.split('').forEach((k) => {
+          const on = lit(s) && regionLit(k), rq = project(REG[k].p);
+          ctx.strokeStyle = 'rgba(17,17,18,' + (on ? (focus === s ? 0.5 : 0.05) : 0.015) + ')';
+          ctx.lineWidth = focus === s ? 1.2 : 0.5;
+          ctx.beginPath(); ctx.moveTo(sq.x, sq.y); ctx.lineTo(rq.x, rq.y); ctx.stroke();
+        });
+      });
+
+      SYN.forEach((e) => {
+        const on = lit(e.a) && lit(e.b), hot = !!focus && (e.a === focus || e.b === focus);
+        if (!on && !hot) return;
+        const c = ctrl(e.a.p!, e.b.p!), A = project(e.a.p!), B = project(e.b.p!), C = project(c);
+        ctx.strokeStyle = hot ? 'rgba(17,17,18,.75)' : 'rgba(' + acc + ',' + (role === 'all' && !region ? 0.035 + 0.035 * e.w : 0.12 + 0.08 * e.w) + ')';
+        ctx.lineWidth = hot ? 1.4 : 0.5 + 0.3 * e.w;
+        ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.quadraticCurveTo(C.x, C.y, B.x, B.y); ctx.stroke();
+      });
+
+      if (pulsesOn) pulses.forEach((p) => {
+        const t = p.dir > 0 ? p.t : 1 - p.t, pt = project(qpt(p.e.a.p!, ctrl(p.e.a.p!, p.e.b.p!), p.e.b.p!, t));
+        const g = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, 6 * pt.f);
+        g.addColorStop(0, 'rgba(' + acc + ',.35)'); g.addColorStop(1, 'rgba(' + acc + ',0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(pt.x, pt.y, 6 * pt.f, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(' + acc + ',.95)'; ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.8 * pt.f, 0, Math.PI * 2); ctx.fill();
+      });
+
+      placed = [];
+      S.map((s) => ({ s, q: project(s.p!) })).sort((a, b) => b.q.z - a.q.z).forEach(({ s, q }) => {
+        const st = CAT_STYLE[s.cat], on = lit(s);
+        const base = s.parent ? 2.6 : 3.6;
+        const r = (base + (s.parent ? 0.8 : 2.0) * s.projects.length) * q.f;
+        const depth = Math.max(0, Math.min(1, (q.f - 0.78) * 2.2));
+        ctx.globalAlpha = on ? 0.5 + 0.5 * depth : 0.08;
+        shapePath(ctx, st.shape, q.x, q.y, r);
+        ctx.fillStyle = shades[s.cat][s.lvl]; ctx.fill();
+        ctx.lineWidth = 1.1; ctx.strokeStyle = 'rgba(242,236,228,.95)'; ctx.stroke();
+        if (!s.confirmed) { ctx.setLineDash([2, 2]); ctx.strokeStyle = 'rgba(17,17,18,.7)'; shapePath(ctx, st.shape, q.x, q.y, r + 3); ctx.stroke(); ctx.setLineDash([]); }
+        if (s === focus) { ctx.lineWidth = 2.4; ctx.strokeStyle = '#111112'; shapePath(ctx, st.shape, q.x, q.y, r + 4); ctx.stroke(); }
+        ctx.globalAlpha = 1;
+        if (on) placed.push({ s, x: q.x, y: q.y, r: Math.max(r, 7) });
+      });
+
+      regs.sort((a, b) => b.q.z - a.q.z).forEach(({ r, q }) => {
+        const on = regionLit(r.k), fs = Math.max(0.88, Math.min(1.08, q.f));
+        ctx.globalAlpha = on ? Math.max(0.45, Math.min(1, (q.f - 0.72) * 2.6)) : 0.25;
+        ctx.font = '400 ' + Math.round((Wc < 560 ? 13 : 17) * fs) + 'px Anton, Impact, sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'; ctx.lineWidth = 5; ctx.strokeStyle = 'rgba(242,236,228,.92)';
+        const label = r.name.toUpperCase(), lw = ctx.measureText(label).width;
+        const lx = Math.max(lw / 2 + 8, Math.min(Wc - lw / 2 - 8, q.x));
+        ctx.strokeText(label, lx, q.y - 6); ctx.fillStyle = '#111112'; ctx.fillText(label, lx, q.y - 6);
+        ctx.font = '500 ' + Math.round((Wc < 560 ? 9 : 10) * fs) + 'px "JetBrains Mono", monospace';
+        const sub = r.skills.length + ' neurons' + (r.proven === 0 ? ' · developing' : '');
+        ctx.strokeText(sub, lx, q.y + 9); ctx.fillStyle = 'rgba(17,17,18,.65)'; ctx.fillText(sub, lx, q.y + 9);
+        ctx.globalAlpha = 1;
+      });
+
+      if (focus) {
+        const fq = project(focus.p!);
+        ctx.font = '800 14px "Bricolage Grotesque", sans-serif';
+        const txt = focus.name.toUpperCase(), tw = ctx.measureText(txt).width;
+        const lx = Math.min(Wc - tw / 2 - 12, Math.max(tw / 2 + 12, fq.x)), ly = Math.max(20, fq.y - 28);
+        ctx.fillStyle = '#111112'; ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(lx - tw / 2 - 9, ly - 13, tw + 18, 26, 7); else ctx.rect(lx - tw / 2 - 9, ly - 13, tw + 18, 26);
+        ctx.fill(); ctx.fillStyle = '#F2ECE4'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(txt, lx, ly + 1);
+      }
+    }
+
+    // Animation loop runs only while the map is on screen.
+    let visible = true, last = 0, raf = 0;
+    new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(tick); }).observe(cv);
+    let dragging = false;
+    function tick(ts: number) {
+      raf = 0;
+      const dt = Math.min(50, ts - last || 16); last = ts;
+      if (target) {
+        cam.yaw += (target.yaw - cam.yaw) * 0.12; cam.pitch += (target.pitch - cam.pitch) * 0.12;
+        if (Math.abs(target.yaw - cam.yaw) < 0.002 && Math.abs(target.pitch - cam.pitch) < 0.002) target = null;
+      } else if (!dragging) {
+        cam.yaw += vel.yaw; cam.pitch = Math.max(-1.3, Math.min(1.3, cam.pitch + vel.pitch));
+        vel.yaw *= 0.94; vel.pitch *= 0.94;
+        if (spin && !hover && Math.abs(vel.yaw) < 0.001) cam.yaw += (0.0022 * dt) / 16;
+      }
+      if (pulsesOn) {
+        if (pulses.length < 28 && Math.random() < 0.35) spawn();
+        pulses.forEach((p) => (p.t += (p.sp * dt) / 16));
+        pulses = pulses.filter((p) => p.t < 1);
+      }
+      draw();
+      if (visible) raf = requestAnimationFrame(tick);
+    }
+
+    let lx0 = 0, ly0 = 0, moved = 0;
+    cv.addEventListener('pointerdown', (e) => { dragging = true; moved = 0; lx0 = e.clientX; ly0 = e.clientY; cv.setPointerCapture(e.pointerId); target = null; vel.yaw = vel.pitch = 0; });
+    cv.addEventListener('pointermove', (e) => {
+      const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+      if (dragging) {
+        const dx = e.clientX - lx0, dy = e.clientY - ly0; moved += Math.abs(dx) + Math.abs(dy);
+        vel.yaw = dx * 0.007; vel.pitch = dy * 0.007;
+        cam.yaw += vel.yaw; cam.pitch = Math.max(-1.3, Math.min(1.3, cam.pitch + vel.pitch));
+        lx0 = e.clientX; ly0 = e.clientY;
+        if (!raf) draw();
+        return;
+      }
+      let best: N | null = null, bd = 1e9;
+      placed.forEach((p) => { const d = Math.hypot(p.x - mx, p.y - my); if (d < p.r + 5 && d < bd) { bd = d; best = p.s; } });
+      if (best !== hover) { hover = best; show(hover || pinned); }
+    });
+    cv.addEventListener('pointerup', () => { dragging = false; if (moved < 6) { pinned = hover ? (pinned === hover ? null : hover) : null; show(pinned); } });
+    cv.addEventListener('pointerleave', () => { hover = null; show(pinned); });
+    cv.addEventListener('keydown', (e) => {
+      const k = ({ ArrowLeft: [-0.12, 0], ArrowRight: [0.12, 0], ArrowUp: [0, -0.12], ArrowDown: [0, 0.12] } as Record<string, number[]>)[e.key];
+      if (k) { e.preventDefault(); target = null; cam.yaw += k[0]; cam.pitch = Math.max(-1.3, Math.min(1.3, cam.pitch + k[1])); if (!raf) draw(); }
+    });
+
+    const detail = root.querySelector<HTMLElement>('[data-detail]')!;
+    function show(s: N | null) {
+      if (!s) {
+        const count = S.filter(lit).length;
+        const reg = region ? regionList.find((r) => r.k === region)! : null;
+        detail.innerHTML =
+          '<div class="name">' + (reg ? esc(reg.name) : role !== 'all' ? esc(ROLES[role].name) : S.length + ' neurons') + '</div>' +
+          (reg
+            ? reg.skills.length + ' neurons wire into this region, ' + reg.proven + ' of them proven in a project.'
+            : role !== 'all'
+              ? count + ' of ' + S.length + ' neurons light up for this role, ' + S.filter((x) => lit(x) && x.lvl === 'A').length + ' of them advanced.'
+              : S.length + ' neurons across 8 regions of work and ' + SYN.length + ' synapses. Hover a neuron, pick a role above, or click a region.');
+        return;
+      }
+      const c = CAT_STYLE[s.cat];
+      detail.innerHTML =
+        '<div class="name">' + esc(s.name) + '</div><dl>' +
+        '<dt>Level</dt><dd>' + LV[s.lvl] + (s.confirmed ? '' : '<span class="flag">to confirm</span>') + '</dd>' +
+        (s.parent ? '<dt>Part of</dt><dd>' + esc(s.parent) + '</dd>' : '') +
+        '<dt>Type</dt><dd><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + c.hex + ';margin-right:6px"></span>' + esc(data.cats[s.cat]) + '</dd>' +
+        '<dt>Regions</dt><dd>' + s.work.split('').map((k) => esc(REG[k].name)).join(', ') + '</dd>' +
+        '<dt>Projects</dt><dd>' + (s.projects.length ? s.projects.map((i) => esc(PROJ[i].name)).join(', ') : 'None on the site yet') + '</dd></dl>' +
+        (s.slug ? '<a class="more" href="#' + s.slug + '">See ' + (s.parent ? esc(s.parent) : 'this skill') + ' in the list ↓</a>' : '');
+    }
+
+    root.querySelectorAll<HTMLButtonElement>('.rbtn').forEach((b) =>
+      b.addEventListener('click', () => {
+        role = b.dataset.role!; region = null; pulses = [];
+        root.querySelectorAll('.rbtn').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        root.querySelectorAll('.wbtn').forEach((x) => x.classList.remove('on'));
+        show(pinned);
+      }),
+    );
+
+    const worksEl = root.querySelector<HTMLElement>('[data-works]')!;
+    [...regionList].sort((a, b) => b.strength - a.strength).forEach((r) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'wbtn';
+      b.innerHTML = '<span class="wn">' + esc(r.name) + '</span><span class="wc">' + r.skills.length + ' · ' + r.skills.filter((s) => s.lvl === 'A').length + ' adv</span><span class="wb"><span style="width:' + ((r.strength / maxStrength) * 100).toFixed(1) + '%"></span></span>';
+      b.addEventListener('click', () => {
+        region = region === r.k ? null : r.k; pulses = [];
+        worksEl.querySelectorAll('.wbtn').forEach((x) => x.classList.toggle('on', x === b && region === r.k));
+        show(pinned);
+      });
+      worksEl.appendChild(b);
+    });
+
+    const typesEl = root.querySelector<HTMLElement>('[data-types]')!;
+    CAT_STYLE.forEach((c, i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'tbtn'; b.setAttribute('aria-pressed', 'true');
+      const ic = document.createElement('canvas'); ic.width = 40; ic.height = 40;
+      const c2 = ic.getContext('2d')!; c2.scale(2, 2); shapePath(c2, c.shape, 10, 10, 6.5); c2.fillStyle = shades[i].A; c2.fill();
+      b.appendChild(ic);
+      const label = document.createElement('span'); label.textContent = data.cats[i] + ' · ' + S.filter((s) => s.cat === i).length; b.appendChild(label);
+      const sh = document.createElement('span'); sh.className = 'shades';
+      (['L', 'C', 'A'] as Lvl[]).forEach((l) => { const x = document.createElement('i'); x.style.background = shades[i][l]; sh.appendChild(x); });
+      b.appendChild(sh);
+      b.addEventListener('click', () => {
+        const all = catOn.every(Boolean), only = catOn.filter(Boolean).length === 1 && catOn[i];
+        if (all) catOn = catOn.map((_, k) => k === i);
+        else if (only) catOn = catOn.map(() => true);
+        else catOn[i] = !catOn[i];
+        if (!catOn.some(Boolean)) catOn = catOn.map(() => true);
+        typesEl.querySelectorAll('.tbtn').forEach((x, k) => x.setAttribute('aria-pressed', String(catOn[k])));
+        pulses = [];
+      });
+      typesEl.appendChild(b);
+    });
+
+    const VIEWS: Record<string, { yaw: number; pitch: number }> = { front: { yaw: 0, pitch: -0.2 }, top: { yaw: 0, pitch: -1.25 }, left: { yaw: Math.PI / 2, pitch: -0.15 }, right: { yaw: -Math.PI / 2, pitch: -0.15 } };
+    const spinBtn = root.querySelector<HTMLButtonElement>('[data-toggle="spin"]')!;
+    const pulseBtn = root.querySelector<HTMLButtonElement>('[data-toggle="pulse"]')!;
+    root.querySelectorAll<HTMLButtonElement>('[data-view]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const t = VIEWS[b.dataset.view!];
+        while (cam.yaw - t.yaw > Math.PI) cam.yaw -= Math.PI * 2;
+        while (t.yaw - cam.yaw > Math.PI) cam.yaw += Math.PI * 2;
+        target = { ...t }; vel.yaw = vel.pitch = 0; spin = false; spinBtn.setAttribute('aria-pressed', 'false');
+        root.querySelectorAll('[data-view]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      }),
+    );
+    spinBtn.addEventListener('click', () => { spin = !spin; spinBtn.setAttribute('aria-pressed', String(spin)); });
+    pulseBtn.addEventListener('click', () => { pulsesOn = !pulsesOn; pulses = []; pulseBtn.setAttribute('aria-pressed', String(pulsesOn)); });
+    if (reduce) { spinBtn.setAttribute('aria-pressed', 'false'); pulseBtn.setAttribute('aria-pressed', 'false'); }
+
+    show(null);
+    if (document.fonts) document.fonts.ready.then(() => draw());
+    raf = requestAnimationFrame(tick);
+  });
+</script>

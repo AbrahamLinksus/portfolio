@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import SkillHeatmap from '../components/SkillHeatmap.astro';
+import SkillCortex from '../components/SkillCortex.astro';
 import { skillGroups, levels, skillSlug, allSkills, certifications, type Level } from '../data/skills';
 import { getProjects, colorVar } from '../lib/projects';
 
@@ -21,8 +21,8 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
   />
 
   <section class="container">
-    <SkillHeatmap />
-    <a class="scroll-cue" href="#details">Scroll for the details: where I used each skill <span aria-hidden="true">↓</span></a>
+    <SkillCortex />
+    <a class="scroll-cue" href="#details">The full list: every skill, its level, and where I used it <span aria-hidden="true">↓</span></a>
     <div id="details"></div>
 
     {
