@@ -102,30 +102,35 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
           ))
         }
       </dl>
-      <div class="bike">
-        <figure class="map">
-          <RideMap home={biking.home} places={[...biking.routes, biking.longestRide]} />
-          <figcaption class="cap">Straight-line distances from home. Roads are longer.</figcaption>
-        </figure>
-        <section class="routes-wrap" aria-labelledby="routes-title">
-          <div class="sec-head">
-            <h2 id="routes-title" class="display sec-title sm">Favourite routes</h2>
-          </div>
-          <ol class="routes">
-            {
-              biking.routes.map((r, i) => (
-                <li>
-                  <span class="rn">{String(i + 1).padStart(2, '0')}</span>
-                  <span>
-                    <span class="item-name">{r.name}</span>
-                    <span class="item-note">{r.note} · {km(biking.home, r)} km away</span>
-                  </span>
-                </li>
-              ))
-            }
-          </ol>
-        </section>
-      </div>
+      {
+        biking.bases.map((base) => (
+          <section aria-labelledby={`from-${base.from}`}>
+            <div class="sec-head">
+              <h2 id={`from-${base.from}`} class="display sec-title sm">From {base.from}</h2>
+              <span class="label">{base.rides.length} rides</span>
+            </div>
+            <div class="bike">
+              <figure class="map">
+                <RideMap home={base.home} homeLabel={base.homeLabel} places={base.rides} view={base.view} regions={base.regions} />
+                <figcaption class="cap">Straight-line distances from {base.from}. Roads are longer.</figcaption>
+              </figure>
+              <ol class="routes">
+                {base.rides.map((r, i) => (
+                  <li>
+                    <span class="rn">{String(i + 1).padStart(2, '0')}</span>
+                    <span>
+                      <span class="item-name">{r.name}</span>
+                      <span class="item-note">
+                        {r.note} · {km(base.home, r)} km{r.longest ? ' · longest ride' : ''}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
+        ))
+      }
     </div>
 
     <!-- DRUMS -->
