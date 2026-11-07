@@ -1,10 +1,344 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import { nowRepos, ACTIVE_DAYS } from '../data/now';
+import synced from '../data/now.json';
+
+type Commit = { sha: string; date: string; subject: string };
+type Activity = { branch: string; total: number; last30: number; commits: Commit[] };
+const activity = synced.repos as Record<string, Activity>;
+
+const now = Date.now();
+const rows = nowRepos
+  .map((r) => {
+    const a = activity[r.repo];
+    const last = a?.commits[0]?.date ?? null;
+    const days = last ? (now - Date.parse(last)) / 864e5 : Infinity;
+    return { ...r, a, last, active: days <= ACTIVE_DAYS };
+  })
+  .filter((r) => r.a)
+  .sort((x, y) => Date.parse(y.last ?? '0') - Date.parse(x.last ?? '0'));
+const active = rows.filter((r) => r.active);
+const recent = rows.filter((r) => !r.active);
+const fmt = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
+const url = (repo: string) => `https://github.com/${repo}`;
 ---
 
-<BaseLayout title="Now" description="What I'm building right now, updated automatically from GitHub.">
-  <PageIntro number="02" title="Now" lede="What I'm building right now, updated automatically from GitHub." />
-  <ComingSoon step="step 5" />
+<BaseLayout title="Now" description="What Jake Roberts is building right now, synced from GitHub at every build.">
+  <PageIntro number="02" title="Now" lede="Hot off the main branch. Everything here is read from my GitHub repos every time the site builds." />
+
+  <section class="container live" aria-labelledby="live-title">
+    <div class="sec-head">
+      <h2 id="live-title" class="display sec-title"><span class="pulse" aria-hidden="true"></span>Right now</h2>
+      <span class="label">Commits in the last {ACTIVE_DAYS} days</span>
+    </div>
+    {
+      active.length === 0 ? (
+        <p class="empty">Nothing pushed in the last {ACTIVE_DAYS} days. Probably on the badminton court.</p>
+      ) : (
+        <div class="live-grid">
+          {active.map((r) => (
+            <article class="live-card">
+              <div class="lc-top">
+                <span class="kind">{r.kind === 'learning' ? 'Learning' : r.kind === 'site' ? 'This site' : 'Project'}</span>
+                <span class="ago" data-ago={r.last}>{fmt(r.last!)}</span>
+              </div>
+              <h3 class="lc-name">
+                <a href={url(r.repo)} rel="noopener">{r.name} ↗</a>
+              </h3>
+              <p class="lc-desc">{r.description}</p>
+              <div class="lc-stats">
+                <span><b>{r.a.last30}</b>commits this month</span>
+                <span><b>{r.a.total}</b>commits in total</span>
+              </div>
+              <ol class="commits" aria-label={`Latest commits to ${r.name}`}>
+                {r.a.commits.map((c) => (
+                  <li>
+                    <a class="sha" href={`${url(r.repo)}/commit/${c.sha}`} rel="noopener">{c.sha}</a>
+                    <span class="msg">{c.subject}</span>
+                    <span class="when" data-ago={c.date}>{fmt(c.date)}</span>
+                  </li>
+                ))}
+              </ol>
+              {r.project && <a class="cs" href={`/projects/${r.project}`}>Read the case study →</a>}
+            </article>
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  <section class="container recent" aria-labelledby="recent-title">
+    <div class="sec-head">
+      <h2 id="recent-title" class="display sec-title">Recently</h2>
+      <span class="label">Quieter repos, newest first</span>
+    </div>
+    <ul class="rows">
+      {
+        recent.map((r) => (
+          <li class="row">
+            <div class="r-main">
+              <a class="r-name" href={url(r.repo)} rel="noopener">{r.name} ↗</a>
+              <span class="r-desc">{r.description}</span>
+            </div>
+            <div class="r-last">
+              <span class="label">Last commit</span>
+              <span class="r-msg">{r.a.commits[0]?.subject}</span>
+              <span class="r-date" data-ago={r.last}>{fmt(r.last!)}</span>
+            </div>
+            {r.project ? <a class="r-cs" href={`/projects/${r.project}`}>Case study →</a> : <span class="r-cs muted">{r.a.total} commits</span>}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <p class="container synced">Synced from GitHub <span data-ago={synced.syncedAt}>{fmt(synced.syncedAt)}</span>.</p>
 </BaseLayout>
+
+<style>
+  .sec-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--fg);
+    margin-bottom: 20px;
+  }
+  .sec-title {
+    font-size: clamp(40px, 6vw, 64px);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .pulse {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 0 0 rgba(155, 219, 106, 0.6);
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    to {
+      box-shadow: 0 0 0 14px rgba(155, 219, 106, 0);
+    }
+  }
+  .empty {
+    color: var(--muted);
+  }
+  .live-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: 16px;
+  }
+  .live-card {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    padding: 22px;
+    border-radius: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--lime);
+  }
+  .lc-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .kind {
+    color: var(--lime);
+  }
+  .lc-name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1;
+  }
+  .lc-name a {
+    text-decoration: none;
+  }
+  .lc-name a:hover {
+    color: var(--lime);
+  }
+  .lc-desc {
+    margin: 0;
+    color: var(--muted);
+  }
+  .lc-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .lc-stats span {
+    display: grid;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .lc-stats b {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--fg);
+  }
+  .commits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+  }
+  .commits li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 5px 0;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+  .sha {
+    color: var(--lime);
+    text-decoration: none;
+  }
+  .sha:hover {
+    text-decoration: underline;
+  }
+  .msg {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .when {
+    color: var(--muted);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .cs {
+    justify-self: start;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1.5px solid currentColor;
+  }
+
+  .recent {
+    padding-top: 72px;
+  }
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr) auto;
+    gap: 24px;
+    align-items: center;
+    padding: 18px 4px;
+    border-bottom: 1px solid var(--line);
+  }
+  .r-main,
+  .r-last {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+  .r-name {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 19px;
+    text-decoration: none;
+  }
+  .r-name:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .r-desc {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .r-msg {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .r-date {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .r-cs {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .r-cs.muted {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .synced {
+    padding-top: 28px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .synced code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  @media (max-width: 760px) {
+    .row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .commits li {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .when {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pulse {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // Show "3 days ago" style times, worked out in the visitor's browser so they stay accurate between builds.
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+  const units: [Intl.RelativeTimeFormatUnit, number][] = [
+    ['year', 31536e6],
+    ['month', 2592e6],
+    ['week', 6048e5],
+    ['day', 864e5],
+    ['hour', 36e5],
+    ['minute', 6e4],
+  ];
+  document.querySelectorAll<HTMLElement>('[data-ago]').forEach((el) => {
+    const t = Date.parse(el.dataset.ago!);
+    if (Number.isNaN(t)) return;
+    const diff = t - Date.now();
+    const [unit, ms] = units.find(([, ms]) => Math.abs(diff) >= ms) ?? ['minute', 6e4];
+    el.title = el.textContent ?? '';
+    el.textContent = rtf.format(Math.round(diff / ms), unit);
+  });
+</script>

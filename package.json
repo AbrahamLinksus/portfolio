@@ -5,11 +5,12 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/sync-notes.mjs",
+    "prebuild": "node scripts/sync-notes.mjs && node scripts/sync-now.mjs",
     "build": "astro build",
     "sync-notes": "node scripts/sync-notes.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "sync-now": "node scripts/sync-now.mjs"
   },
   "dependencies": {
     "astro": "^7.4.7"
