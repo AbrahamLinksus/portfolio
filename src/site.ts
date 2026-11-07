@@ -28,7 +28,6 @@ export type NavItem = {
 // Order and colors match the full-page menu design.
 export const nav: NavItem[] = [
   { href: '/projects', label: 'Projects', letter: 'P', description: 'Case studies: problem, process, results', color: 'var(--pink)' },
-  { href: '/now', label: 'Now', letter: 'N', description: 'Hot off the main branch', color: 'var(--teal)' },
   { href: '/skills', label: 'Skills', letter: 'S', description: 'Things I can do without Stack Overflow', color: 'var(--yellow)' },
   { href: '/hobbies', label: 'Hobbies', letter: 'H', description: 'Offline mode: on', color: 'var(--orange)' },
   { href: '/contact', label: 'Contact', letter: 'C', description: "Let's sync up", color: 'var(--lime)' },
