@@ -4,6 +4,9 @@ export const site = {
   title: 'Software Engineer',
   description: "Projects, skills, and what I'm building right now.",
   email: 'jakeroberts.a.05@gmail.com', // receives contact-form messages; not shown on the site
+  // Formspree form ID (the part after formspree.io/f/). Messages are emailed to the account that owns the form.
+  // Leave empty until the form exists; the page then explains that the form isn't connected yet.
+  contactFormId: '',
   socials: [
     { label: 'GitHub', href: 'https://github.com/AbrahamLinksus' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/' },

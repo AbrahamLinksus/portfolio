@@ -1,10 +1,362 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import { site, roles } from '../site';
+
+const endpoint = site.contactFormId ? `https://formspree.io/f/${site.contactFormId}` : '';
+const topics = [
+  { value: 'Job opportunity', label: 'A role', color: 'var(--pink)' },
+  { value: 'Project or collaboration', label: 'A project', color: 'var(--teal)' },
+  { value: 'Just saying hi', label: 'Just hi', color: 'var(--yellow)' },
+];
 ---
 
-<BaseLayout title="Contact" description="Have a question or an idea? Send me a message.">
-  <PageIntro number="05" title="Contact" lede="Have a question or an idea? Send me a message." />
-  <ComingSoon step="step 5" />
+<BaseLayout title="Contact" description="Send Jake Roberts a message about a role, a project, or anything else.">
+  <PageIntro number="04" title="Contact" lede="Let's sync up. Write to me about a role, a project, or a good prog album." />
+
+  <section class="container contact">
+    <aside class="side">
+      <span class="label">Open to</span>
+      <ul class="open">
+        {
+          roles.map((r) => (
+            <li style={`--c: ${r.color}`}>
+              <span class="dot" aria-hidden="true" />
+              {r.role}
+            </li>
+          ))
+        }
+      </ul>
+      <span class="label">Elsewhere</span>
+      <ul class="links">
+        {
+          site.socials.map((s) => (
+            <li>
+              <a href={s.href} rel="noopener">{s.label} ↗</a>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+
+    <form class="form" method="POST" action={endpoint || undefined} data-contact data-endpoint={endpoint} novalidate>
+      <fieldset class="topics">
+        <legend class="label">What's it about?</legend>
+        <div class="chips">
+          {
+            topics.map((t, i) => (
+              <label class="chip" style={`--c: ${t.color}`}>
+                <input type="radio" name="topic" id={`topic-${i}`} value={t.value} checked={i === 0} />
+                <span>{t.label}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <div class="row">
+        <div class="field">
+          <label for="c-name">Your name</label>
+          <input id="c-name" name="name" type="text" autocomplete="name" required maxlength="100" />
+          <span class="err" data-err="name">Tell me who you are.</span>
+        </div>
+        <div class="field">
+          <label for="c-email">Your email</label>
+          <input id="c-email" name="email" type="email" autocomplete="email" required maxlength="200" />
+          <span class="err" data-err="email">I need a valid email to reply to.</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="c-message">Message</label>
+        <textarea id="c-message" name="message" rows="7" required minlength="10" maxlength="5000"></textarea>
+        <span class="err" data-err="message">Write at least a sentence (10+ characters).</span>
+      </div>
+
+      <!-- Honeypot: humans never see this field; bots that fill it are ignored. -->
+      <div class="hp" aria-hidden="true">
+        <label for="c-website">Leave this empty</label>
+        <input id="c-website" name="_gotcha" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="send" data-send>Send message →</button>
+        <p class="status" role="status" aria-live="polite" data-status></p>
+      </div>
+    </form>
+  </section>
 </BaseLayout>
+
+<style>
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.6fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .side {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+  .open,
+  .links {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .open li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 16px;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c);
+  }
+  .links a {
+    font-size: 15px;
+  }
+
+  .form {
+    display: grid;
+    gap: 18px;
+    padding: 28px;
+    border-radius: 22px;
+    background-color: var(--panel);
+    background-image:
+      linear-gradient(var(--panel-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--panel-grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    color: var(--ink);
+  }
+  .form .label {
+    color: #5e5a55;
+  }
+  .topics {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chip {
+    cursor: pointer;
+  }
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .chip span {
+    display: inline-block;
+    padding: 9px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--ink);
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 14px;
+    background: #fff;
+    transition: transform 0.15s ease;
+  }
+  .chip input:checked + span {
+    background: var(--c);
+    transform: rotate(-3deg);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  }
+  .chip input:focus-visible + span {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+  .field label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .field input,
+  .field textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 16px;
+    color: var(--ink);
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 160px;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    outline: 3px solid var(--teal);
+    outline-offset: 1px;
+  }
+  .field.bad input,
+  .field.bad textarea {
+    border-color: #c4203f;
+  }
+  .err {
+    display: none;
+    font-size: 13px;
+    color: #c4203f;
+  }
+  .field.bad .err {
+    display: block;
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .send {
+    all: unset;
+    cursor: pointer;
+    padding: 14px 22px;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--panel);
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 15px;
+  }
+  .send:hover {
+    background: #2a2a2c;
+  }
+  .send:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 3px;
+  }
+  .send[disabled] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .status {
+    margin: 0;
+    font-size: 14px;
+  }
+  .status.ok {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: var(--lime);
+    transform: rotate(-2deg);
+  }
+  .status.fail {
+    color: #c4203f;
+  }
+
+  @media (max-width: 860px) {
+    .contact {
+      grid-template-columns: 1fr;
+    }
+    .side {
+      order: 2;
+    }
+  }
+  @media (max-width: 560px) {
+    .form {
+      padding: 18px;
+    }
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact]');
+  if (form) {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const send = form.querySelector<HTMLButtonElement>('[data-send]')!;
+    const endpoint = form.dataset.endpoint ?? '';
+    const emailOk = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+    const checks: Record<string, (v: string) => boolean> = {
+      name: (v) => v.trim().length > 0,
+      email: (v) => emailOk(v.trim()),
+      message: (v) => v.trim().length >= 10,
+    };
+    const validate = (name: string) => {
+      const el = form.elements.namedItem(name) as HTMLInputElement;
+      const ok = checks[name](el.value);
+      el.closest('.field')!.classList.toggle('bad', !ok);
+      el.setAttribute('aria-invalid', String(!ok));
+      return ok;
+    };
+    Object.keys(checks).forEach((n) => {
+      const el = form.elements.namedItem(n) as HTMLInputElement;
+      el.addEventListener('blur', () => el.value && validate(n));
+      el.addEventListener('input', () => el.closest('.field')!.classList.contains('bad') && validate(n));
+    });
+
+    const say = (text: string, kind: 'ok' | 'fail' | '') => {
+      status.textContent = text;
+      status.className = 'status' + (kind ? ' ' + kind : '');
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const results = Object.keys(checks).map(validate);
+      if (results.includes(false)) {
+        say('Check the highlighted fields.', 'fail');
+        (form.querySelector('.field.bad input, .field.bad textarea') as HTMLElement | null)?.focus();
+        return;
+      }
+      if (!endpoint) {
+        say("The form isn't connected yet. Please reach me on LinkedIn for now.", 'fail');
+        return;
+      }
+      const data = new FormData(form);
+      data.set('_subject', `Portfolio: ${data.get('topic')} from ${data.get('name')}`);
+      send.disabled = true;
+      say('Sending…', '');
+      try {
+        const res = await fetch(endpoint, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        say("Message sent. I'll get back to you soon.", 'ok');
+      } catch {
+        say("That didn't go through. Check your connection and try again in a moment.", 'fail');
+      } finally {
+        send.disabled = false;
+      }
+    });
+  }
+</script>
