@@ -1,0 +1,126 @@
+/*
+  Design tokens and base styles.
+  Dark is the designed default; light is provisional until it gets its own design pass.
+*/
+:root {
+  /* Fixed brand colors (same in both themes) */
+  --ink: #111112;
+  --pink: #f4507a;
+  --teal: #5cc8c0;
+  --yellow: #f6d23a;
+  --orange: #ff8a1f;
+  --lime: #9bdb6a;
+  --menu-bg: #e9dcd6;
+  --panel: #f2ece4;
+  --panel-grid: #d6cfc4;
+
+  /* Theme colors: dark */
+  --bg: #0e0e0f;
+  --fg: #f2ece4;
+  --muted: #a7a29b;
+  --line: #2a2a2c;
+  --surface: #18181a;
+  color-scheme: dark;
+
+  /* Type */
+  --font-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sticker: 'Bricolage Grotesque', 'Arial Black', sans-serif;
+  --font-body: 'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+
+  /* Layout */
+  --max: 1120px;
+  --gutter-l: max(20px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(20px, env(safe-area-inset-right, 0px));
+}
+
+:root[data-theme='light'] {
+  --bg: #f2ece4;
+  --fg: #111112;
+  --muted: #5e5a55;
+  --line: #d6cfc4;
+  --surface: #fbf8f4;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--pink);
+  outline-offset: 3px;
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--max) + 40px);
+  margin-inline: auto;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

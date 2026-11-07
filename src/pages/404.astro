@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+---
+
+<BaseLayout title="Page not found">
+  <PageIntro number="404" title="Lost?" lede="That page doesn't exist. It may have moved, or the link has a typo.">
+    <a class="home" href="/">Back to home →</a>
+  </PageIntro>
+</BaseLayout>
+
+<style>
+  .home {
+    justify-self: start;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1.5px solid currentColor;
+    padding-bottom: 2px;
+  }
+</style>

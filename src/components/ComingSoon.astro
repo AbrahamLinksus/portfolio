@@ -1,0 +1,31 @@
+---
+interface Props {
+  step: string;
+}
+const { step } = Astro.props;
+---
+
+<div class="container">
+  <p class="soon"><span class="dot" aria-hidden="true"></span>This page gets built in {step}.</p>
+</div>
+
+<style>
+  .soon {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 10px 16px;
+    border: 1px dashed var(--line);
+    border-radius: 99px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--yellow);
+  }
+</style>

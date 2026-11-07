@@ -1,0 +1,75 @@
+---
+import { site } from '../site';
+import ThemeToggle from './ThemeToggle.astro';
+---
+
+<header class="header container">
+  <a class="brand" href="/" aria-label={`${site.name}, home`}>
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">{site.name.split(' ')[0]}<br />{site.name.split(' ').slice(1).join(' ')}</span>
+  </a>
+  <div class="actions">
+    <ThemeToggle />
+    <button class="menu-btn" type="button" data-menu-open aria-haspopup="dialog" aria-controls="site-menu">
+      Menu
+      <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-top: calc(20px + env(safe-area-inset-top, 0px));
+    padding-bottom: 20px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .brand-mark {
+    width: 38px;
+    height: 22px;
+    background: var(--fg);
+    border-radius: 4px 99px 99px 4px;
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .menu-btn {
+    all: unset;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 8px 4px;
+  }
+  .menu-btn:focus-visible {
+    outline: 2px solid var(--pink);
+    outline-offset: 3px;
+  }
+  .burger {
+    display: grid;
+    gap: 4px;
+    width: 22px;
+  }
+  .burger i {
+    display: block;
+    height: 2px;
+    background: currentColor;
+  }
+</style>

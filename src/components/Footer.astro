@@ -1,0 +1,95 @@
+---
+import { nav, site } from '../site';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container inner">
+    <div class="cta">
+      <p class="display big">Let's build<br />something.</p>
+      <a class="contact" href="/contact">Get in touch →</a>
+    </div>
+    <div class="cols">
+      <nav aria-label="Footer">
+        <span class="label">Pages</span>
+        <ul>
+          {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+      <div>
+        <span class="label">Elsewhere</span>
+        <ul>
+          {site.socials.map((s) => <li><a href={s.href} rel="noopener">{s.label}</a></li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container base">
+    <span>© {year} {site.name}</span>
+    <span>Built with Astro</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--line);
+    margin-top: 96px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+  .inner {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 40px;
+    padding-top: 56px;
+    padding-bottom: 48px;
+  }
+  .big {
+    font-size: clamp(48px, 8vw, 96px);
+  }
+  .contact {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1.5px solid currentColor;
+    padding-bottom: 2px;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-content: start;
+  }
+  ul {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  ul a {
+    text-decoration: none;
+  }
+  ul a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .base {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  @media (max-width: 720px) {
+    .inner {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
