@@ -11,121 +11,236 @@ const music = hobbies.find((h) => h.id === 'music')!;
 <BaseLayout title="Hobbies" description="Badminton, drums and progressive rock: life outside the terminal.">
   <PageIntro number="04" title="Hobbies" lede="Offline mode: on. Three things I do every day, all of them a little too seriously." />
 
-  <nav class="container jump" aria-label="Hobbies">
-    {
-      [
-        { id: 'badminton', name: 'Badminton', color: 'var(--lime)' },
-        { id: 'drums', name: 'Drums', color: 'var(--pink)' },
-        { id: 'music', name: 'Music', color: 'var(--teal)' },
-      ].map((h, i) => (
-        <a href={`#${h.id}`} style={`--c: ${h.color}`}>
-          <span class="num">{String(i + 1).padStart(2, '0')}</span>
-          {h.name}
-        </a>
-      ))
-    }
-  </nav>
-
-  <section class="hobby visual container" id="badminton" style="--c: var(--lime)" aria-labelledby="badminton-title">
-    <div class="head">
-      <span class="label">01 · Hobby</span>
-      <h2 id="badminton-title" class="display name">Badminton</h2>
-      <p class="line">Three hours a day on my home court, every day, for five years.</p>
-    </div>
-    <div class="art">
-      <CourtGraphic
-        boxes={[
-          { value: '5', label: 'YEARS PLAYING' },
-          { value: '365', label: 'DAYS A YEAR' },
-          { value: '3H', label: 'EVERY DAY' },
-          { value: '5,000+', label: 'HOURS ON COURT' },
-        ]}
-      />
-    </div>
-  </section>
-
-  <section class="hobby visual container" id="drums" style="--c: var(--pink)" aria-labelledby="drums-title">
-    <div class="head">
-      <span class="label">02 · Hobby</span>
-      <h2 id="drums-title" class="display name">Drums</h2>
-      <p class="line">Thirteen years behind a Yamaha kit, playing progressive rock at home and in church.</p>
-    </div>
-    <div class="art">
-      <DrumKitGraphic
-        kick={{ value: '13', label: 'YEARS PLAYING' }}
-        snare={{ value: 'PROG', label: '& ROCK' }}
-        tom1={{ value: 'FREE BIRD', label: 'FAVOURITE' }}
-        tom2={{ value: 'BAND', label: 'NAME TBA' }}
-        floor={{ value: 'HOME', label: 'PRACTICE' }}
-        hihat={{ value: 'YAMAHA', label: 'THE KIT' }}
-        crash={{ value: 'MIXED', label: 'CYMBALS' }}
-        ride={{ value: 'CHURCH', label: 'LIVE' }}
-      />
-    </div>
-  </section>
-
-  <section class="hobby container" id={music.id} style={`--c: ${music.color}`} aria-labelledby="music-title">
-    <div class="head">
-      <span class="label">03 · Hobby</span>
-      <h2 id="music-title" class="display name">{music.name}</h2>
-      <p class="tagline">{music.tagline}</p>
-    </div>
-    <ul class="stats">
-      {
-        music.stats.map((s) => (
-          <li>
-            <span class="sv">{s.value}</span>
-            <span class="sl">{s.label}</span>
-          </li>
-        ))
-      }
-    </ul>
-    <div class="body">
-      <div class="text">{music.body.map((p) => <p>{p}</p>)}</div>
-    </div>
-
-    <div class="music-grid">
-      <div class="card repeat">
-        <span class="label">On repeat · top 5</span>
-        <ol class="artists">
-          {
-            topArtists.map((a, i) => (
-              <li>
-                <span class="rank">{i + 1}</span>
-                <span class="an">{a}</span>
-              </li>
-            ))
-          }
-        </ol>
+  <div class="container deck" data-deck>
+    <button type="button" class="tile" id="tile-badminton" data-key="badminton" aria-expanded="false" aria-controls="panel-badminton" style="--c: var(--lime); --o: 1">
+      <span class="t-num">01</span>
+      <span class="t-name display">Badminton</span>
+      <span class="t-stat"><b>3h</b> a day, every day</span>
+      <span class="t-icon" aria-hidden="true">+</span>
+    </button>
+    <section class="panel" id="panel-badminton" data-panel="badminton" role="region" aria-labelledby="tile-badminton" style="--c: var(--lime); --o: 2" hidden>
+      <div class="panel-in">
+        <p class="line">Three hours a day on my home court, every day, for five years.</p>
+        <CourtGraphic
+          boxes={[
+            { value: '5', label: 'YEARS PLAYING' },
+            { value: '365', label: 'DAYS A YEAR' },
+            { value: '3H', label: 'EVERY DAY' },
+            { value: '5,000+', label: 'HOURS ON COURT' },
+          ]}
+        />
       </div>
+    </section>
 
-      <div class="card soundtrack">
-        <span class="label">Coding soundtrack</span>
-        <p class="st-artist display">{codingSoundtrack.artist}</p>
-        <p>{codingSoundtrack.line}</p>
-        <p class="pun">{codingSoundtrack.pun}</p>
+    <button type="button" class="tile" id="tile-drums" data-key="drums" aria-expanded="false" aria-controls="panel-drums" style="--c: var(--pink); --o: 1">
+      <span class="t-num">02</span>
+      <span class="t-name display">Drums</span>
+      <span class="t-stat"><b>13</b> years behind the kit</span>
+      <span class="t-icon" aria-hidden="true">+</span>
+    </button>
+    <section class="panel" id="panel-drums" data-panel="drums" role="region" aria-labelledby="tile-drums" style="--c: var(--pink); --o: 2" hidden>
+      <div class="panel-in">
+        <p class="line">Thirteen years behind a Yamaha kit, playing progressive rock at home and in church.</p>
+        <DrumKitGraphic
+          kick={{ value: '13', label: 'YEARS PLAYING' }}
+          snare={{ value: 'PROG', label: '& ROCK' }}
+          tom1={{ value: 'FREE BIRD', label: 'FAVOURITE' }}
+          tom2={{ value: 'BAND', label: 'NAME TBA' }}
+          floor={{ value: 'HOME', label: 'PRACTICE' }}
+          hihat={{ value: 'YAMAHA', label: 'THE KIT' }}
+          crash={{ value: 'MIXED', label: 'CYMBALS' }}
+          ride={{ value: 'CHURCH', label: 'LIVE' }}
+        />
       </div>
+    </section>
 
-      <div class="card drummers">
-        <span class="label">Drummers I study</span>
-        <ul>
+    <button type="button" class="tile" id="tile-music" data-key="music" aria-expanded="false" aria-controls="panel-music" style="--c: var(--teal); --o: 1">
+      <span class="t-num">03</span>
+      <span class="t-name display">Music</span>
+      <span class="t-stat"><b>5h</b> of prog a day</span>
+      <span class="t-icon" aria-hidden="true">+</span>
+    </button>
+    <section class="panel" id="panel-music" data-panel="music" role="region" aria-labelledby="tile-music" style="--c: var(--teal); --o: 2" hidden>
+      <div class="panel-in">
+        <p class="tagline">{music.tagline}</p>
+        <ul class="stats">
           {
-            drummers.map((d) => (
+            music.stats.map((s) => (
               <li>
-                <span class="dn">{d.name}</span>
-                <span class="db">{d.band} · in my top 5</span>
-                <span class="dt">{d.note}</span>
+                <span class="sv">{s.value}</span>
+                <span class="sl">{s.label}</span>
               </li>
             ))
           }
         </ul>
-        <a class="link" href="#drums">Back to my own kit ↑</a>
+        <div class="text">{music.body.map((p) => <p>{p}</p>)}</div>
+        <div class="music-grid">
+          <div class="card repeat">
+            <span class="label">On repeat · top 5</span>
+            <ol class="artists">
+              {
+                topArtists.map((a, i) => (
+                  <li>
+                    <span class="rank">{i + 1}</span>
+                    <span class="an">{a}</span>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+          <div class="card soundtrack">
+            <span class="label">Coding soundtrack</span>
+            <p class="st-artist display">{codingSoundtrack.artist}</p>
+            <p>{codingSoundtrack.line}</p>
+            <p class="pun">{codingSoundtrack.pun}</p>
+          </div>
+          <div class="card drummers">
+            <span class="label">Drummers I study</span>
+            <ul>
+              {
+                drummers.map((d) => (
+                  <li>
+                    <span class="dn">{d.name}</span>
+                    <span class="db">{d.band} · in my top 5</span>
+                    <span class="dt">{d.note}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <a class="link" href="#drums">Open my own kit ↑</a>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
+  /* Deck: three tiles in a row; the open panel spans the full width beneath them. */
+  .deck {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    padding-top: 8px;
+  }
+  .tile {
+    all: unset;
+    box-sizing: border-box;
+    grid-row: 1;
+    cursor: pointer;
+    position: relative;
+    display: grid;
+    align-content: space-between;
+    gap: 18px;
+    min-height: 260px;
+    padding: 22px;
+    border-radius: 20px;
+    border: 2px solid var(--c);
+    color: var(--fg);
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+  }
+  .tile:hover {
+    transform: translateY(-3px);
+  }
+  .tile:focus-visible {
+    outline: 3px solid var(--fg);
+    outline-offset: 3px;
+  }
+  .tile[aria-expanded='true'] {
+    background: var(--c);
+    color: var(--ink);
+  }
+  .t-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+  .t-name {
+    font-size: clamp(44px, 5.6vw, 84px);
+    color: var(--c);
+    overflow-wrap: anywhere;
+  }
+  .tile[aria-expanded='true'] .t-name {
+    color: var(--ink);
+  }
+  .t-stat {
+    font-size: 15px;
+  }
+  .t-stat b {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 30px;
+    margin-right: 6px;
+    vertical-align: -3px;
+  }
+  .t-icon {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    line-height: 1;
+    background: var(--c);
+    color: var(--ink);
+    transition: transform 0.25s ease, background-color 0.25s ease;
+  }
+  .tile[aria-expanded='true'] .t-icon {
+    transform: rotate(45deg);
+    background: var(--ink);
+    color: var(--c);
+  }
+  .panel {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    border-top: 3px solid var(--c);
+    padding-top: 22px;
+    margin-top: 6px;
+    scroll-margin-top: 24px;
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .panel:not([hidden]) .panel-in {
+    animation: open 0.35s ease both;
+  }
+  @keyframes open {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: none; }
+  }
+  .panel-in {
+    display: grid;
+    gap: 22px;
+  }
+  .panel-in > :global(svg) {
+    max-width: 880px;
+    width: 100%;
+    justify-self: center;
+  }
+  @media (max-width: 760px) {
+    .deck {
+      grid-template-columns: 1fr;
+    }
+    .tile,
+    .panel {
+      grid-row: auto;
+    }
+    .tile {
+      min-height: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tile,
+    .t-icon,
+    .panel:not([hidden]) .panel-in {
+      transition: none;
+      animation: none;
+    }
+  }
+
   .jump {
     display: flex;
     flex-wrap: wrap;
@@ -388,3 +503,28 @@ const music = hobbies.find((h) => h.id === 'music')!;
     }
   }
 </style>
+
+<script>
+  const deck = document.querySelector<HTMLElement>('[data-deck]');
+  if (deck) {
+    const tiles = [...deck.querySelectorAll<HTMLButtonElement>('.tile')];
+    const panels = [...deck.querySelectorAll<HTMLElement>('[data-panel]')];
+    const open = (key: string | null, scroll = false) => {
+      tiles.forEach((t) => t.setAttribute('aria-expanded', String(t.dataset.key === key)));
+      panels.forEach((p) => (p.hidden = p.dataset.panel !== key));
+      if (key) {
+        history.replaceState(null, '', '#' + key);
+        if (scroll) deck.querySelector('#panel-' + key)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else history.replaceState(null, '', location.pathname);
+    };
+    tiles.forEach((t) =>
+      t.addEventListener('click', () => open(t.getAttribute('aria-expanded') === 'true' ? null : t.dataset.key!, true)),
+    );
+    const fromHash = () => {
+      const key = location.hash.slice(1);
+      if (tiles.some((t) => t.dataset.key === key)) open(key, true);
+    };
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
+  }
+</script>
