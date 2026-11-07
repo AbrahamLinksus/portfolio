@@ -1,16 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StickerPanel from '../components/StickerPanel.astro';
-import { site } from '../site';
+import { site, roles } from '../site';
 ---
 
 <BaseLayout>
   <section class="hero container">
+    <p class="status"><span class="pulse" aria-hidden="true"></span>Open to work · Software · AI · Data</p>
     <h1 class="display headline">{site.title}</h1>
     <div class="intro">
       <p>
         I'm {site.name}. I build software and write up how I made it: the problem, the decisions,
-        and what I'd do differently.
+        and what I'd do differently. My code is better than my puns, I promise.
       </p>
       <p>
         This site holds my projects, the skills behind them, what I'm building right now, and a
@@ -20,11 +21,134 @@ import { site } from '../site';
     </div>
     <StickerPanel />
   </section>
+
+  <section class="open container" aria-labelledby="open-title">
+    <div class="open-head">
+      <span class="label">Currently open to</span>
+      <h2 id="open-title" class="display open-title">Roles I'm<br />ready to run</h2>
+    </div>
+    <ol class="roles">
+      {
+        roles.map((r, i) => (
+          <li class:list={['role', { first: i === 0 }]} style={`--c: ${r.color}`}>
+            <span class="rank">{r.rank}</span>
+            <span class="tag">{r.tag}</span>
+            <span class="name">{r.role}</span>
+            <span class="pun">{r.pun}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
 </BaseLayout>
 
 <style>
   .hero {
     padding-top: 8px;
+  }
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 0 0 rgba(155, 219, 106, 0.6);
+    animation: pulse 2s ease-out infinite;
+  }
+  @keyframes pulse {
+    to { box-shadow: 0 0 0 10px rgba(155, 219, 106, 0); }
+  }
+
+  .open {
+    padding-top: 88px;
+    display: grid;
+    gap: 28px;
+  }
+  .open-head {
+    display: grid;
+    gap: 10px;
+  }
+  .open-title {
+    font-size: clamp(44px, 7vw, 80px);
+  }
+  .roles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 16px;
+  }
+  .role {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-content: start;
+    gap: 10px 12px;
+    padding: 22px;
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    min-width: 0;
+  }
+  .role.first {
+    background: var(--c);
+    border-color: var(--c);
+    color: var(--ink);
+  }
+  .rank {
+    font-family: var(--font-display);
+    font-size: 64px;
+    line-height: 0.9;
+    color: var(--c);
+  }
+  .first .rank {
+    color: var(--ink);
+  }
+  .tag {
+    align-self: start;
+    justify-self: end;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: var(--c);
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .first .tag {
+    background: var(--ink);
+    color: var(--c);
+  }
+  .name {
+    grid-column: 1 / -1;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(20px, 2.4vw, 28px);
+    line-height: 1;
+    margin-top: 8px;
+  }
+  .first .name {
+    font-size: clamp(26px, 3.4vw, 40px);
+  }
+  .pun {
+    grid-column: 1 / -1;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .first .pun {
+    color: var(--ink);
   }
   .headline {
     font-size: clamp(56px, 13.6vw, 160px);
@@ -51,6 +175,11 @@ import { site } from '../site';
     white-space: nowrap;
     border-bottom: 1.5px solid currentColor;
     padding-bottom: 2px;
+  }
+  @media (max-width: 860px) {
+    .roles {
+      grid-template-columns: 1fr;
+    }
   }
   @media (max-width: 760px) {
     .intro {
