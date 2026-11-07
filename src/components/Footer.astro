@@ -78,14 +78,22 @@ const year = new Date().getFullYear();
     text-underline-offset: 3px;
   }
   .base {
+    position: relative;
     display: flex;
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
-    border-top: 1px solid var(--line);
     padding-top: 18px;
     font-size: 13px;
     color: var(--muted);
+  }
+  .base::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: var(--gutter-l);
+    right: var(--gutter-r);
+    border-top: 1px solid var(--line);
   }
   @media (max-width: 720px) {
     .inner {

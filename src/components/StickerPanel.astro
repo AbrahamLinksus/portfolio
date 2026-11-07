@@ -1,0 +1,195 @@
+---
+// Cream grid panel with the cut-out photo and tilted stickers that link to each section.
+interface Props {
+  photo?: string; // path to a transparent, black-and-white cut-out (e.g. /images/me.png)
+  photoAlt?: string;
+}
+const { photo, photoAlt = '' } = Astro.props;
+
+const stickers = [
+  { href: '/projects', cls: 'st-a', color: 'var(--pink)', title: 'Case<br>studies', small: 'problem → process<br>→ results' },
+  { href: '/now', cls: 'st-b', color: 'var(--teal)', title: 'Now building ●' },
+  { href: '/skills', cls: 'st-c', color: 'var(--yellow)', title: 'Skills &amp;<br>tools →' },
+  { href: '/hobbies', cls: 'st-d', color: 'var(--orange)', title: 'Hobbies<br>&amp; life ©' },
+  { href: '/skills#learning', cls: 'st-e', color: 'var(--teal)', title: 'Learning<br>log ’26' },
+  { href: '/contact', cls: 'st-f', color: 'var(--lime)', title: 'Say<br>hello', small: 'contact form' },
+];
+---
+
+<div class="panel">
+  <nav class="stickers" aria-label="Sections">
+    {
+      stickers.map((s) => (
+        <a class:list={['sticker', s.cls]} href={s.href} style={`--c: ${s.color}`}>
+          <span class="t" set:html={s.title} />
+          {s.small && <small set:html={s.small} />}
+        </a>
+      ))
+    }
+  </nav>
+  {
+    photo ? (
+      <img class="photo" src={photo} alt={photoAlt} width="360" height="460" />
+    ) : (
+      <div class="person" role="img" aria-label="Photo coming soon">
+        <div class="head" />
+        <div class="body" />
+        <span>Your cut-out photo, black and white</span>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .panel {
+    position: relative;
+    min-height: 440px;
+    border-radius: 0 999px 999px 0;
+    background-color: var(--panel);
+    background-image:
+      linear-gradient(var(--panel-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--panel-grid) 1px, transparent 1px);
+    background-size: 44px 44px;
+    overflow: hidden;
+    color: var(--ink);
+  }
+  :global(:root[data-theme='light']) .panel {
+    box-shadow: inset 0 0 0 1px var(--panel-grid);
+  }
+
+  .photo,
+  .person {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
+  .photo {
+    width: auto;
+    height: 92%;
+    filter: grayscale(1) contrast(1.05);
+  }
+  .person {
+    width: 230px;
+    height: 330px;
+  }
+  .person .head {
+    position: absolute;
+    left: 50%;
+    top: 20px;
+    transform: translateX(-50%);
+    width: 108px;
+    height: 124px;
+    border-radius: 48% 48% 44% 44%;
+    background: #2b2b2d;
+  }
+  .person .head::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    right: -6px;
+    top: -10px;
+    height: 58px;
+    border-radius: 60px 60px 12px 12px;
+    background: #161617;
+  }
+  .person .body {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 190px;
+    border-radius: 110px 110px 0 0;
+    background: #1c1c1e;
+  }
+  .person span {
+    position: absolute;
+    left: 50%;
+    bottom: 60px;
+    transform: translateX(-50%);
+    width: 160px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #8d8a85;
+  }
+
+  .sticker {
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    gap: 4px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--c);
+    color: var(--ink);
+    text-decoration: none;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+    transform: rotate(var(--r, 0deg));
+    transition: transform 0.2s ease;
+  }
+  .sticker:hover,
+  .sticker:focus-visible {
+    transform: rotate(0deg) scale(1.06);
+  }
+  .sticker:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+  .sticker small {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    line-height: 1.25;
+  }
+  .st-a { --r: -8deg; left: 7%; top: 9%; width: 150px; height: 150px; border-radius: 50%; place-content: center; text-align: center; font-size: 19px; }
+  .st-b { --r: -7deg; left: 3%; top: 52%; font-size: 22px; }
+  .st-c { --r: 6deg; left: 14%; bottom: 8%; font-size: 22px; }
+  .st-d { --r: -5deg; right: 30%; top: 14%; font-size: 23px; }
+  .st-e { --r: -10deg; right: 9%; top: 38%; font-size: 20px; }
+  .st-f { --r: 10deg; right: 22%; bottom: 6%; width: 132px; height: 132px; border-radius: 50%; place-content: center; text-align: center; font-size: 16px; }
+
+  @media (max-width: 760px) {
+    .panel {
+      min-height: 0;
+      border-radius: 0 72px 72px 0;
+      padding: 20px 48px 0 16px;
+    }
+    .stickers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .sticker {
+      position: static;
+      width: auto !important;
+      height: auto !important;
+      border-radius: 12px !important;
+      font-size: 16px !important;
+    }
+    .photo,
+    .person {
+      position: relative;
+      left: auto;
+      transform: none;
+      margin: 16px auto 0;
+    }
+    .photo {
+      height: 300px;
+    }
+    .person {
+      width: 200px;
+      height: 260px;
+    }
+    .person .head { width: 90px; height: 104px; }
+    .person .body { left: 10%; right: 10%; height: 150px; }
+  }
+</style>

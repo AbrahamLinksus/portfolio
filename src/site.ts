@@ -1,9 +1,9 @@
-// Site-wide settings and navigation. Placeholders until real details are supplied.
+// Site-wide settings and navigation.
 export const site = {
-  name: 'Your Name',
+  name: 'Jake Roberts',
   title: 'Software Engineer',
   description: "Projects, skills, and what I'm building right now.",
-  email: 'hello@example.com',
+  email: 'jakeroberts.a.05@gmail.com', // receives contact-form messages; not shown on the site
   socials: [
     { label: 'GitHub', href: 'https://github.com/AbrahamLinksus' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/' },

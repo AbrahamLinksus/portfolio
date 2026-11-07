@@ -1,31 +1,64 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import StickerPanel from '../components/StickerPanel.astro';
 import { site } from '../site';
 ---
 
 <BaseLayout>
   <section class="hero container">
     <h1 class="display headline">{site.title}</h1>
-    <p class="lede">{site.description}</p>
+    <div class="intro">
+      <p>
+        I'm {site.name}. I build software and write up how I made it: the problem, the decisions,
+        and what I'd do differently.
+      </p>
+      <p>
+        This site holds my projects, the skills behind them, what I'm building right now, and a
+        few things I love outside code.
+      </p>
+      <a class="cta" href="/contact">Get in touch →</a>
+    </div>
+    <StickerPanel />
   </section>
-  <ComingSoon step="step 3 (grid panel and stickers)" />
 </BaseLayout>
 
 <style>
   .hero {
-    padding-top: 24px;
-    padding-bottom: 32px;
-    display: grid;
-    gap: 20px;
+    padding-top: 8px;
   }
   .headline {
     font-size: clamp(56px, 13.6vw, 160px);
   }
-  .lede {
+  .intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 32px;
+    align-items: end;
+    padding: 24px 0 32px;
+  }
+  .intro p {
     margin: 0;
+    max-width: 46ch;
+    font-size: 15px;
     color: var(--muted);
-    max-width: 50ch;
-    font-size: 17px;
+  }
+  .cta {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 1.5px solid currentColor;
+    padding-bottom: 2px;
+  }
+  @media (max-width: 760px) {
+    .intro {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .cta {
+      justify-self: start;
+    }
   }
 </style>
