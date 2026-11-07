@@ -2,9 +2,837 @@
  "source": "notes",
  "url": "https://github.com/AbrahamLinksus/notes",
  "branch": "main",
- "commit": "8477d424b333b8da649b7ab840921d3c07526dc8",
- "syncedAt": "2026-11-07T09:33:07.494Z",
+ "commit": "4b227c4f3d6aaec8bf0156e4ecd38f8618370262",
+ "syncedAt": "2026-11-07T10:35:30.925Z",
  "topics": [
+  {
+   "topic": "ai-engineering/langchain",
+   "map": {
+    "suggested": true,
+    "skill": "llm frameworks",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "LangChain ecosystem",
+     "takeaway": "LangChain is a Python framework that adds functionality around LLMs. It's split into core, chains/agents, LangGraph, LangSmith and LangServe, and its `Document` is just page content plus a free-form metadata dict.",
+     "path": "notes/ai-engineering/langchain/langchain-ecosystem.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 64–65)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/langchain/prompt-templates-and-output-parsers.md",
+      "notes/ai-engineering/langchain/langgraph-basics.md",
+      "notes/ai-engineering/langchain/rag-from-scratch.md",
+      "notes/ai-engineering/rag/ingestion/document-metadata.md"
+     ]
+    },
+    {
+     "title": "LangGraph basics",
+     "takeaway": "LangGraph builds an app as a graph: a typed shared State flows through Nodes (functions), ToolNodes run tools, and a StateGraph compiles it all into a Runnable.",
+     "path": "notes/ai-engineering/langchain/langgraph-basics.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 69–70)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/langchain/langchain-ecosystem.md",
+      "notes/ai-engineering/langchain/prompt-templates-and-output-parsers.md",
+      "notes/ai-engineering/llms/prompting/prompt-engineering.md"
+     ]
+    },
+    {
+     "title": "Prompt templates and output parsers",
+     "takeaway": "Chat prompt templates inject the user's variables into a reusable message structure, and output parsers turn the model's text back into clean strings, dicts or validated Pydantic objects.",
+     "path": "notes/ai-engineering/langchain/prompt-templates-and-output-parsers.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 66–68)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/langchain/langchain-ecosystem.md",
+      "notes/ai-engineering/llms/prompting/prompt-engineering.md",
+      "notes/ai-engineering/rag/advanced/routing-and-query-construction.md"
+     ]
+    },
+    {
+     "title": "RAG from scratch in LangChain",
+     "takeaway": "The \"RAG from scratch\" map has six stages: query construction, query translation, routing, retrieval, indexing and generation. The basic build counts tokens with tiktoken, embeds with OpenAI (1536 dims), compares by cosine, and retrieves k nearby chunks.",
+     "path": "notes/ai-engineering/langchain/rag-from-scratch.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 71–73)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/fundamentals/bpe-tokenizer.md",
+      "notes/ai-engineering/langchain/langchain-ecosystem.md",
+      "notes/ai-engineering/rag/advanced/multi-query-and-rag-fusion.md",
+      "notes/ai-engineering/rag/advanced/raptor-and-colbert.md",
+      "notes/ai-engineering/rag/pipeline/context-assembly.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/llms/fundamentals",
+   "map": {
+    "suggested": true,
+    "skill": "large language models",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "BPE tokenizer",
+     "takeaway": "Byte Pair Encoding learns its vocabulary by repeatedly merging the most frequent adjacent pair of tokens, which compresses text into shorter token sequences.",
+     "path": "notes/ai-engineering/llms/fundamentals/bpe-tokenizer.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 3–6)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/fundamentals/subword-tokenization.md",
+      "notes/ai-engineering/llms/inference/context-window-and-kv-cache.md",
+      "notes/ai-engineering/langchain/rag-from-scratch.md"
+     ]
+    },
+    {
+     "title": "Cosine vs L2 similarity",
+     "takeaway": "For semantic embeddings, meaning lives in the vector's direction, so cosine similarity beats Euclidean distance. Once vectors are normalised, a plain dot product is the cosine.",
+     "path": "notes/ai-engineering/llms/fundamentals/cosine-vs-l2-similarity.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 7–8)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/fundamentals/llm-embeddings-and-pooling.md",
+      "notes/ai-engineering/rag/retrieval/in-memory-vector-store.md",
+      "notes/ai-engineering/rag/retrieval/top-k-similarity-search.md",
+      "notes/data-science/nlp/word-embeddings-word2vec.md"
+     ]
+    },
+    {
+     "title": "Encoder vs decoder models",
+     "takeaway": "Encoders see the whole input in both directions and are built to understand. Decoders see only the past and are built to generate, which is why LLMs are decoders.",
+     "path": "notes/ai-engineering/llms/fundamentals/encoder-vs-decoder-models.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 12–14)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/fundamentals/self-attention.md",
+      "notes/ai-engineering/llms/fundamentals/llm-embeddings-and-pooling.md",
+      "notes/ai-engineering/llms/training/llm-training-pipeline.md"
+     ]
+    },
+    {
+     "title": "LLM embeddings and pooling",
+     "takeaway": "A token starts as a row in the embedding matrix, gains context as it passes through the transformer layers, and pooling collapses the per-token states into one sentence embedding.",
+     "path": "notes/ai-engineering/llms/fundamentals/llm-embeddings-and-pooling.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 6–9)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/fundamentals/self-attention.md",
+      "notes/ai-engineering/llms/fundamentals/cosine-vs-l2-similarity.md",
+      "notes/ai-engineering/llms/fundamentals/encoder-vs-decoder-models.md",
+      "notes/ai-engineering/rag/retrieval/dense-vs-sparse-embeddings.md"
+     ]
+    },
+    {
+     "title": "Self-attention",
+     "takeaway": "Attention lets every token directly look at every other token's representation, whatever the distance, which fixes the long-range dependency problem of RNNs at an O(n²) cost.",
+     "path": "notes/ai-engineering/llms/fundamentals/self-attention.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 9–11)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/fundamentals/llm-embeddings-and-pooling.md",
+      "notes/ai-engineering/llms/fundamentals/encoder-vs-decoder-models.md",
+      "notes/ai-engineering/llms/inference/context-window-and-kv-cache.md"
+     ]
+    },
+    {
+     "title": "Subword tokenization",
+     "takeaway": "Subword tokenization keeps common words whole and breaks rare words into meaningful pieces, which avoids both the huge vocabulary of word-level tokens and the long sequences of character-level ones.",
+     "path": "notes/ai-engineering/llms/fundamentals/subword-tokenization.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 1–2, 5)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/fundamentals/bpe-tokenizer.md",
+      "notes/ai-engineering/llms/fundamentals/llm-embeddings-and-pooling.md",
+      "notes/data-science/nlp/tokenization-and-stop-words.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/llms/inference",
+   "map": {
+    "suggested": true,
+    "skill": "large language models",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "Context window and KV cache",
+     "takeaway": "The context window is a hard token limit per forward pass, and the KV cache stops the model recomputing keys and values for tokens it has already processed.",
+     "path": "notes/ai-engineering/llms/inference/context-window-and-kv-cache.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 19–21, 86)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/fundamentals/self-attention.md",
+      "notes/ai-engineering/rag/pipeline/context-assembly.md",
+      "notes/ai-engineering/llms/inference/decoding-strategies.md"
+     ]
+    },
+    {
+     "title": "Decoding strategies",
+     "takeaway": "Greedy always takes the top token, sampling (top-k or top-p) adds controlled randomness, and beam search tracks several candidates. Top-p adapts best, and beam search is a poor fit for chat.",
+     "path": "notes/ai-engineering/llms/inference/decoding-strategies.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 18–19)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/inference/logits-and-temperature.md",
+      "notes/ai-engineering/llms/inference/context-window-and-kv-cache.md"
+     ]
+    },
+    {
+     "title": "Hallucination",
+     "takeaway": "A hallucination is fluent, confident output that isn't grounded in any source. That's different from a factual error the model learned from bad training data.",
+     "path": "notes/ai-engineering/llms/inference/hallucination.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 21–22)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/inference/logits-and-temperature.md",
+      "notes/ai-engineering/rag/pipeline/grounding-and-failure-modes.md",
+      "notes/ai-engineering/rag/pipeline/rag-evaluation.md"
+     ]
+    },
+    {
+     "title": "Logits and temperature",
+     "takeaway": "Temperature divides the logits before softmax: below 1 the distribution sharpens, above 1 it flattens, and at 0 it becomes greedy decoding.",
+     "path": "notes/ai-engineering/llms/inference/logits-and-temperature.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 17–18)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/inference/decoding-strategies.md",
+      "notes/ai-engineering/llms/inference/hallucination.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/llms/prompting",
+   "map": {
+    "suggested": true,
+    "skill": "prompt engineering",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "Prompt engineering",
+     "takeaway": "Prompt engineering is structuring, designing and refining the input instructions so the model gives accurate results. A good prompt has a format, a system prompt, context, constraints and an output structure.",
+     "path": "notes/ai-engineering/llms/prompting/prompt-engineering.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 87–89)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/training/lora-and-qlora.md",
+      "notes/ai-engineering/rag/pipeline/grounding-and-failure-modes.md",
+      "notes/ai-engineering/langchain/prompt-templates-and-output-parsers.md",
+      "notes/ai-engineering/rag/advanced/step-back-and-hyde.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/llms/training",
+   "map": {
+    "suggested": true,
+    "skill": "large language models",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "LLM training pipeline",
+     "takeaway": "Pre-training on raw text gives a base model that only continues text, and alignment (SFT, then RLHF or DPO) teaches it to follow instructions and behave.",
+     "path": "notes/ai-engineering/llms/training/llm-training-pipeline.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 14–15)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/training/lora-and-qlora.md",
+      "notes/ai-engineering/llms/fundamentals/encoder-vs-decoder-models.md",
+      "notes/ai-engineering/llms/inference/hallucination.md"
+     ]
+    },
+    {
+     "title": "LoRA and QLoRA",
+     "takeaway": "LoRA fine-tunes a model by freezing its weights and training two small low-rank matrices, and QLoRA adds 4-bit quantization of the frozen weights to save even more memory.",
+     "path": "notes/ai-engineering/llms/training/lora-and-qlora.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 15–16, 22)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/training/llm-training-pipeline.md",
+      "notes/ai-engineering/llms/prompting/prompt-engineering.md",
+      "notes/ai-engineering/rag/pipeline/rag-pipeline-modules.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/rag/advanced",
+   "map": {
+    "suggested": true,
+    "skill": "retrieval-augmented generation",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "Decomposition vs IR-CoT",
+     "takeaway": "Decomposition splits a complex question into sub-questions upfront and answers them independently. IR-CoT interleaves retrieval with reasoning, one step at a time, so each step can use what the previous one retrieved.",
+     "path": "notes/ai-engineering/rag/advanced/decomposition-vs-ircot.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 77–78)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/advanced/multi-query-and-rag-fusion.md",
+      "notes/ai-engineering/rag/advanced/step-back-and-hyde.md",
+      "notes/ai-engineering/llms/prompting/prompt-engineering.md"
+     ]
+    },
+    {
+     "title": "Multi-query and RAG-Fusion",
+     "takeaway": "Ambiguous user queries retrieve the wrong documents, so query translation has an LLM rewrite the question several ways. Multi-query merges the results, and RAG-Fusion ranks them with RRF.",
+     "path": "notes/ai-engineering/rag/advanced/multi-query-and-rag-fusion.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 74–76)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/hybrid-search-rrf.md",
+      "notes/ai-engineering/rag/advanced/decomposition-vs-ircot.md",
+      "notes/ai-engineering/rag/advanced/step-back-and-hyde.md"
+     ]
+    },
+    {
+     "title": "Multi-representation, RAPTOR and ColBERT",
+     "takeaway": "Advanced indexing changes *what* gets embedded: a keyword-rich summary instead of the raw chunk (multi-representation), a tree of recursive summaries (RAPTOR), or one embedding per token (ColBERT).",
+     "path": "notes/ai-engineering/rag/advanced/raptor-and-colbert.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 83–85)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/hnsw-and-ivf.md",
+      "notes/ai-engineering/rag/retrieval/bi-vs-cross-encoders.md",
+      "notes/ai-engineering/llms/fundamentals/llm-embeddings-and-pooling.md"
+     ]
+    },
+    {
+     "title": "Routing and query construction",
+     "takeaway": "Routing decides which data source should handle a query, and query construction splits the question into a semantic search term plus metadata filters that narrow the pool before similarity search.",
+     "path": "notes/ai-engineering/rag/advanced/routing-and-query-construction.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 82–83)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/retriever-design.md",
+      "notes/ai-engineering/langchain/prompt-templates-and-output-parsers.md",
+      "notes/ai-engineering/rag/ingestion/document-metadata.md"
+     ]
+    },
+    {
+     "title": "Step-back prompting and HyDE",
+     "takeaway": "Step-back retrieves with a more abstract version of the question alongside the original, and HyDE retrieves with a hypothetical answer document instead of the raw query.",
+     "path": "notes/ai-engineering/rag/advanced/step-back-and-hyde.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 79–81)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/advanced/multi-query-and-rag-fusion.md",
+      "notes/ai-engineering/rag/advanced/decomposition-vs-ircot.md",
+      "notes/ai-engineering/llms/prompting/prompt-engineering.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/rag/chunking",
+   "map": {
+    "suggested": true,
+    "skill": "retrieval-augmented generation",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "Chunk sizing",
+     "takeaway": "Size chunks in tokens, not characters, because embedding models enforce token limits, and choose the size and overlap to match the kind of content.",
+     "path": "notes/ai-engineering/rag/chunking/chunk-sizing.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 39–41)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/chunking/why-chunk-and-overlap.md",
+      "notes/ai-engineering/rag/chunking/chunking-strategies.md",
+      "notes/ai-engineering/llms/fundamentals/bpe-tokenizer.md"
+     ]
+    },
+    {
+     "title": "Chunking strategies",
+     "takeaway": "Fixed-size chunking ignores structure. Recursive character splitting falls back through a hierarchy of separators, and sentence- or paragraph-aware splitting wins when units of meaning matter.",
+     "path": "notes/ai-engineering/rag/chunking/chunking-strategies.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 36–39)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/chunking/why-chunk-and-overlap.md",
+      "notes/ai-engineering/rag/chunking/chunk-sizing.md",
+      "notes/ai-engineering/rag/ingestion/text-cleaning.md"
+     ]
+    },
+    {
+     "title": "Why chunk, and overlap",
+     "takeaway": "Whole documents can't be embedded well, because embedding models have input limits and long inputs blur into an averaged vector. Chunks trade retrieval precision against context, and overlap protects sentences that get cut at a boundary.",
+     "path": "notes/ai-engineering/rag/chunking/why-chunk-and-overlap.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 33–35)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/chunking/chunking-strategies.md",
+      "notes/ai-engineering/rag/chunking/chunk-sizing.md",
+      "notes/ai-engineering/llms/fundamentals/llm-embeddings-and-pooling.md",
+      "notes/ai-engineering/rag/pipeline/context-assembly.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/rag/ingestion",
+   "map": {
+    "suggested": true,
+    "skill": "retrieval-augmented generation",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "Deduplication",
+     "takeaway": "Deduplicate before embedding, otherwise repeated content counts twice and skews retrieval. A hash catches exact copies, and shingling with MinHash catches near-duplicates.",
+     "path": "notes/ai-engineering/rag/ingestion/deduplication.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 30–31)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/ingestion/text-cleaning.md",
+      "notes/ai-engineering/rag/ingestion/document-metadata.md",
+      "notes/ai-engineering/rag/retrieval/mmr.md",
+      "notes/ai-engineering/rag/pipeline/context-assembly.md"
+     ]
+    },
+    {
+     "title": "Document metadata",
+     "takeaway": "The Document object owns its metadata: it's a container for the clean text plus stable identifiers and attributes, captured once at ingestion when the information is still unambiguous.",
+     "path": "notes/ai-engineering/rag/ingestion/document-metadata.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 29–30, 32)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/ingestion/format-specific-extraction.md",
+      "notes/ai-engineering/rag/ingestion/deduplication.md",
+      "notes/ai-engineering/rag/retrieval/retriever-design.md",
+      "notes/ai-engineering/langchain/langchain-ecosystem.md"
+     ]
+    },
+    {
+     "title": "Format-specific extraction",
+     "takeaway": "Ingestion turns every file on disk into one consistent representation (clean text + metadata), and each file format needs its own extraction path because each one stores content differently.",
+     "path": "notes/ai-engineering/rag/ingestion/format-specific-extraction.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 25–27)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/ingestion/text-cleaning.md",
+      "notes/ai-engineering/rag/ingestion/document-metadata.md",
+      "notes/ai-engineering/rag/ingestion/deduplication.md",
+      "notes/ai-engineering/rag/pipeline/rag-pipeline-modules.md"
+     ]
+    },
+    {
+     "title": "Text cleaning",
+     "takeaway": "Clean text has normalised whitespace, no page artifacts, its reading order intact and correct decoding. Garbage in, garbage out.",
+     "path": "notes/ai-engineering/rag/ingestion/text-cleaning.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 26, 28)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/ingestion/format-specific-extraction.md",
+      "notes/ai-engineering/rag/ingestion/deduplication.md",
+      "notes/ai-engineering/rag/chunking/chunking-strategies.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/rag/pipeline",
+   "map": {
+    "suggested": true,
+    "skill": "retrieval-augmented generation",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "Context assembly",
+     "takeaway": "Before generation, the retrieved chunks are reordered against lost-in-the-middle, trimmed to fit the token budget, deduplicated, and formatted with source labels and delimiters.",
+     "path": "notes/ai-engineering/rag/pipeline/context-assembly.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 53–54)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/inference/context-window-and-kv-cache.md",
+      "notes/ai-engineering/rag/pipeline/grounding-and-failure-modes.md",
+      "notes/ai-engineering/rag/retrieval/mmr.md",
+      "notes/ai-engineering/rag/chunking/why-chunk-and-overlap.md"
+     ]
+    },
+    {
+     "title": "Grounding and failure modes",
+     "takeaway": "A grounded prompt tells the model to answer only from labelled sources and to cite them, but RAG can still fail through ignored context, conflicting chunks, empty retrieval or injected instructions.",
+     "path": "notes/ai-engineering/rag/pipeline/grounding-and-failure-modes.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 55–57)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/llms/inference/hallucination.md",
+      "notes/ai-engineering/rag/pipeline/context-assembly.md",
+      "notes/ai-engineering/rag/pipeline/rag-evaluation.md",
+      "notes/ai-engineering/llms/prompting/prompt-engineering.md"
+     ]
+    },
+    {
+     "title": "RAG evaluation",
+     "takeaway": "Evaluate a RAG system in two halves, retrieval (did the right chunks come back?) and generation (is the answer grounded, relevant and complete?), against a golden Q&A set.",
+     "path": "notes/ai-engineering/rag/pipeline/rag-evaluation.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 59–60)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/pipeline/grounding-and-failure-modes.md",
+      "notes/ai-engineering/llms/inference/hallucination.md",
+      "notes/ai-engineering/rag/retrieval/retriever-design.md"
+     ]
+    },
+    {
+     "title": "RAG pipeline modules",
+     "takeaway": "A from-scratch RAG pipeline is eight modules, each with one responsibility, orchestrated into two public flows: `index()` and `query()`.",
+     "path": "notes/ai-engineering/rag/pipeline/rag-pipeline-modules.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 58, 61)",
+     "firstSeen": "2026-11-07T10:34:09+00:00",
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/ingestion/format-specific-extraction.md",
+      "notes/ai-engineering/rag/chunking/chunking-strategies.md",
+      "notes/ai-engineering/rag/retrieval/retriever-design.md",
+      "notes/ai-engineering/rag/pipeline/context-assembly.md",
+      "notes/ai-engineering/rag/pipeline/grounding-and-failure-modes.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "ai-engineering/rag/retrieval",
+   "map": {
+    "suggested": true,
+    "skill": "retrieval-augmented generation",
+    "region": "ai engineering"
+   },
+   "items": [
+    {
+     "title": "Bi-encoders vs cross-encoders",
+     "takeaway": "Bi-encoders embed the query and the passage separately, which is cheap and good for searching everything. Cross-encoders read them together with full attention, which is expensive and precise. So retrieve with the first and rerank with the second.",
+     "path": "notes/ai-engineering/rag/retrieval/bi-vs-cross-encoders.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 52–53)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/hybrid-search-rrf.md",
+      "notes/ai-engineering/rag/retrieval/top-k-similarity-search.md",
+      "notes/ai-engineering/llms/fundamentals/self-attention.md",
+      "notes/ai-engineering/rag/advanced/raptor-and-colbert.md"
+     ]
+    },
+    {
+     "title": "Dense vs sparse embeddings",
+     "takeaway": "Dense embeddings spread meaning across a few hundred uninterpretable dimensions, while sparse embeddings have one slot per vocabulary term. SPLADE learns a sparse vector with term expansion.",
+     "path": "notes/ai-engineering/rag/retrieval/dense-vs-sparse-embeddings.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 23–24)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/hybrid-search-rrf.md",
+      "notes/ai-engineering/rag/retrieval/bi-vs-cross-encoders.md",
+      "notes/ai-engineering/llms/fundamentals/llm-embeddings-and-pooling.md"
+     ]
+    },
+    {
+     "title": "HNSW and IVF indexing",
+     "takeaway": "Indexing organises the embedded chunks into a structure that makes similarity search fast. HNSW does it with a layered graph, and IVF does it with buckets of clusters it can skip.",
+     "path": "notes/ai-engineering/rag/retrieval/hnsw-and-ivf.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 83, 85–86)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/top-k-similarity-search.md",
+      "notes/ai-engineering/rag/retrieval/vector-database-types.md",
+      "notes/ai-engineering/rag/advanced/raptor-and-colbert.md",
+      "notes/ai-engineering/langchain/langchain-ecosystem.md"
+     ]
+    },
+    {
+     "title": "Hybrid search and RRF",
+     "takeaway": "Dense search misses exact identifiers and phrasing, so hybrid search adds sparse search too. Reciprocal Rank Fusion merges the two lists by rank, because their raw scores live on incompatible scales.",
+     "path": "notes/ai-engineering/rag/retrieval/hybrid-search-rrf.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 51–52)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/dense-vs-sparse-embeddings.md",
+      "notes/ai-engineering/rag/retrieval/bi-vs-cross-encoders.md",
+      "notes/ai-engineering/rag/advanced/multi-query-and-rag-fusion.md"
+     ]
+    },
+    {
+     "title": "In-memory vector store",
+     "takeaway": "Embed chunks in batches, keep the vectors in one contiguous normalised NumPy array with a parallel metadata list, and similarity search becomes a single vectorised operation.",
+     "path": "notes/ai-engineering/rag/retrieval/in-memory-vector-store.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 42–45)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/top-k-similarity-search.md",
+      "notes/ai-engineering/llms/fundamentals/cosine-vs-l2-similarity.md",
+      "notes/ai-engineering/rag/retrieval/vector-database-types.md"
+     ]
+    },
+    {
+     "title": "MMR (Maximal Marginal Relevance)",
+     "takeaway": "MMR picks results one at a time, rewarding relevance to the query and penalising similarity to what's already been picked, so the generator doesn't get the same fact five times.",
+     "path": "notes/ai-engineering/rag/retrieval/mmr.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 50–51)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/retriever-design.md",
+      "notes/ai-engineering/rag/ingestion/deduplication.md",
+      "notes/ai-engineering/rag/pipeline/context-assembly.md"
+     ]
+    },
+    {
+     "title": "Retriever design",
+     "takeaway": "The vector store only returns the raw top-k. The retriever owns the query side: it embeds the query, applies metadata filters and a score threshold, and returns ranked SearchResults.",
+     "path": "notes/ai-engineering/rag/retrieval/retriever-design.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 48–49)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/top-k-similarity-search.md",
+      "notes/ai-engineering/rag/retrieval/mmr.md",
+      "notes/ai-engineering/rag/advanced/routing-and-query-construction.md",
+      "notes/ai-engineering/rag/ingestion/document-metadata.md"
+     ]
+    },
+    {
+     "title": "Top-k similarity search",
+     "takeaway": "One matrix–vector product scores the query against every stored chunk, and `argpartition` finds the top k without sorting all n scores.",
+     "path": "notes/ai-engineering/rag/retrieval/top-k-similarity-search.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 46–47)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/in-memory-vector-store.md",
+      "notes/ai-engineering/rag/retrieval/retriever-design.md",
+      "notes/ai-engineering/rag/retrieval/hnsw-and-ivf.md"
+     ]
+    },
+    {
+     "title": "Vector database types",
+     "takeaway": "A vector database stores data as vectors (direction and magnitude) in a multi-dimensional space. The main types differ in where the vectors live: memory, disk, a cluster, or a graph.",
+     "path": "notes/ai-engineering/rag/retrieval/vector-database-types.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "llms_rag.pdf (pp. 62–63)",
+     "firstSeen": "2026-11-07T10:34:08+00:00",
+     "lastChanged": "2026-11-07T10:34:08+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/ai-engineering/rag/retrieval/in-memory-vector-store.md",
+      "notes/ai-engineering/rag/retrieval/hnsw-and-ivf.md"
+     ]
+    }
+   ]
+  },
   {
    "topic": "data-science/feature-engineering",
    "map": {
@@ -484,11 +1312,12 @@
      "status": "done",
      "source": "Data_Science.pdf (pp. 31–32, 34)",
      "firstSeen": "2026-11-07T14:58:21+05:30",
-     "lastChanged": "2026-11-07T14:58:21+05:30",
-     "revisions": 0,
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 1,
      "links": [
       "notes/data-science/nlp/stemming-vs-lemmatization.md",
-      "notes/data-science/nlp/one-hot-and-bag-of-words.md"
+      "notes/data-science/nlp/one-hot-and-bag-of-words.md",
+      "notes/ai-engineering/llms/fundamentals/subword-tokenization.md"
      ]
     },
     {
@@ -500,12 +1329,13 @@
      "status": "done",
      "source": "Data_Science.pdf (pp. 39–41)",
      "firstSeen": "2026-11-07T14:58:21+05:30",
-     "lastChanged": "2026-11-07T14:58:21+05:30",
-     "revisions": 0,
+     "lastChanged": "2026-11-07T10:34:09+00:00",
+     "revisions": 1,
      "links": [
       "notes/data-science/nlp/tf-idf.md",
       "notes/data-science/nlp/one-hot-and-bag-of-words.md",
-      "notes/data-science/recommender-systems/recommender-system-types.md"
+      "notes/data-science/recommender-systems/recommender-system-types.md",
+      "notes/ai-engineering/llms/fundamentals/cosine-vs-l2-similarity.md"
      ]
     }
    ]
