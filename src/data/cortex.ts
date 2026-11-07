@@ -1,3 +1,5 @@
+import advancedDsa from './knowledge/advanced-dsa.json';
+
 // Data for the Skill Cortex (the neural map at the top of the Skills page).
 // Main skills come from skills.ts. Extra neurons below are parts of those skills
 // (or coursework topics) that only appear in the map, not in the skill lists.
@@ -127,7 +129,6 @@ export const extraNeurons: ExtraNeuron[] = [
   { name: 'Dead code elimination & constant folding', parent: 'Compilers & code optimization', work: 'y' },
   { name: 'Register allocation', parent: 'Compilers & code optimization', work: 'y' },
   { name: 'Big-O analysis', parent: 'Data structures & algorithms', work: 'yb' },
-  { name: 'Graph algorithms', parent: 'Data structures & algorithms', work: 'y' },
   { name: 'Dynamic programming', parent: 'Data structures & algorithms', work: 'y' },
   { name: 'Object-oriented programming', cat: 5, level: 'Comfortable', confirmed: false, work: 'bf' },
 
@@ -171,3 +172,31 @@ export const extraNeurons: ExtraNeuron[] = [
   { name: 'Graph state machines', parent: 'LangChain / LangGraph', work: 'a', projects: ['study-copilot'] },
   { name: 'Artificial intelligence (search, logic)', cat: 3, level: 'Comfortable', confirmed: false, work: 'a' },
 ];
+
+// Study notes: topics from note/practice repos become neurons, and each problem or note
+// becomes a small "memory" around its topic. Work regions per topic:
+export type MemoryItem = { title: string; path: string; day: string; kind: 'problem' | 'note'; status: 'done' | 'sketch' | 'planned' };
+export type StudySource = { source: string; url: string; branch: string; topics: { topic: string; items: MemoryItem[] }[] };
+
+export const studySources: StudySource[] = [advancedDsa as StudySource];
+
+// Which listed skill each study topic belongs to, and where it sits in the brain.
+export const studyTopicMeta: Record<string, { parent: string; work: string }> = {
+  'Hashing & hash maps': { parent: 'Data structures & algorithms', work: 'yb' },
+  'Sorting & top-k': { parent: 'Data structures & algorithms', work: 'yb' },
+  'Sliding window & two pointers': { parent: 'Data structures & algorithms', work: 'yb' },
+  'Arrays & prefix sums': { parent: 'Data structures & algorithms', work: 'yb' },
+  'Math & combinatorics': { parent: 'Data structures & algorithms', work: 'yd' },
+  'String matching': { parent: 'Data structures & algorithms', work: 'yb' },
+  'Linked lists': { parent: 'Data structures & algorithms', work: 'y' },
+  'Stacks, queues & deques': { parent: 'Data structures & algorithms', work: 'y' },
+  'Heaps & ordered maps': { parent: 'Data structures & algorithms', work: 'y' },
+  'Binary trees': { parent: 'Data structures & algorithms', work: 'y' },
+  'BSTs & balanced trees': { parent: 'Data structures & algorithms', work: 'y' },
+  'Graph traversal (BFS / DFS)': { parent: 'Data structures & algorithms', work: 'y' },
+  'Topological sort & cycles': { parent: 'Data structures & algorithms', work: 'y' },
+  'Union-find & MSTs': { parent: 'Data structures & algorithms', work: 'y' },
+  'Shortest paths': { parent: 'Data structures & algorithms', work: 'y' },
+  'Greedy algorithms': { parent: 'Data structures & algorithms', work: 'y' },
+  'Dominator trees (compilers)': { parent: 'Compilers & code optimization', work: 'y' },
+};

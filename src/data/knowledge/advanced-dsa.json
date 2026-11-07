@@ -1,0 +1,932 @@
+{
+ "source": "advancedDSA",
+ "url": "https://github.com/AbrahamLinksus/advancedDSA",
+ "branch": "main",
+ "topics": [
+  {
+   "topic": "Hashing & hash maps",
+   "items": [
+    {
+     "title": "Create a program to count the total using hashmap",
+     "path": "day1/level1.py",
+     "day": "Day 1",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Custom hashmap with string keys",
+     "path": "day6/customHashmapWithStringKeys.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "HashMap with Open Addressing and linear probing",
+     "path": "day6/hashMapWithOpenAddressing.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Hashset, open addressing and linear probes",
+     "path": "day6/hashSetWithOpenAddressing.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To create a hashMap with chaining an LL per bucket",
+     "path": "day6/level1.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Fraud detection engine using hashset and frequency maps",
+     "path": "day6/level2.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Cryptographically secure Hashing",
+     "path": "day6/level8.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "Fraud detect",
+     "path": "dayRevision5/fraudDetect.py",
+     "day": "Revision 5",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Notes: Bloom filters",
+     "path": "day6/hashingTheory.txt",
+     "day": "Day 6",
+     "kind": "note",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Sorting & top-k",
+   "items": [
+    {
+     "title": "To find the k best selling products",
+     "path": "day1/level2.py",
+     "day": "Day 1",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Sliding window & two pointers",
+   "items": [
+    {
+     "title": "To use 2 pointers find shortest window of flash-sale days reaching target",
+     "path": "day1/level3.py",
+     "day": "Day 1",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the maximum of a window k in an array continuously",
+     "path": "day4/slidingWindowMaximum.py",
+     "day": "Day 4",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Implement a crowd window monitor using monotonic dequeues",
+     "path": "day5/level4.py",
+     "day": "Day 5",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Slow/ fast pointer technique to find the middle",
+     "path": "day5/level5.py",
+     "day": "Day 5",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Level 5",
+     "path": "day1/level5.py",
+     "day": "Day 1",
+     "kind": "problem",
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "topic": "Arrays & prefix sums",
+   "items": [
+    {
+     "title": "Prefix sum hashmap to count sum of a list",
+     "path": "day1/level4.py",
+     "day": "Day 1",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Viewership trend using arrays",
+     "path": "day3/level2.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Array analytics 1",
+     "path": "day3/arrayAnalytics1.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Array analytics 2",
+     "path": "day3/arrayAnalytics2.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Math & combinatorics",
+   "items": [
+    {
+     "title": "Combinatorics fastpower",
+     "path": "day2/combinatoricsFastpower.py",
+     "day": "Day 2",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "String matching",
+   "items": [
+    {
+     "title": "KMP algorithm for string matching",
+     "path": "day3/kmp.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "STRING MATCHING using RabinKarp's matching algorithm",
+     "path": "day3/rabinKarp.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "String match",
+     "path": "day3/stringMatch.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "String analysis",
+     "path": "day3/level1.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Kmp",
+     "path": "dayRevision5/kmp.py",
+     "day": "Revision 5",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Linked lists",
+   "items": [
+    {
+     "title": "Playlist matching using Linked Lists",
+     "path": "day3/level3.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Linked list sim 1",
+     "path": "day3/linkedListSim1.py",
+     "day": "Day 3",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Stacks, queues & deques",
+   "items": [
+    {
+     "title": "Circular queue",
+     "path": "day4/circularQueue.py",
+     "day": "Day 4",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find relative temperatures using monotonic stacks",
+     "path": "day4/dailyTemperatures.py",
+     "day": "Day 4",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Queue from 2 stacks",
+     "path": "day4/level1.py",
+     "day": "Day 4",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Min stack price tracker",
+     "path": "day4/level2.py",
+     "day": "Day 4",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Level 3",
+     "path": "day4/level3.py",
+     "day": "Day 4",
+     "kind": "problem",
+     "status": "planned"
+    },
+    {
+     "title": "Level 4",
+     "path": "day4/level4.py",
+     "day": "Day 4",
+     "kind": "problem",
+     "status": "planned"
+    },
+    {
+     "title": "Final dqueue",
+     "path": "day5/finalDqueue.py",
+     "day": "Day 5",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Level 1",
+     "path": "day5/level1.py",
+     "day": "Day 5",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Palindrome checker with finalDqueue",
+     "path": "day5/level3.py",
+     "day": "Day 5",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Heaps & ordered maps",
+   "items": [
+    {
+     "title": "My own heap implementation",
+     "path": "day6/myHeap.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "Loyalty points system using Heaps",
+     "path": "day6/level4.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "Min heap",
+     "path": "day10/minHeap.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Trading order book",
+     "path": "day6/level3.py",
+     "day": "Day 6",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Binary trees",
+   "items": [
+    {
+     "title": "To find the top view, bottom, left and right view",
+     "path": "day7/boundaryView.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "When the inorder and preorder values are same, a degenerate tree is made(skewed)",
+     "path": "day7/degenerateTree.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Using xor to save mem space for trees",
+     "path": "day7/idea.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "Infection",
+     "path": "day7/infection.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Infection by lcp",
+     "path": "day7/infectionByLCP.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To traverse a tree post order iteratively",
+     "path": "day7/iterativePostOrder.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To traverse a tree iteratively, pre order",
+     "path": "day7/iterativePreorder.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Create a level order tree with N marking missing child",
+     "path": "day7/level1.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the level views of a tree",
+     "path": "day7/levelViews.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "If current is None, return None",
+     "path": "day7/lowestCommonAncestor.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Morris traversal",
+     "path": "day7/morrisTraversal.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To calculate the root to leaf path of a binary tree,",
+     "path": "day7/pathSum.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To build a tree inorder, preorder, postorder",
+     "path": "day7/problem1.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Compare height with the depth",
+     "path": "day7/problem2.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the in-order, pre-order and post-order in one traversal",
+     "path": "day7/singleTraversal3orders.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the height and diameter of a tree",
+     "path": "day7/treeMetrics.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find basic details about a tree",
+     "path": "day7/treeShape.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To traverse a tree",
+     "path": "day7/treeWalk.py",
+     "day": "Day 7",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Depth of abt",
+     "path": "dayRevision5/depthOfABT.py",
+     "day": "Revision 5",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Identical check",
+     "path": "dayRevision5/identicalCheck.py",
+     "day": "Revision 5",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Zig zag traverse",
+     "path": "dayRevision5/zigZagTraverse.py",
+     "day": "Revision 5",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "In order traversal",
+     "path": "dayRevision11/inOrderTraversal.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE : 94",
+     "path": "dayRevision11/inorderTraversal.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE : 226",
+     "path": "dayRevision11/invertABinaryTree.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Level order traverse",
+     "path": "dayRevision11/levelOrderTraverse.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "planned"
+    },
+    {
+     "title": "Levelorder traverse",
+     "path": "dayRevision11/levelorderTraverse.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "planned"
+    },
+    {
+     "title": "Post order traverse",
+     "path": "dayRevision11/postOrderTraverse.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Pre order traverse",
+     "path": "dayRevision11/preOrderTraverse.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Symmetric tree",
+     "path": "dayRevision11/symmetricTree.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "topic": "BSTs & balanced trees",
+   "items": [
+    {
+     "title": "Create avltree",
+     "path": "day8/createAVLTree.py",
+     "day": "Day 8",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "Create bst",
+     "path": "day8/createBST.py",
+     "day": "Day 8",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Red black tree",
+     "path": "day8/redBlackTree.py",
+     "day": "Day 8",
+     "kind": "problem",
+     "status": "planned"
+    },
+    {
+     "title": "FLOOR and CEIL in a BST",
+     "path": "dayRevision11/floorInBST.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE : 98",
+     "path": "dayRevision11/validataBST.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "sketch"
+    }
+   ]
+  },
+  {
+   "topic": "Graph traversal (BFS / DFS)",
+   "items": [
+    {
+     "title": "Adjacency matrix traversal for graphs",
+     "path": "day9/adjacencyMatrixTraversalForGraphs.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Build levels for a DAG",
+     "path": "day9/buildLevels.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To output a set of all connected components",
+     "path": "day9/connectedComponents.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Creat graph",
+     "path": "day9/creatGraph.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "To traverse a graph using DFS method",
+     "path": "day9/dfsTraverseAGraph.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To traverse a graph DFS, by using postfix",
+     "path": "day9/dfsTraversePostOrder.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Follow edges from source to find every node reaechable from an input S",
+     "path": "day9/directedReachability.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To read an undirected graph into an adjacency list and report its basic stats",
+     "path": "day9/graphLab1.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "BFS Traversal and distances",
+     "path": "day9/graphLab2.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "DFS search on a graph, with the number of islands",
+     "path": "day9/graphLab3.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the grid Shortest Path",
+     "path": "day9/graphLab5.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Cycle Detection and Bipartite check",
+     "path": "day9/graphLab6.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the number of knight moves from square 0, 0 to 8, 8",
+     "path": "day9/knightMoves.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Number of provinces",
+     "path": "day9/numberOfProvinces.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "planned"
+    },
+    {
+     "title": "To find the minimum number of moves from start to end state",
+     "path": "day9/reachTarget.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find some metrics of a graph",
+     "path": "day10/weightedGraphStats.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE: 133",
+     "path": "dayRevision11/cloneGraph.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCOE : 200",
+     "path": "dayRevision11/numberOfIslands.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE : 547",
+     "path": "dayRevision11/numberOfProvinces.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE : 79",
+     "path": "dayRevision11/wordSearch.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Topological sort & cycles",
+   "items": [
+    {
+     "title": "Course scheduler",
+     "path": "day9/courseScheduler.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "To find cycles in a graph and the number of sources",
+     "path": "day9/directedCycleDetection.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Kahns topo sort",
+     "path": "day9/kahnsTopoSort.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "planned"
+    },
+    {
+     "title": "Topo sort dfs",
+     "path": "day9/topoSortDFS.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "planned"
+    },
+    {
+     "title": "To topo sort using reverse Post Orders",
+     "path": "day9/topologicalOrder.py",
+     "day": "Day 9",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE: 207",
+     "path": "dayRevision11/courseScheduler.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE : 210",
+     "path": "dayRevision11/courseScheduler2.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "ALIEN SORT : GeeksForGeeks",
+     "path": "dayRevision11/alienDictionary.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Union-find & MSTs",
+   "items": [
+    {
+     "title": "To find the minimum spanning tree using Kruskals algorithm",
+     "path": "day10/kruskalsMST.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the minimum spanning tree and maximum spanning tree",
+     "path": "day10/minVmaxMST.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the minimum cost to connect houses with its weight being the",
+     "path": "day10/mstWithManhattanDistance.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the MST using prims algorithm",
+     "path": "day10/primsMST.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "To find the redundant edge in an undirected graph",
+     "path": "day10/redundantConnection.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Disjoint set with union and find operations",
+     "path": "day10/unionFind.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Mst for points",
+     "path": "day11/mstForPoints.py",
+     "day": "Day 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE : 721",
+     "path": "dayRevision11/accountMerge.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "LEETCODE : 1584",
+     "path": "dayRevision11/minCostToConnectPoints.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "LEETCODE: 684",
+     "path": "dayRevision11/redundantConnections.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Shortest paths",
+   "items": [
+    {
+     "title": "Word ladder",
+     "path": "day10/wordLadder.py",
+     "day": "Day 10",
+     "kind": "problem",
+     "status": "sketch"
+    },
+    {
+     "title": "To find the shortest path from source to destination using Dijkstra's algorithm",
+     "path": "day11/dijkstraShortestPath.py",
+     "day": "Day 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Dijkstras formal",
+     "path": "day11/dijkstrasFormal.py",
+     "day": "Day 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Practice for the dijkstras algorithm",
+     "path": "dayRevision11/dijkstras.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Shortest path from begin word to end word",
+     "path": "dayRevision11/wordLadder.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    },
+    {
+     "title": "Ask for intution!!",
+     "path": "dayRevision11/wordLadder2.py",
+     "day": "Revision 11",
+     "kind": "problem",
+     "status": "done"
+    }
+   ]
+  },
+  {
+   "topic": "Greedy algorithms",
+   "items": [
+    {
+     "title": "Activity selection",
+     "path": "day11/activitySelection.py",
+     "day": "Day 11",
+     "kind": "problem",
+     "status": "planned"
+    }
+   ]
+  },
+  {
+   "topic": "Dominator trees (compilers)",
+   "items": [
+    {
+     "title": "Notes: Dominator graphs for compiler optimization",
+     "path": "dominator_graph_in_python.md",
+     "day": "Notes",
+     "kind": "note",
+     "status": "done"
+    }
+   ]
+  }
+ ]
+}

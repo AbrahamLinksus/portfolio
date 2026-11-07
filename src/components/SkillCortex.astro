@@ -2,7 +2,7 @@
 // The Skill Cortex: a rotatable neural map of skills across eight regions of work.
 // Data is assembled at build time from skills.ts, cortex.ts and the projects collection.
 import { skillGroups, skillSlug } from '../data/skills';
-import { regions, workOf, extraNeurons } from '../data/cortex';
+import { regions, workOf, extraNeurons, studySources, studyTopicMeta, type MemoryItem } from '../data/cortex';
 import { getProjects } from '../lib/projects';
 
 const LEVEL_KEY = { Advanced: 'A', Comfortable: 'C', Learning: 'L' } as const;
@@ -16,7 +16,8 @@ function checkWork(name: string, work: string | undefined) {
   return work;
 }
 
-type Neuron = { name: string; cat: number; lvl: 'A' | 'C' | 'L'; work: string; confirmed: boolean; projects: number[]; parent: string | null; slug: string | null };
+type Memory = MemoryItem & { url: string };
+type Neuron = { name: string; cat: number; lvl: 'A' | 'C' | 'L'; work: string; confirmed: boolean; projects: number[]; parent: string | null; slug: string | null; memories?: Memory[]; source?: string };
 const neurons: Neuron[] = [];
 const main = new Map<string, Neuron>();
 skillGroups.forEach((g, gi) =>
@@ -55,11 +56,47 @@ for (const x of extraNeurons) {
   });
 }
 
+// Study topics: one neuron per topic, with every problem or note as a memory around it.
+for (const src of studySources) {
+  for (const t of src.topics) {
+    const meta = studyTopicMeta[t.topic];
+    if (!meta) throw new Error(`SkillCortex: study topic "${t.topic}" needs an entry in studyTopicMeta`);
+    const parent = main.get(meta.parent);
+    if (!parent) throw new Error(`SkillCortex: study topic "${t.topic}" has unknown parent "${meta.parent}"`);
+    neurons.push({
+      name: t.topic,
+      cat: parent.cat,
+      lvl: parent.lvl,
+      work: checkWork(t.topic, meta.work),
+      confirmed: true,
+      projects: [],
+      parent: parent.name,
+      slug: parent.slug,
+      source: src.source,
+      memories: t.items.map((it) => ({ ...it, url: `${src.url}/blob/${src.branch}/${it.path}` })),
+    });
+  }
+}
+const study = studySources.map((src) => {
+  const items = src.topics.flatMap((t) => t.items);
+  return {
+    source: src.source,
+    url: src.url,
+    topics: src.topics.length,
+    done: items.filter((i) => i.status === 'done').length,
+    sketch: items.filter((i) => i.status === 'sketch').length,
+    planned: items.filter((i) => i.status === 'planned').length,
+    notes: items.filter((i) => i.kind === 'note').length,
+    days: new Set(items.map((i) => i.day).filter((d) => d !== 'Notes')).size,
+  };
+});
+
 const data = {
   cats: skillGroups.map((g) => g.title),
   regions,
   neurons,
   projects: projects.map((p) => ({ L: p.data.letter, name: p.data.title, id: p.id })),
+  study,
 };
 ---
 
@@ -91,6 +128,7 @@ const data = {
           <button type="button" class="vbtn" data-view="right" aria-pressed="false">Right: learn</button>
         </div>
         <div class="hgroup">
+          <button type="button" class="vbtn" data-toggle="memory" aria-pressed="true">Memories</button>
           <button type="button" class="vbtn" data-toggle="pulse" aria-pressed="true">Signals</button>
           <button type="button" class="vbtn" data-toggle="spin" aria-pressed="true">Spin</button>
         </div>
@@ -101,6 +139,10 @@ const data = {
 
     <div class="rail">
       <div class="card detail" aria-live="polite" data-detail></div>
+      <div class="card study">
+        <h3>Study notes <small>memories</small></h3>
+        <div data-study></div>
+      </div>
       <div class="card">
         <h3>Regions of work <small>strength</small></h3>
         <div class="works" data-works></div>
@@ -117,7 +159,7 @@ const data = {
     <li><b>Position</b>Eight regions of work. A neuron sits between the regions that use it, so shared fundamentals end up in the middle.</li>
     <li><b>Color & shape</b>The kind of skill: languages, frameworks, data & infra, AI & data, engineering, core CS.</li>
     <li><b>Shade & size</b>Darker is stronger. Bigger means more of my projects use it. A dashed ring means the level isn't confirmed yet.</li>
-    <li><b>Synapses & signals</b>A line joins two skills used together in a project. Small neurons are parts of a bigger skill.</li>
+    <li><b>Synapses & memories</b>A line joins two skills used together in a project. Tiny dots are problems and notes from my study repos, clustered around their topic.</li>
   </ul>
 
   <script type="application/json" data-cortex set:html={JSON.stringify(data)} />
@@ -337,6 +379,97 @@ const data = {
     font-size: 12.5px;
     color: var(--fg);
   }
+  .study :global(.src) {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .study :global(.src a) {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .study :global(.stats) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin: 4px 0 2px;
+  }
+  .study :global(.stats span) {
+    display: grid;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+  .study :global(.stats b) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 26px;
+    color: var(--fg);
+  }
+  .study :global(.focus-mem) {
+    all: unset;
+    cursor: pointer;
+    justify-self: start;
+    font-size: 12.5px;
+    padding: 5px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    color: var(--fg);
+  }
+  .study :global(.focus-mem[aria-pressed='true']),
+  .study :global(.focus-mem:hover) {
+    border-color: var(--fg);
+  }
+  .detail :global(.mem-sum) {
+    margin: 10px 0 6px;
+    color: var(--fg);
+  }
+  .detail :global(.mem-list) {
+    list-style: none;
+    margin: 0;
+    padding: 0 4px 0 0;
+    max-height: 220px;
+    overflow-y: auto;
+    display: grid;
+    gap: 4px;
+  }
+  .detail :global(.mem-list li) {
+    display: grid;
+    grid-template-columns: 10px 1fr auto;
+    gap: 8px;
+    align-items: baseline;
+    font-size: 12.5px;
+  }
+  .detail :global(.mem-list a) {
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .detail :global(.mem-list a:hover) {
+    text-decoration: underline;
+  }
+  .detail :global(.mem-list i) {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--fg);
+    align-self: center;
+  }
+  .detail :global(.mem-list i.sketch) {
+    background: var(--muted);
+  }
+  .detail :global(.mem-list i.planned) {
+    background: transparent;
+    border: 1px solid var(--muted);
+  }
+  .detail :global(.mem-list i.note) {
+    border-radius: 2px;
+  }
+  .detail :global(.mem-list small) {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
   .works,
   .types {
     display: grid;
@@ -474,9 +607,11 @@ const data = {
 
 <script>
   type Lvl = 'A' | 'C' | 'L';
-  type N = { name: string; cat: number; lvl: Lvl; work: string; confirmed: boolean; projects: number[]; parent: string | null; slug: string | null; id?: number; p?: number[] };
+  type Mem = { title: string; path: string; day: string; kind: 'problem' | 'note'; status: 'done' | 'sketch' | 'planned'; url: string; p?: number[] };
+  type N = { name: string; cat: number; lvl: Lvl; work: string; confirmed: boolean; projects: number[]; parent: string | null; slug: string | null; memories?: Mem[]; source?: string; id?: number; p?: number[] };
   type Region = { name: string; p: number[]; roles: string[] };
-  type Data = { cats: string[]; regions: Record<string, Region>; neurons: N[]; projects: { L: string; name: string; id: string }[] };
+  type Study = { source: string; url: string; topics: number; done: number; sketch: number; planned: number; notes: number; days: number };
+  type Data = { cats: string[]; regions: Record<string, Region>; neurons: N[]; projects: { L: string; name: string; id: string }[]; study: Study[] };
 
   // Category colors (validated for contrast and color-blind separation on the cream panel), in category order.
   const CAT_STYLE = [
@@ -555,6 +690,18 @@ const data = {
       });
     });
 
+    // Memories: problems and notes orbit their topic neuron in a small shell.
+    S.forEach((s) => {
+      if (!s.memories) return;
+      const n = s.memories.length, R = 0.045 + 0.016 * Math.sqrt(n);
+      s.memories.forEach((m, i) => {
+        const y = n === 1 ? 0 : 1 - (i / (n - 1)) * 2, rr = Math.sqrt(Math.max(0, 1 - y * y)), th = i * 2.39996 + s.id!;
+        const k = R * (0.75 + 0.35 * hash(s.id! * 31 + i));
+        m.p = [s.p![0] + Math.cos(th) * rr * k, s.p![1] + y * k, s.p![2] + Math.sin(th) * rr * k];
+      });
+    });
+    const MEM = S.flatMap((s) => (s.memories ?? []).map((m) => ({ m, s })));
+
     const regionList = Object.entries(REG).map(([k, r]) => {
       const skills = S.filter((s) => s.work.includes(k));
       return { k, ...r, skills, strength: skills.reduce((t, s) => t + W8[s.lvl], 0), proven: skills.filter((s) => s.projects.length).length };
@@ -571,7 +718,7 @@ const data = {
     resize();
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const cam = { yaw: 0.22, pitch: -0.24 }, vel = { yaw: 0, pitch: 0 };
-    let target: { yaw: number; pitch: number } | null = null, spin = !reduce, pulsesOn = !reduce;
+    let target: { yaw: number; pitch: number } | null = null, spin = !reduce, pulsesOn = !reduce, memOn = true, memFocus = false;
 
     const project = (p: number[]) => {
       const cy = Math.cos(cam.yaw), sy = Math.sin(cam.yaw), cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
@@ -585,6 +732,7 @@ const data = {
     let hover: N | null = null, pinned: N | null = null;
     const lit = (s: N) => {
       if (!catOn[s.cat]) return false;
+      if (memFocus) return !!s.memories || s.name === 'Data structures & algorithms';
       if (region) return s.work.includes(region);
       if (role === 'all') return true;
       return s.work.split('').some((k) => REG[k].roles.includes(role));
@@ -649,10 +797,25 @@ const data = {
         ctx.fillStyle = 'rgba(' + acc + ',.95)'; ctx.beginPath(); ctx.arc(pt.x, pt.y, 1.8 * pt.f, 0, Math.PI * 2); ctx.fill();
       });
 
+      if (memOn) {
+        MEM.forEach(({ m, s }) => {
+          const on = lit(s), q = project(m.p!), sq = project(s.p!), hot = focus === s;
+          ctx.globalAlpha = on ? (hot ? 1 : 0.85) : 0.06;
+          ctx.strokeStyle = 'rgba(17,17,18,' + (hot ? 0.35 : 0.08) + ')'; ctx.lineWidth = 0.5;
+          ctx.beginPath(); ctx.moveTo(sq.x, sq.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+          const r = (hot ? 2.4 : 1.7) * q.f, col = shades[s.cat];
+          ctx.beginPath();
+          if (m.kind === 'note') ctx.rect(q.x - r, q.y - r, r * 2, r * 2); else ctx.arc(q.x, q.y, r, 0, Math.PI * 2);
+          if (m.status === 'planned') { ctx.strokeStyle = col.C; ctx.lineWidth = 0.9; ctx.stroke(); }
+          else { ctx.fillStyle = m.status === 'done' ? col.A : col.L; ctx.fill(); }
+          ctx.globalAlpha = 1;
+        });
+      }
+
       placed = [];
       S.map((s) => ({ s, q: project(s.p!) })).sort((a, b) => b.q.z - a.q.z).forEach(({ s, q }) => {
         const st = CAT_STYLE[s.cat], on = lit(s);
-        const base = s.parent ? 2.6 : 3.6;
+        const base = s.memories ? 2.4 + 0.45 * Math.sqrt(s.memories.length) : s.parent ? 2.6 : 3.6;
         const r = (base + (s.parent ? 0.8 : 2.0) * s.projects.length) * q.f;
         const depth = Math.max(0, Math.min(1, (q.f - 0.78) * 2.2));
         ctx.globalAlpha = on ? 0.5 + 0.5 * depth : 0.08;
@@ -738,17 +901,30 @@ const data = {
     });
 
     const detail = root.querySelector<HTMLElement>('[data-detail]')!;
+    const studyLine = () => data.study.map((st) => st.done + ' problems solved across ' + st.topics + ' topics in ' + st.source + ', over ' + st.days + ' study days.').join(' ');
+    function memList(ms: Mem[]) {
+      const done = ms.filter((m) => m.status === 'done').length, sketch = ms.filter((m) => m.status === 'sketch').length, planned = ms.filter((m) => m.status === 'planned').length;
+      const parts = [done + ' solved'];
+      if (sketch) parts.push(sketch + ' sketched');
+      if (planned) parts.push(planned + ' planned');
+      const order = { done: 0, sketch: 1, planned: 2 } as const;
+      return '<p class="mem-sum">' + parts.join(' · ') + '</p><ul class="mem-list">' +
+        [...ms].sort((a, b) => order[a.status] - order[b.status]).map((m) =>
+          '<li><i class="' + m.status + (m.kind === 'note' ? ' note' : '') + '" title="' + m.status + '"></i><a href="' + m.url + '" target="_blank" rel="noopener">' + esc(m.title) + '</a><small>' + esc(m.day) + '</small></li>').join('') + '</ul>';
+    }
     function show(s: N | null) {
       if (!s) {
         const count = S.filter(lit).length;
         const reg = region ? regionList.find((r) => r.k === region)! : null;
         detail.innerHTML =
-          '<div class="name">' + (reg ? esc(reg.name) : role !== 'all' ? esc(ROLES[role].name) : S.length + ' neurons') + '</div>' +
+          '<div class="name">' + (reg ? esc(reg.name) : role !== 'all' ? esc(ROLES[role].name) : memFocus ? 'What I studied' : S.length + ' neurons') + '</div>' +
           (reg
             ? reg.skills.length + ' neurons wire into this region, ' + reg.proven + ' of them proven in a project.'
             : role !== 'all'
               ? count + ' of ' + S.length + ' neurons light up for this role, ' + S.filter((x) => lit(x) && x.lvl === 'A').length + ' of them advanced.'
-              : S.length + ' neurons across 8 regions of work and ' + SYN.length + ' synapses. Hover a neuron, pick a role above, or click a region.');
+              : memFocus
+                ? 'Everything I have practised: ' + studyLine() + ' Hover a topic to see its problems.'
+                : S.length + ' neurons, ' + MEM.length + ' memories and ' + SYN.length + ' synapses across 8 regions of work. Hover a neuron, pick a role above, or click a region.');
         return;
       }
       const c = CAT_STYLE[s.cat];
@@ -758,13 +934,17 @@ const data = {
         (s.parent ? '<dt>Part of</dt><dd>' + esc(s.parent) + '</dd>' : '') +
         '<dt>Type</dt><dd><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + c.hex + ';margin-right:6px"></span>' + esc(data.cats[s.cat]) + '</dd>' +
         '<dt>Regions</dt><dd>' + s.work.split('').map((k) => esc(REG[k].name)).join(', ') + '</dd>' +
-        '<dt>Projects</dt><dd>' + (s.projects.length ? s.projects.map((i) => esc(PROJ[i].name)).join(', ') : 'None on the site yet') + '</dd></dl>' +
+        (s.memories
+          ? '<dt>Source</dt><dd>' + esc(s.source ?? '') + '</dd></dl>' + memList(s.memories)
+          : '<dt>Projects</dt><dd>' + (s.projects.length ? s.projects.map((i) => esc(PROJ[i].name)).join(', ') : 'None on the site yet') + '</dd></dl>' +
+            (s.name === 'Data structures & algorithms' ? '<p class="mem-sum">' + studyLine() + '</p>' : '')) +
         (s.slug ? '<a class="more" href="#' + s.slug + '">See ' + (s.parent ? esc(s.parent) : 'this skill') + ' in the list ↓</a>' : '');
     }
 
     root.querySelectorAll<HTMLButtonElement>('.rbtn').forEach((b) =>
       b.addEventListener('click', () => {
-        role = b.dataset.role!; region = null; pulses = [];
+        role = b.dataset.role!; region = null; pulses = []; memFocus = false;
+        root.querySelectorAll('.focus-mem').forEach((x) => x.setAttribute('aria-pressed', 'false'));
         root.querySelectorAll('.rbtn').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
         root.querySelectorAll('.wbtn').forEach((x) => x.classList.remove('on'));
         show(pinned);
@@ -777,7 +957,8 @@ const data = {
       b.type = 'button'; b.className = 'wbtn';
       b.innerHTML = '<span class="wn">' + esc(r.name) + '</span><span class="wc">' + r.skills.length + ' · ' + r.skills.filter((s) => s.lvl === 'A').length + ' adv</span><span class="wb"><span style="width:' + ((r.strength / maxStrength) * 100).toFixed(1) + '%"></span></span>';
       b.addEventListener('click', () => {
-        region = region === r.k ? null : r.k; pulses = [];
+        region = region === r.k ? null : r.k; pulses = []; memFocus = false;
+        root.querySelectorAll('.focus-mem').forEach((x) => x.setAttribute('aria-pressed', 'false'));
         worksEl.querySelectorAll('.wbtn').forEach((x) => x.classList.toggle('on', x === b && region === r.k));
         show(pinned);
       });
@@ -822,6 +1003,23 @@ const data = {
     spinBtn.addEventListener('click', () => { spin = !spin; spinBtn.setAttribute('aria-pressed', String(spin)); });
     pulseBtn.addEventListener('click', () => { pulsesOn = !pulsesOn; pulses = []; pulseBtn.setAttribute('aria-pressed', String(pulsesOn)); });
     if (reduce) { spinBtn.setAttribute('aria-pressed', 'false'); pulseBtn.setAttribute('aria-pressed', 'false'); }
+
+    const studyEl = root.querySelector<HTMLElement>('[data-study]')!;
+    studyEl.innerHTML = data.study.map((st) =>
+      '<div class="src"><span><a href="' + st.url + '" target="_blank" rel="noopener">' + esc(st.source) + '</a> · practice repo</span>' +
+      '<div class="stats"><span><b>' + st.done + '</b>solved</span><span><b>' + st.topics + '</b>topics</span><span><b>' + st.days + '</b>study days</span></div>' +
+      '<span>' + st.sketch + ' sketched · ' + st.planned + ' planned · ' + st.notes + ' notes</span>' +
+      '<button type="button" class="focus-mem" aria-pressed="false">Light up what I studied</button></div>').join('');
+    studyEl.querySelectorAll<HTMLButtonElement>('.focus-mem').forEach((b) => b.addEventListener('click', () => {
+      memFocus = !memFocus; region = null; role = 'all'; pulses = [];
+      b.setAttribute('aria-pressed', String(memFocus));
+      root.querySelectorAll('.rbtn').forEach((x) => x.setAttribute('aria-pressed', String((x as HTMLElement).dataset.role === 'all')));
+      root.querySelectorAll('.wbtn').forEach((x) => x.classList.remove('on'));
+      if (memFocus) { memOn = true; memBtn.setAttribute('aria-pressed', 'true'); }
+      show(pinned);
+    }));
+    const memBtn = root.querySelector<HTMLButtonElement>('[data-toggle="memory"]')!;
+    memBtn.addEventListener('click', () => { memOn = !memOn; memBtn.setAttribute('aria-pressed', String(memOn)); });
 
     show(null);
     if (document.fonts) document.fonts.ready.then(() => draw());
