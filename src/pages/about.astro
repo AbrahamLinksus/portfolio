@@ -1,285 +1,290 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import { origin, timeline, kinds, type Kind } from '../data/about';
-import { site } from '../site';
+import { intro, chain, highlights } from '../data/about';
+import { getProjects, colorVar } from '../lib/projects';
 
-const kindKeys = Object.keys(kinds) as Kind[];
+const projects = await getProjects();
+const links = chain.map((c, i) => {
+  const p = projects.find((x) => x.id === c.project);
+  if (!p) throw new Error(`About: unknown project "${c.project}"`);
+  return { ...c, p, n: String(i + 1).padStart(2, '0') };
+});
 ---
 
-<BaseLayout title="About" description="Jake Roberts: from a first Python circle at fifteen to backend systems and AI engineering.">
-  <PageIntro number="01" title="About" lede={`I'm ${site.name}. Software engineer in the making, drummer, badminton regular.`} />
+<BaseLayout title="About" description="Jake Roberts: Computer Science student at SRM IST (class of 2027), building tools for problems he runs into himself.">
+  <PageIntro number="01" title="About" lede="All-rounder, kind of." />
 
-  <section class="container origin">
-    <p class="remember display">{origin.remember}</p>
-    <div class="story">
-      <span class="label">How it started</span>
-      {origin.story.map((p) => <p>{p}</p>)}
-    </div>
+  <section class="container intro">
+    {intro.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
   </section>
 
-  <section class="container history" aria-labelledby="history-title">
-    <div class="h-head">
-      <h2 id="history-title" class="display h-title">The timeline</h2>
-      <ul class="legend" aria-label="Legend">
-        {
-          kindKeys.map((k) => (
-            <li style={`--c: ${kinds[k].color}`}>
-              <span class="ld" aria-hidden="true" />
-              {kinds[k].label}
-            </li>
-          ))
-        }
-      </ul>
+  <section class="container chain-wrap" aria-labelledby="chain-title">
+    <div class="sec-head">
+      <h2 id="chain-title" class="display sec-title">One problem led to the next</h2>
+      <span class="label">Four projects, in the order I built them</span>
     </div>
-
-    <ol class="line">
+    <ol class="chain">
       {
-        timeline.map((m, i) => {
-          const showYear = i === 0 || timeline[i - 1].year !== m.year;
-          return (
-            <li class:list={['moment', m.kind, { future: m.future, first: showYear }]} style={`--c: ${kinds[m.kind].color}`}>
-              <span class="year display" aria-hidden={!showYear}>
-                {showYear ? m.year : ''}
-                {showYear && m.approx && <span class="approx">approx.</span>}
+        links.map((l) => (
+          <li class="link" style={`--c: ${colorVar(l.p.data.color)}`}>
+            <a class="card" href={`/projects/${l.p.id}`}>
+              <span class="top">
+                <span class="n">{l.n}</span>
+                <span class="letter" aria-hidden="true">{l.p.data.letter}</span>
               </span>
-              <span class="node" aria-hidden="true" />
-              <div class="card">
-                <span class="kind">{kinds[m.kind].label}{!showYear && <span class="sr"> · {m.year}</span>}</span>
-                <h3 class="m-title">{m.title}</h3>
-                {m.line && <p class="m-line">{m.line}</p>}
-                {m.link && (
-                  <a class="m-link" href={m.link.href}>
-                    {m.link.label} →
-                  </a>
-                )}
-              </div>
-            </li>
-          );
-        })
+              <span class="problem-label">The problem</span>
+              <span class="problem">{l.problem}</span>
+              <span class="built-label">So I built</span>
+              <span class="built">{l.built}</span>
+              <span class="go">Read the case study →</span>
+            </a>
+          </li>
+        ))
       }
     </ol>
+  </section>
+
+  <section class="container more" aria-label="Research and experience">
+    {
+      highlights.map((h) => (
+        <article class="hl" style={`--c: ${h.color}`}>
+          <span class="hk">{h.kind}</span>
+          <h3 class="ht display">{h.title}</h3>
+          <p class="hline">{h.line}</p>
+          {h.link && (
+            <a class="hlink" href={h.link.href}>
+              {h.link.label} →
+            </a>
+          )}
+        </article>
+      ))
+    }
   </section>
 </BaseLayout>
 
 <style>
-  .origin {
+  .intro {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-    gap: 48px;
-    align-items: start;
-    padding-bottom: 24px;
+    gap: 18px;
   }
-  .remember {
+  .intro p {
     margin: 0;
-    font-size: clamp(56px, 8vw, 112px);
-    line-height: 0.9;
-    color: var(--teal);
-    text-wrap: balance;
-  }
-  .story {
-    display: grid;
-    gap: 14px;
-  }
-  .story p {
-    margin: 0;
-    font-size: 18px;
+    max-width: 68ch;
+    font-size: 19px;
     line-height: 1.65;
-    max-width: 58ch;
+    color: var(--muted);
+  }
+  .intro p.lead {
+    font-size: clamp(22px, 2.6vw, 30px);
+    line-height: 1.35;
+    color: var(--fg);
+  }
+  .intro p:last-child {
+    color: var(--fg);
+    font-weight: 500;
   }
 
-  .history {
-    padding-top: 72px;
+  .chain-wrap {
+    padding-top: 64px;
   }
-  .h-head {
+  .sec-head {
     display: flex;
     justify-content: space-between;
     align-items: end;
-    gap: 16px;
+    gap: 12px;
     flex-wrap: wrap;
     padding-bottom: 14px;
     border-bottom: 1.5px solid var(--fg);
-    margin-bottom: 28px;
+    margin-bottom: 22px;
   }
-  .h-title {
-    font-size: clamp(40px, 6vw, 64px);
+  .sec-title {
+    font-size: clamp(36px, 5vw, 60px);
   }
-  .legend {
+  .chain {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-size: 13px;
-    color: var(--muted);
-  }
-  .legend li {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .ld {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--c);
-  }
-
-  .line {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: relative;
-  }
-  .moment {
     display: grid;
-    grid-template-columns: 170px 28px minmax(0, 1fr);
-    gap: 0 20px;
-    position: relative;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 34px;
   }
-  /* The spine runs through the node column. */
-  .moment::before {
-    content: '';
+  .link {
+    position: relative;
+    display: flex;
+  }
+  /* Arrow from each card to the next. */
+  .link:not(:last-child)::after {
+    content: '→';
     position: absolute;
-    left: calc(170px + 20px + 13px);
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: var(--line);
-  }
-  .moment.future::before {
-    background: repeating-linear-gradient(var(--line) 0 6px, transparent 6px 12px);
-  }
-  .moment:last-child::before {
-    bottom: calc(100% - 30px);
-  }
-  .year {
-    text-align: right;
-    font-size: clamp(34px, 4vw, 52px);
-    line-height: 1;
-    padding-top: 10px;
-    color: var(--fg);
-  }
-  .approx {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
+    right: -27px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-size: 26px;
     color: var(--muted);
-    text-transform: lowercase;
-    margin-top: 4px;
-  }
-  .node {
-    position: relative;
-    z-index: 1;
-    width: 28px;
-    height: 28px;
-    margin-top: 16px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 3px solid var(--c);
-  }
-  .moment.first .node {
-    background: var(--c);
-  }
-  .future .node {
-    border-style: dashed;
-    background: var(--bg) !important;
   }
   .card {
+    flex: 1;
     display: grid;
-    gap: 6px;
-    padding: 14px 0 34px;
+    align-content: start;
+    gap: 8px;
+    padding: 20px;
+    border-radius: 18px;
+    border: 2px solid var(--c);
+    text-decoration: none;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
   }
-  .kind {
+  .card:hover,
+  .card:focus-visible {
+    background: var(--c);
+    color: var(--ink);
+    transform: translateY(-3px);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 4px;
+  }
+  .n {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .letter {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--c);
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 30px;
+    transform: rotate(-6deg);
+  }
+  .card:hover .letter,
+  .card:focus-visible .letter {
+    background: var(--ink);
+    color: var(--c);
+  }
+  .problem-label,
+  .built-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--c);
   }
-  .sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
+  .card:hover .problem-label,
+  .card:hover .built-label,
+  .card:hover .n,
+  .card:focus-visible .problem-label,
+  .card:focus-visible .built-label,
+  .card:focus-visible .n {
+    color: var(--ink);
   }
-  .m-title {
-    margin: 0;
+  .built-label {
+    margin-top: 8px;
+  }
+  .problem {
     font-family: var(--font-sticker);
     font-weight: 800;
     text-transform: uppercase;
-    font-size: clamp(20px, 2.4vw, 28px);
-    line-height: 1.05;
+    font-size: 17px;
+    line-height: 1.15;
   }
-  .m-line {
+  .built {
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+  .go {
+    margin-top: 10px;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .more {
+    padding-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .hl {
+    display: grid;
+    gap: 8px;
+    align-content: start;
+    padding: 24px;
+    border-radius: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--c);
+  }
+  .hk {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c);
+  }
+  .ht {
     margin: 0;
-    color: var(--muted);
-    font-size: 16px;
-    max-width: 60ch;
+    font-size: clamp(30px, 3.6vw, 44px);
   }
-  .m-link {
+  .hline {
+    margin: 0;
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 52ch;
+  }
+  .hlink {
     justify-self: start;
+    margin-top: 4px;
     font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     text-decoration: none;
     border-bottom: 1.5px solid var(--c);
-    color: var(--fg);
-  }
-  .future .m-title,
-  .future .m-line {
-    opacity: 0.75;
   }
 
-  @media (max-width: 860px) {
-    .origin {
-      grid-template-columns: 1fr;
-      gap: 24px;
+  @media (max-width: 1000px) {
+    .chain {
+      grid-template-columns: 1fr 1fr;
+    }
+    .link:nth-child(2)::after {
+      content: '↓';
+      right: auto;
+      left: -17px;
+      top: auto;
+      bottom: -30px;
+      transform: none;
     }
   }
-  @media (max-width: 600px) {
-    .moment {
-      grid-template-columns: 22px minmax(0, 1fr);
-      gap: 0 14px;
+  @media (max-width: 640px) {
+    .chain {
+      grid-template-columns: 1fr;
+      gap: 30px;
     }
-    .moment::before {
-      left: 10px;
+    .link:not(:last-child)::after {
+      content: '↓';
+      right: auto;
+      left: 50%;
+      top: auto;
+      bottom: -28px;
+      transform: translateX(-50%);
     }
-    .year {
-      grid-column: 2;
-      grid-row: 1;
-      text-align: left;
-      font-size: 32px;
-      padding-top: 6px;
+    .more {
+      grid-template-columns: 1fr;
     }
-    .moment:not(.first) .year {
-      display: none;
-    }
-    .approx {
-      display: inline;
-      margin-left: 8px;
-    }
-    .node {
-      grid-column: 1;
-      grid-row: 1;
-      width: 22px;
-      height: 22px;
-      margin-top: 12px;
-    }
+  }
+  @media (prefers-reduced-motion: reduce) {
     .card {
-      grid-column: 2;
-      padding-top: 4px;
-    }
-    .moment:not(.first) .node {
-      grid-row: 2;
-      margin-top: 6px;
-    }
-    .moment:not(.first) .card {
-      grid-row: 2;
+      transition: none;
     }
   }
 </style>

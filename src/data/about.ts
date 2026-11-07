@@ -1,43 +1,47 @@
-// About page: Jake's story, as a timeline. Years marked approx were worked out from school grades.
-export type Kind = 'education' | 'tech' | 'hobby';
+// About page content, in Jake's own words.
+export const intro = [
+  "Hi, I'm Jake Roberts. I'm a Computer Science student at SRM Institute of Science and Technology, Chennai (class of 2027), working toward a career in software, AI or data.",
+  'What hooked me was the structure of a programming language itself: low-level enough to control the machine, high-level enough to think in. I have been working my way up and down that ladder ever since.',
+  'Most of what I build comes from a problem I ran into myself.',
+];
 
-export type Moment = {
-  year: string; // shown as the timeline label
-  kind: Kind;
-  title: string;
-  line?: string;
-  approx?: boolean;
-  future?: boolean;
-  link?: { href: string; label: string };
-};
+// Each project solved a problem the previous one created.
+export type ChainLink = { project: string; problem: string; built: string };
+export const chain: ChainLink[] = [
+  {
+    project: 'queuedup',
+    problem: 'Practising DSA and CS concepts consistently.',
+    built: 'QueuedUp, a spaced-repetition tracker for practising DSA and CS concepts.',
+  },
+  {
+    project: 'nextup',
+    problem: 'Keeping up with practice meant keeping up with everything else.',
+    built: 'NextUp, an assistant that pulls in my Notion and Gmail, sorts each item, and schedules tasks on its own.',
+  },
+  {
+    project: 'study-copilot',
+    problem: 'I wanted something to study with.',
+    built: 'Study Copilot, a RAG-powered academic assistant.',
+  },
+  {
+    project: 'recall-prediction',
+    problem: "I wanted to know when I'd actually forget something.",
+    built: "Recall Prediction, a model of my own memory curve trained on Duolingo's spaced-repetition data.",
+  },
+];
 
-export const kinds: Record<Kind, { label: string; color: string }> = {
-  education: { label: 'School & college', color: 'var(--teal)' },
-  tech: { label: 'Tech', color: 'var(--pink)' },
-  hobby: { label: 'Off the keyboard', color: 'var(--orange)' },
-};
-
-export const origin = {
-  remember: 'All-rounder, kind of.',
-  story: [
-    "I was fifteen when a movie showed a hacker typing into a terminal, and I wanted to know what that felt like. My first program was a Python script that drew a circle.",
-    'What hooked me was the structure of a programming language itself: low-level enough to control the machine, high-level enough to think in. I have been working my way up and down that ladder ever since.',
-  ],
-};
-
-export const timeline: Moment[] = [
-  { year: '2011', kind: 'education', title: 'Camford International School, Coimbatore', line: 'Classes 1 to 6.', approx: true },
-  { year: '2013', kind: 'hobby', title: 'Started playing the drums', line: 'Thirteen years later, still behind the kit.' },
-  { year: '2017', kind: 'education', title: 'Stanes School (CBSE), Coimbatore', line: 'Classes 7 to 12.', approx: true },
-  { year: '2019', kind: 'tech', title: 'My first program', line: 'A Python script that drew a circle. A movie hacker in a terminal started it all.' },
-  { year: '2021', kind: 'hobby', title: 'Picked up badminton', line: 'Three hours a day, every day, ever since.' },
-  { year: '2022', kind: 'tech', title: 'Fluent in Python', line: 'Python became the language I think in.' },
-  { year: '2023', kind: 'education', title: 'SRM IST, B.Tech Computer Science', line: 'Started at SRM Institute of Science and Technology.' },
-  { year: '2023', kind: 'tech', title: 'Got into data structures and algorithms' },
-  { year: 'Mid 2023', kind: 'tech', title: 'Put DSA down, picked up machine learning', line: 'Models, data and statistics took over.' },
-  { year: '2024', kind: 'tech', title: 'Got into frontend', line: 'React, Next.js and making things people can actually use.' },
-  { year: '2025', kind: 'tech', title: 'Backend systems and AI engineering', line: 'Queues, databases and distributed systems, then LLMs, retrieval and agents.', link: { href: '/projects', label: 'See the projects' } },
-  { year: '2026', kind: 'tech', title: 'Came back to DSA and finished it', line: '99 problems across 17 topics. Systems design is partly done.', link: { href: '/skills', label: 'See it in the Skill Cortex' } },
-  { year: '2026', kind: 'education', title: 'STEP ranking: 94', line: 'At SRM IST.' },
-  { year: '2027', kind: 'education', title: 'Graduating', line: 'B.Tech Computer Science, SRM IST.', future: true },
+export const highlights = [
+  {
+    kind: 'Research · 2026',
+    title: 'Co-authored paper',
+    line: 'Byzantine-resilient federated learning for anomaly detection in smart-home IoT.',
+    link: { href: '/projects/fedlearn', label: 'See the fedLearn project' },
+    color: 'var(--teal)',
+  },
+  {
+    kind: 'Internship · Dec 2024',
+    title: 'Drylogic Solutions',
+    line: 'Built an email campaign scheduler in Python.',
+    color: 'var(--orange)',
+  },
 ];
