@@ -1,10 +1,349 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import { hobbies, topArtists, drummers, codingSoundtrack } from '../data/hobbies';
+
+const music = hobbies.find((h) => h.id === 'music')!;
+const others = hobbies.filter((h) => h.id !== 'music');
 ---
 
-<BaseLayout title="Hobbies" description="Life outside code.">
-  <PageIntro number="04" title="Hobbies" lede="Life outside code." />
-  <ComingSoon step="step 4" />
+<BaseLayout title="Hobbies" description="Badminton, drums and progressive rock: life outside the terminal.">
+  <PageIntro number="04" title="Hobbies" lede="Offline mode: on. Three things I do every day, all of them a little too seriously." />
+
+  <nav class="container jump" aria-label="Hobbies">
+    {
+      hobbies.map((h, i) => (
+        <a href={`#${h.id}`} style={`--c: ${h.color}`}>
+          <span class="num">{String(i + 1).padStart(2, '0')}</span>
+          {h.name}
+        </a>
+      ))
+    }
+  </nav>
+
+  {
+    others.map((h, i) => (
+      <section class="hobby container" id={h.id} style={`--c: ${h.color}`} aria-labelledby={`${h.id}-title`}>
+        <div class="head">
+          <span class="label">{String(i + 1).padStart(2, '0')} · Hobby</span>
+          <h2 id={`${h.id}-title`} class="display name">{h.name}</h2>
+          <p class="tagline">{h.tagline}</p>
+        </div>
+        <ul class="stats">
+          {h.stats.map((s) => (
+            <li>
+              <span class="sv">{s.value}</span>
+              <span class="sl">{s.label}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="body">
+          <div class="text">{h.body.map((p) => <p>{p}</p>)}</div>
+          <ul class="stickers">
+            {h.stickers.map((s, k) => (
+              <li style={`--r: ${[-4, 3, -2][k % 3]}deg`}>{s}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="hobby container" id={music.id} style={`--c: ${music.color}`} aria-labelledby="music-title">
+    <div class="head">
+      <span class="label">03 · Hobby</span>
+      <h2 id="music-title" class="display name">{music.name}</h2>
+      <p class="tagline">{music.tagline}</p>
+    </div>
+    <ul class="stats">
+      {
+        music.stats.map((s) => (
+          <li>
+            <span class="sv">{s.value}</span>
+            <span class="sl">{s.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="body">
+      <div class="text">{music.body.map((p) => <p>{p}</p>)}</div>
+    </div>
+
+    <div class="music-grid">
+      <div class="card repeat">
+        <span class="label">On repeat · top 5</span>
+        <ol class="artists">
+          {
+            topArtists.map((a, i) => (
+              <li>
+                <span class="rank">{i + 1}</span>
+                <span class="an">{a}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="card soundtrack">
+        <span class="label">Coding soundtrack</span>
+        <p class="st-artist display">{codingSoundtrack.artist}</p>
+        <p>{codingSoundtrack.line}</p>
+        <p class="pun">{codingSoundtrack.pun}</p>
+      </div>
+
+      <div class="card drummers">
+        <span class="label">Drummers I study</span>
+        <ul>
+          {
+            drummers.map((d) => (
+              <li>
+                <span class="dn">{d.name}</span>
+                <span class="db">{d.band} · in my top 5</span>
+                <span class="dt">{d.note}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="link" href="#drums">Back to my own kit ↑</a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+  .jump a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 8px;
+    border-radius: 99px;
+    border: 1.5px solid var(--c);
+    text-decoration: none;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  .jump a:hover,
+  .jump a:focus-visible {
+    background: var(--c);
+    color: var(--ink);
+  }
+  .jump .num {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--c);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .hobby {
+    display: grid;
+    gap: 24px;
+    padding-top: 72px;
+    scroll-margin-top: 24px;
+  }
+  .head {
+    display: grid;
+    gap: 8px;
+    border-top: 3px solid var(--c);
+    padding-top: 18px;
+  }
+  .name {
+    font-size: clamp(64px, 12vw, 150px);
+    color: var(--c);
+  }
+  .tagline {
+    margin: 0;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(18px, 2.4vw, 26px);
+  }
+  .stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .stats li {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    padding: 18px;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .sv {
+    font-family: var(--font-display);
+    font-size: clamp(44px, 6vw, 72px);
+    line-height: 0.9;
+    color: var(--c);
+  }
+  .sl {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+  .text p {
+    margin: 0 0 12px;
+    font-size: 17px;
+    line-height: 1.65;
+    max-width: 60ch;
+  }
+  .stickers {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .stickers li {
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--c);
+    color: var(--ink);
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 15px;
+    line-height: 1.1;
+    transform: rotate(var(--r));
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .music-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .card {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .artists {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .artists li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .rank {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--c);
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 16px;
+  }
+  .an {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 18px;
+  }
+  .soundtrack {
+    background: var(--panel);
+    color: var(--ink);
+    border-color: var(--panel);
+  }
+  .soundtrack .label {
+    color: #5e5a55;
+  }
+  .soundtrack p {
+    margin: 0;
+  }
+  .st-artist {
+    font-size: clamp(40px, 5vw, 60px);
+  }
+  .pun {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 14px;
+    justify-self: start;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--c);
+    transform: rotate(-2deg);
+  }
+  .drummers ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .drummers li {
+    display: grid;
+    gap: 2px;
+  }
+  .dn {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 28px;
+    line-height: 1;
+  }
+  .db {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c);
+  }
+  .dt {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .link {
+    font-size: 13px;
+    color: var(--fg);
+  }
+
+  @media (max-width: 900px) {
+    .body,
+    .music-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
