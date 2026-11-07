@@ -31,7 +31,7 @@ for (const repo of repos) {
       execFileSync('git', ['clone', '--quiet', '--bare', '--filter=blob:none', `https://github.com/${repo}`, dir], { stdio: 'pipe' });
     }
     const git = (...a) => execFileSync('git', ['-C', dir, ...a], { encoding: 'utf8' }).trim();
-    const log = git('log', '-n', '5', '--format=%H%x1f%aI%x1f%s', 'HEAD')
+    const log = git('log', '-n', '12', '--format=%H%x1f%aI%x1f%s', 'HEAD')
       .split('\n')
       .filter(Boolean)
       .map((l) => {

@@ -1,11 +1,21 @@
 {
- "syncedAt": "2026-11-07T12:00:53.359Z",
+ "syncedAt": "2026-11-07T12:05:40.131Z",
  "repos": {
   "AbrahamLinksus/portfolio": {
    "branch": "main",
-   "total": 18,
-   "last30": 18,
+   "total": 20,
+   "last30": 20,
    "commits": [
+    {
+     "sha": "7a8667b",
+     "date": "2026-11-07T12:04:39+00:00",
+     "subject": "Now page: drop the Recently section"
+    },
+    {
+     "sha": "9a4c2fc",
+     "date": "2026-11-07T11:59:28+00:00",
+     "subject": "Now page: recent work synced from GitHub at every build"
+    },
     {
      "sha": "4d8d991",
      "date": "2026-11-07T10:13:38+00:00",
@@ -30,6 +40,31 @@
      "sha": "22193e7",
      "date": "2026-11-07T08:13:12+00:00",
      "subject": "Skills: replace heatmap with the Skill Cortex neural map"
+    },
+    {
+     "sha": "c78f8fe",
+     "date": "2026-11-07T07:09:02+00:00",
+     "subject": "Prototype: skills heatmap by role (categories x levels)"
+    },
+    {
+     "sha": "018d2a9",
+     "date": "2026-11-07T06:57:29+00:00",
+     "subject": "Skills: summary by level at the top, details below"
+    },
+    {
+     "sha": "65eafdc",
+     "date": "2026-11-07T06:55:01+00:00",
+     "subject": "Skills: add skills from resume, Core CS group, certifications, learning sources"
+    },
+    {
+     "sha": "d71c9f7",
+     "date": "2026-11-07T06:50:39+00:00",
+     "subject": "Add Skills page with levels linked to projects"
+    },
+    {
+     "sha": "5ddfc59",
+     "date": "2026-11-07T06:32:23+00:00",
+     "subject": "Add projects: list with role filter, six case studies, featured work on homepage"
     }
    ]
   },
@@ -62,6 +97,41 @@
      "sha": "ced01df",
      "date": "2026-11-07T11:11:59+00:00",
      "subject": "learn(backend/databases): migrations, orm, n+1 problem, indexing and sharding"
+    },
+    {
+     "sha": "56524b6",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/caching): caching basics, eviction, read/write strategies, cache types"
+    },
+    {
+     "sha": "79e82fd",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/auth): session, jwt, basic auth, token auth, oauth and sso"
+    },
+    {
+     "sha": "fc884cc",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/apis): api styles, rest, soap and grpc"
+    },
+    {
+     "sha": "d99b880",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/web-fundamentals): http, status codes, dns, browser rendering, web servers"
+    },
+    {
+     "sha": "4b227c4",
+     "date": "2026-11-07T10:34:09+00:00",
+     "subject": "chore(topics): add ai-engineering topics"
+    },
+    {
+     "sha": "2baef00",
+     "date": "2026-11-07T10:34:09+00:00",
+     "subject": "revise(data-science/nlp): link tokenization and word2vec to llm notes"
+    },
+    {
+     "sha": "cd37a69",
+     "date": "2026-11-07T10:34:09+00:00",
+     "subject": "learn(ai-engineering/langchain): core, prompts, parsers and langgraph"
     }
    ]
   },
@@ -94,6 +164,41 @@
      "sha": "c194bb7",
      "date": "2026-06-17T14:44:46+05:30",
      "subject": "added files on graphs"
+    },
+    {
+     "sha": "95721ef",
+     "date": "2026-06-16T17:56:47+05:30",
+     "subject": "added more graphs"
+    },
+    {
+     "sha": "631064f",
+     "date": "2026-06-16T14:23:35+05:30",
+     "subject": "included till graphs"
+    },
+    {
+     "sha": "d1c20c4",
+     "date": "2026-06-12T15:17:45+05:30",
+     "subject": "infected tree problem"
+    },
+    {
+     "sha": "78a3d69",
+     "date": "2026-06-12T10:08:47+05:30",
+     "subject": "added lca"
+    },
+    {
+     "sha": "ab9b4f9",
+     "date": "2026-06-12T09:18:10+05:30",
+     "subject": "iterative traversals"
+    },
+    {
+     "sha": "0e52c7c",
+     "date": "2026-06-11T21:10:37+05:30",
+     "subject": "added morris traversal"
+    },
+    {
+     "sha": "3bab58e",
+     "date": "2026-06-11T18:12:44+05:30",
+     "subject": "tree problem 1"
     }
    ]
   },
@@ -126,6 +231,41 @@
      "sha": "f843922",
      "date": "2026-09-30T17:55:45+05:30",
      "subject": "Add docs/demo-commands.md: the copy-paste command list for recording"
+    },
+    {
+     "sha": "d3334b8",
+     "date": "2026-09-30T17:53:49+05:30",
+     "subject": "Say what the minimum delay actually guarantees, and how to show it"
+    },
+    {
+     "sha": "88ac8f4",
+     "date": "2026-09-30T17:35:06+05:30",
+     "subject": "Fix seed:senders for an address that has already signed in with Google"
+    },
+    {
+     "sha": "eb62d9a",
+     "date": "2026-09-30T17:17:46+05:30",
+     "subject": "README: the free-tier variant of the VM path"
+    },
+    {
+     "sha": "7a1538c",
+     "date": "2026-09-30T17:11:06+05:30",
+     "subject": "Add a single-VM deployment path alongside the managed one"
+    },
+    {
+     "sha": "0897e2e",
+     "date": "2026-09-30T17:05:51+05:30",
+     "subject": "Deployable to a free-tier host: a blueprint, and migrations at startup"
+    },
+    {
+     "sha": "3330da9",
+     "date": "2026-09-30T17:00:22+05:30",
+     "subject": "Alert on both hourly limits, and promote a day ahead instead of an hour"
+    },
+    {
+     "sha": "56e01a8",
+     "date": "2026-09-30T16:45:38+05:30",
+     "subject": "Docs: restructure the README to the assignment's checklist, and rewrite the demo"
     }
    ]
   },
@@ -158,6 +298,31 @@
      "sha": "def39fd",
      "date": "2026-08-30T09:44:29+05:30",
      "subject": "Phase 4: persistence, calendar sync, adaptive re-scheduling"
+    },
+    {
+     "sha": "688b934",
+     "date": "2026-08-30T09:26:50+05:30",
+     "subject": "Phase 3: the scheduling algorithm"
+    },
+    {
+     "sha": "20ce59f",
+     "date": "2026-08-30T09:09:47+05:30",
+     "subject": "Switch to local Ollama, then retune decay on real embeddings"
+    },
+    {
+     "sha": "9570958",
+     "date": "2026-08-30T08:51:58+05:30",
+     "subject": "Phase 2: implement time-decay ranking"
+    },
+    {
+     "sha": "22fcc36",
+     "date": "2026-08-30T08:46:27+05:30",
+     "subject": "Phase 0+1: test runner and retrieval eval harness"
+    },
+    {
+     "sha": "900e595",
+     "date": "2026-08-30T08:35:52+05:30",
+     "subject": "Initial commit: Study Copilot v2 scaffold"
     }
    ]
   },
@@ -207,6 +372,41 @@
      "sha": "c96a617",
      "date": "2026-08-26T19:51:30+05:30",
      "subject": "chore: ignore .vercel link state"
+    },
+    {
+     "sha": "2175ae4",
+     "date": "2026-08-26T19:49:01+05:30",
+     "subject": "fix(deploy): make the monorepo build survive Vercel's defaults"
+    },
+    {
+     "sha": "49eceb4",
+     "date": "2026-08-26T19:38:57+05:30",
+     "subject": "fix(outbox): drain from the request path, so the free tier is enough"
+    },
+    {
+     "sha": "7a41ce8",
+     "date": "2026-08-26T19:22:40+05:30",
+     "subject": "chore: pre-deployment readiness, without provisioning anything"
+    },
+    {
+     "sha": "8ab50e6",
+     "date": "2026-08-26T19:13:33+05:30",
+     "subject": "feat(web): adopt the QueuedUp design for the app shell and screens"
+    },
+    {
+     "sha": "ab0bb9e",
+     "date": "2026-08-26T18:57:00+05:30",
+     "subject": "feat(seed): a demo account with eight months of simulated history"
+    },
+    {
+     "sha": "2fa3340",
+     "date": "2026-08-26T18:46:38+05:30",
+     "subject": "feat(outbox): drain on a cron tick instead of in a long-lived process"
+    },
+    {
+     "sha": "be3ab05",
+     "date": "2026-08-26T14:40:51+05:30",
+     "subject": "fix(db): give transaction acquisition enough headroom for a remote endpoint"
     }
    ]
   },
