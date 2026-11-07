@@ -4,10 +4,7 @@ export const music = {
     "Music is how I set my head for whatever comes next. Something slow and atmospheric when I need to calm down, something long and layered when I need to think, something heavy when I need to get fired up.",
     "I don't treat it as background noise. I listen to full albums, start to finish, and I pay attention to how they're built: the odd time signatures, the drum parts, the way a record moves from one idea to the next.",
   ],
-  stats: [
-    { value: '5 h', label: 'of music a day' },
-    { value: 'Prog', label: 'my genre, by a mile' },
-  ],
+  genre: 'Prog, by a mile',
   topArtists: ['Dream Theater', 'Pink Floyd', 'Tool', 'Toto', 'Steven Wilson'],
   soundtrack: { artist: 'Pink Floyd', line: 'Full albums, start to finish, while I build.' },
   drummers: [
