@@ -43,44 +43,50 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
 
     <!-- MUSIC -->
     <div class="panel" role="tabpanel" id="panel-music" aria-labelledby="tab-music" tabindex="0" style="--c: var(--teal)">
-      <div class="music-top">
-        <div class="about">
-          {music.about.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
-          <p class="genre"><span>Genre</span>{music.genre}</p>
-        </div>
-        <div class="rank-wrap">
-          <h2 class="bh">Top 5 artists</h2>
-          <ol class="rank">
-            {
-              music.topArtists.map((a, i) => (
-                <li>
-                  <span class="rn">{i + 1}</span>
-                  <span class="ra">{a}</span>
-                </li>
-              ))
-            }
-          </ol>
-        </div>
+      <div class="about">
+        {music.about.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
       </div>
-      <div class="band">
-        <div>
-          <h2 class="bh">Coding soundtrack</h2>
-          <p class="band-big">{music.soundtrack.artist}</p>
-          <p class="band-note">{music.soundtrack.line}</p>
+
+      <section aria-labelledby="top5-title">
+        <div class="sec-head">
+          <h2 id="top5-title" class="display sec-title">Top 5 artists</h2>
+          <span class="label">{music.genre}</span>
         </div>
-        <div>
-          <h2 class="bh">Drummers I study</h2>
-          <ul class="people">
+        <ol class="top5">
+          {
+            music.topArtists.map((a, i) => (
+              <li class:list={['artist', { first: i === 0 }]}>
+                <span class="rank">{String(i + 1).padStart(2, '0')}</span>
+                <span class="name">{a}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <div class="two">
+        <section aria-labelledby="sound-title">
+          <div class="sec-head">
+            <h2 id="sound-title" class="display sec-title sm">Coding soundtrack</h2>
+          </div>
+          <p class="item-name">{music.soundtrack.artist}</p>
+          <p class="item-note">{music.soundtrack.line}</p>
+        </section>
+        <section aria-labelledby="drummers-title">
+          <div class="sec-head">
+            <h2 id="drummers-title" class="display sec-title sm">Drummers I study</h2>
+          </div>
+          <ul class="rows">
             {
               music.drummers.map((d) => (
                 <li>
-                  <span class="pname">{d.name}</span>
-                  <span class="pband">{d.band}</span>
+                  <span class="item-name">{d.name}</span>
+                  <span class="label">{d.band}</span>
                 </li>
               ))
             }
           </ul>
-        </div>
+        </section>
       </div>
     </div>
 
@@ -101,22 +107,24 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
           <RideMap home={biking.home} places={[...biking.routes, biking.longestRide]} />
           <figcaption class="cap">Straight-line distances from home. Roads are longer.</figcaption>
         </figure>
-        <div class="routes-wrap">
-          <h2 class="bh">Favourite routes</h2>
+        <section class="routes-wrap" aria-labelledby="routes-title">
+          <div class="sec-head">
+            <h2 id="routes-title" class="display sec-title sm">Favourite routes</h2>
+          </div>
           <ol class="routes">
             {
               biking.routes.map((r, i) => (
                 <li>
-                  <span class="rn">{i + 1}</span>
+                  <span class="rn">{String(i + 1).padStart(2, '0')}</span>
                   <span>
-                    <span class="rname">{r.name}</span>
-                    <span class="rnote">{r.note} · {km(biking.home, r)} km away</span>
+                    <span class="item-name">{r.name}</span>
+                    <span class="item-note">{r.note} · {km(biking.home, r)} km away</span>
                   </span>
                 </li>
               ))
             }
           </ol>
-        </div>
+        </section>
       </div>
     </div>
 
@@ -217,145 +225,142 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     outline-offset: 8px;
     border-radius: 8px;
   }
-  .bh {
-    margin: 0 0 14px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
+  /* Shared type, matching the rest of the site */
+  .sec-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--fg);
+    margin-bottom: 22px;
+  }
+  .sec-title {
+    font-size: clamp(36px, 5vw, 60px);
+  }
+  .sec-title.sm {
+    font-size: clamp(30px, 3.6vw, 44px);
+  }
+  .item-name {
+    margin: 0;
+    font-family: var(--font-sticker);
+    font-weight: 800;
     text-transform: uppercase;
-    color: var(--c);
+    font-size: 22px;
+    line-height: 1.1;
+  }
+  .item-note {
+    margin: 6px 0 0;
+    font-size: 15px;
+    color: var(--muted);
   }
 
   /* Music */
-  .music-top {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    gap: 56px;
-    align-items: start;
-  }
   .about {
     display: grid;
     gap: 18px;
   }
   .about p {
     margin: 0;
-    font-size: 18px;
+    max-width: 68ch;
+    font-size: 19px;
     line-height: 1.65;
     color: var(--muted);
   }
   .about p.lead {
-    font-size: clamp(22px, 2.4vw, 28px);
-    line-height: 1.38;
+    font-size: clamp(22px, 2.6vw, 30px);
+    line-height: 1.35;
     color: var(--fg);
   }
-  .about p.genre {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-    margin-top: 6px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
+  .top5 {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr));
+    align-items: end;
+    gap: 12px;
+  }
+  .artist {
+    display: grid;
+    align-content: space-between;
+    gap: 18px;
+    min-height: 150px;
+    padding: 18px;
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    min-width: 0;
+  }
+  .artist.first {
+    min-height: 200px;
+    padding: 24px;
+    background: var(--c);
+    border-color: var(--c);
+    color: var(--ink);
+  }
+  .rank {
+    font-family: var(--font-display);
+    font-size: 44px;
+    line-height: 0.9;
+    color: var(--c);
+  }
+  .first .rank {
+    font-size: 64px;
+    color: var(--ink);
+  }
+  .name {
     font-family: var(--font-sticker);
     font-weight: 800;
     text-transform: uppercase;
-    font-size: 20px;
-    color: var(--c);
+    font-size: clamp(17px, 1.7vw, 21px);
+    line-height: 1.05;
   }
-  .genre span {
-    font-family: var(--font-mono);
-    font-weight: 400;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    color: var(--muted);
+  .first .name {
+    font-size: clamp(24px, 2.6vw, 32px);
   }
-  .rank,
-  .routes,
-  .people {
+  .two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+  .rows,
+  .routes {
     list-style: none;
     margin: 0;
     padding: 0;
   }
-  .rank li,
-  .routes li {
-    display: grid;
-    grid-template-columns: 44px 1fr;
+  .rows li {
+    display: flex;
+    justify-content: space-between;
     align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
   }
-  .rank li:first-child,
+  .rows li:first-child {
+    padding-top: 0;
+  }
+  .routes li {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
   .routes li:first-child {
-    border-top: 1px solid var(--line);
+    padding-top: 0;
+  }
+  .routes .item-name,
+  .routes .item-note {
+    display: block;
   }
   .rn {
-    font-family: var(--font-serif);
-    font-weight: 900;
+    font-family: var(--font-display);
     font-size: 30px;
     line-height: 1;
     color: var(--c);
-  }
-  .ra {
-    font-family: var(--font-display);
-    font-size: clamp(30px, 3.4vw, 42px);
-    line-height: 1.05;
-    text-transform: uppercase;
-  }
-  .rank li:first-child .ra {
-    font-size: clamp(40px, 4.8vw, 60px);
-  }
-  .rank li:first-child .rn {
-    font-size: 40px;
-  }
-
-  .band {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    border-radius: 22px;
-    background: var(--c);
-    color: var(--ink);
-    overflow: hidden;
-  }
-  .band > div {
-    padding: 26px 30px;
-  }
-  .band > div + div {
-    border-left: 2px solid rgba(17, 17, 18, 0.18);
-  }
-  .band .bh {
-    color: rgba(17, 17, 18, 0.7);
-  }
-  .band-big {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: clamp(40px, 5vw, 64px);
-    line-height: 1;
-    text-transform: uppercase;
-  }
-  .band-note {
-    margin: 10px 0 0;
-    font-size: 16px;
-  }
-  .people {
-    display: grid;
-    gap: 14px;
-  }
-  .people li {
-    display: grid;
-    gap: 2px;
-  }
-  .pname {
-    font-family: var(--font-sticker);
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: 22px;
-  }
-  .pband {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: rgba(17, 17, 18, 0.7);
   }
 
   /* Facts strip (biking, drums) */
@@ -419,19 +424,6 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     color: var(--muted);
     background: #151313;
   }
-  .rname {
-    display: block;
-    font-family: var(--font-display);
-    font-size: clamp(28px, 3vw, 36px);
-    line-height: 1.05;
-    text-transform: uppercase;
-  }
-  .rnote {
-    display: block;
-    margin-top: 4px;
-    font-size: 14px;
-    color: var(--muted);
-  }
 
   /* Drums */
   .kit {
@@ -472,17 +464,19 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
   }
 
   @media (max-width: 900px) {
-    .music-top,
     .bike,
-    .band {
+    .two {
       grid-template-columns: 1fr;
     }
-    .music-top {
-      gap: 40px;
+    .top5 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    .band > div + div {
-      border-left: 0;
-      border-top: 2px solid rgba(17, 17, 18, 0.18);
+    .artist.first {
+      grid-column: 1 / -1;
+      min-height: 0;
+    }
+    .artist {
+      min-height: 120px;
     }
   }
   @media (max-width: 600px) {
@@ -515,9 +509,6 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     }
     .facts > .fact:last-child:not(.wide) {
       border-bottom: 0;
-    }
-    .band > div {
-      padding: 22px;
     }
     .photos {
       grid-template-columns: 1fr;
