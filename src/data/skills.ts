@@ -117,3 +117,82 @@ export const allSkills = skillGroups.flatMap((g) => g.skills);
 
 export const skillSlug = (name: string) =>
   name.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+// Which skills matter for each role I'm open to. Drives the role heatmap on the Skills page.
+export type RoleKey = 'swe' | 'ai' | 'data';
+
+export const roleInfo: Record<RoleKey, { name: string; color: string }> = {
+  swe: { name: 'Software Engineer', color: 'var(--pink)' },
+  ai: { name: 'AI Engineer', color: 'var(--teal)' },
+  data: { name: 'Data Scientist', color: 'var(--yellow)' },
+};
+
+const roleMap: Record<string, RoleKey[]> = {
+  Python: ['swe', 'ai', 'data'],
+  SQL: ['swe', 'data'],
+  JavaScript: ['swe'],
+  'HTML / CSS': ['swe'],
+  TypeScript: ['swe', 'ai'],
+  'C++': ['swe'],
+  C: ['swe'],
+  'Next.js / React': ['swe'],
+  'Node.js / Express': ['swe'],
+  'Tailwind CSS': ['swe'],
+  XGBoost: ['ai', 'data'],
+  'scikit-learn': ['ai', 'data'],
+  'pandas / NumPy': ['ai', 'data'],
+  'OpenAI API': ['ai'],
+  FastAPI: ['swe', 'ai'],
+  'LangChain / LangGraph': ['ai'],
+  PySpark: ['data'],
+  Prisma: ['swe'],
+  PyTorch: ['ai', 'data'],
+  TensorFlow: ['ai', 'data'],
+  Django: ['swe'],
+  PostgreSQL: ['swe', 'ai', 'data'],
+  MySQL: ['swe', 'data'],
+  MongoDB: ['swe', 'data'],
+  'Vector databases (Chroma, pgvector)': ['ai'],
+  Linux: ['swe', 'ai', 'data'],
+  'Git / GitHub': ['swe', 'ai', 'data'],
+  'Redis / BullMQ': ['swe'],
+  Elasticsearch: ['swe'],
+  'CI/CD (GitHub Actions)': ['swe'],
+  Docker: ['swe', 'ai'],
+  AWS: ['swe', 'ai'],
+  'GCP (incl. Pub/Sub)': ['swe', 'ai'],
+  'LLMs & local models (Ollama)': ['ai'],
+  'RAG / retrieval': ['ai'],
+  'AI agents': ['ai'],
+  'Model evaluation & statistics': ['ai', 'data'],
+  'Feature engineering & calibration': ['ai', 'data'],
+  'Federated learning': ['ai', 'data'],
+  'Software architecture': ['swe', 'ai'],
+  'REST APIs': ['swe', 'ai'],
+  'Database design (ER, normalization, indexing)': ['swe', 'data'],
+  'Data structures & algorithms': ['swe', 'ai', 'data'],
+  'Design patterns / SOLID': ['swe'],
+  'Distributed systems': ['swe', 'ai'],
+  'Testing & TDD': ['swe'],
+  Security: ['swe', 'ai'],
+  'Operating systems': ['swe'],
+  'Computer networks': ['swe'],
+  'Computer architecture': ['swe'],
+  'Compilers & code optimization': ['swe'],
+};
+
+export const rolesFor = (name: string): RoleKey[] => roleMap[name] ?? [];
+
+// Short names for the heatmap labels, where the full name is long.
+const shortNames: Record<string, string> = {
+  'Vector databases (Chroma, pgvector)': 'Vector DBs',
+  'LLMs & local models (Ollama)': 'LLMs & Ollama',
+  'Database design (ER, normalization, indexing)': 'Database design',
+  'Model evaluation & statistics': 'Model eval & stats',
+  'Feature engineering & calibration': 'Feature engineering',
+  'GCP (incl. Pub/Sub)': 'GCP',
+  'CI/CD (GitHub Actions)': 'CI/CD',
+  'Data structures & algorithms': 'DSA',
+  'Compilers & code optimization': 'Compilers',
+};
+export const shortName = (name: string) => shortNames[name] ?? name;
