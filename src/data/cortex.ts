@@ -1,4 +1,5 @@
 import advancedDsa from './knowledge/advanced-dsa.json';
+import notesRepo from './knowledge/notes.json';
 
 // Data for the Skill Cortex (the neural map at the top of the Skills page).
 // Main skills come from skills.ts. Extra neurons below are parts of those skills
@@ -175,10 +176,48 @@ export const extraNeurons: ExtraNeuron[] = [
 
 // Study notes: topics from note/practice repos become neurons, and each problem or note
 // becomes a small "memory" around its topic. Work regions per topic:
-export type MemoryItem = { title: string; path: string; day: string; kind: 'problem' | 'note'; status: 'done' | 'sketch' | 'planned' };
-export type StudySource = { source: string; url: string; branch: string; topics: { topic: string; items: MemoryItem[] }[] };
+export type MemoryItem = {
+  title: string;
+  path: string;
+  day: string | null;
+  kind: 'problem' | 'note';
+  status: 'done' | 'sketch' | 'planned';
+  takeaway?: string;
+  source?: string | null;
+  firstSeen?: string | null;
+  revisions?: number;
+  links?: string[];
+};
+// A line from the notes repo's _topics.md: "- path → skill: … · region: … · level: …".
+export type TopicMap = { skill?: string; region?: string; level?: string; suggested?: boolean } | null;
+export type StudySource = { source: string; url: string; branch: string; topics: { topic: string; map?: TopicMap; items: MemoryItem[] }[] };
 
-export const studySources: StudySource[] = [advancedDsa as StudySource];
+// advancedDSA is a one-time snapshot. notes.json is refreshed from github.com/AbrahamLinksus/notes
+// before every build by scripts/sync-notes.mjs.
+export const studySources: StudySource[] = [advancedDsa as StudySource, notesRepo as StudySource];
+
+// How free-text skills in the notes repo's _topics.md map onto neurons already in the brain.
+// Anything not listed here (and not an exact neuron name) becomes its own subject hub neuron.
+export const skillAliases: Record<string, string> = {
+  statistics: 'Model evaluation & statistics',
+  probability: 'Probability theory',
+  'data preprocessing': 'Feature engineering & calibration',
+  'feature engineering': 'Feature engineering & calibration',
+  dsa: 'Data structures & algorithms',
+  'data structures': 'Data structures & algorithms',
+  algorithms: 'Data structures & algorithms',
+  'operating systems': 'Operating systems',
+  networking: 'Computer networks',
+};
+
+// Free-text region names from _topics.md, matched to region keys.
+export const regionAliases: Record<string, string> = {
+  frontend: 'f', 'full-stack': 'f', backend: 'b', devops: 'o', cloud: 'o', systems: 'y', 'low-level': 'y',
+  ai: 'a', llm: 'a', 'data engineering': 'e', 'data science': 'd', 'machine learning': 'm', ml: 'm',
+};
+
+// Neuron type for a new subject hub, by the region it lives in.
+export const regionCategory: Record<string, number> = { f: 4, b: 4, o: 4, y: 5, e: 2, d: 3, m: 3, a: 3 };
 
 // Which listed skill each study topic belongs to, and where it sits in the brain.
 export const studyTopicMeta: Record<string, { parent: string; work: string }> = {

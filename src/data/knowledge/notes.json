@@ -1,0 +1,845 @@
+{
+ "source": "notes",
+ "url": "https://github.com/AbrahamLinksus/notes",
+ "branch": "main",
+ "commit": "8477d424b333b8da649b7ab840921d3c07526dc8",
+ "syncedAt": "2026-11-07T09:33:07.494Z",
+ "topics": [
+  {
+   "topic": "data-science/feature-engineering",
+   "map": {
+    "suggested": true,
+    "skill": "data preprocessing",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "Feature engineering steps",
+     "takeaway": "Feature engineering turns raw data into useful data: EDA, then missing values, class imbalance, outliers, and finally scaling (normalisation or standardisation).",
+     "path": "notes/data-science/feature-engineering/feature-engineering-steps.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 24, 57, 62)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/descriptive/percentiles-and-outliers.md",
+      "notes/data-science/statistics/probability/z-score-and-standard-normal.md",
+      "notes/data-science/ml/supervised/k-nearest-neighbours.md",
+      "notes/data-science/ml/ensembles/random-forest.md",
+      "notes/data-science/ml/ensembles/random-forest-missing-data.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/ml/ensembles",
+   "map": {
+    "suggested": true,
+    "skill": "machine learning",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "AdaBoost",
+     "takeaway": "AdaBoost chains decision stumps, gives each one a vote weighted by how well it did, and boosts the weights of misclassified rows so the next stump concentrates on them.",
+     "path": "notes/data-science/ml/ensembles/adaboost.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 24–25, 67)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/ensembles/bagging-vs-boosting.md",
+      "notes/data-science/ml/ensembles/gradient-boosting.md",
+      "notes/data-science/ml/supervised/decision-tree-splits.md"
+     ]
+    },
+    {
+     "title": "Bagging vs boosting",
+     "takeaway": "Bagging trains models in parallel on random subsets and votes or averages to cut variance, while boosting trains weak learners in sequence so each one fixes the previous one's errors.",
+     "path": "notes/data-science/ml/ensembles/bagging-vs-boosting.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 21–22)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/ensembles/random-forest.md",
+      "notes/data-science/ml/ensembles/adaboost.md",
+      "notes/data-science/ml/ensembles/gradient-boosting.md",
+      "notes/data-science/ml/ensembles/xgboost.md",
+      "notes/data-science/ml/fundamentals/bias-variance-tradeoff.md"
+     ]
+    },
+    {
+     "title": "Gradient boosting (regression)",
+     "takeaway": "Gradient boosting starts from the mean prediction, then keeps adding small trees that predict the remaining residuals, each scaled down by a learning rate.",
+     "path": "notes/data-science/ml/ensembles/gradient-boosting.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 68)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/ensembles/bagging-vs-boosting.md",
+      "notes/data-science/ml/ensembles/xgboost.md",
+      "notes/data-science/ml/ensembles/adaboost.md",
+      "notes/data-science/ml/supervised/gradient-descent.md"
+     ]
+    },
+    {
+     "title": "Random forest: filling missing data",
+     "takeaway": "A random forest fills missing values by starting with a simple guess, then refining it with a proximity matrix that weights similar samples, and repeating until the values stop changing.",
+     "path": "notes/data-science/ml/ensembles/random-forest-missing-data.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 66–67)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/ensembles/random-forest.md",
+      "notes/data-science/feature-engineering/feature-engineering-steps.md",
+      "notes/data-science/statistics/descriptive/central-tendency-and-dispersion.md"
+     ]
+    },
+    {
+     "title": "Random forest",
+     "takeaway": "A random forest trains many decision trees, each on a bootstrapped sample and a random subset of features, and takes a majority vote so that each tree's overfitting averages out.",
+     "path": "notes/data-science/ml/ensembles/random-forest.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 22–24, 65–66)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/ensembles/bagging-vs-boosting.md",
+      "notes/data-science/ml/ensembles/random-forest-missing-data.md",
+      "notes/data-science/ml/supervised/decision-tree-splits.md",
+      "notes/data-science/ml/supervised/k-nearest-neighbours.md"
+     ]
+    },
+    {
+     "title": "XGBoost",
+     "takeaway": "XGBoost builds trees in sequence on the residuals and picks splits by similarity score and gain, with a λ regulariser in the denominator.",
+     "path": "notes/data-science/ml/ensembles/xgboost.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 27)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/ensembles/gradient-boosting.md",
+      "notes/data-science/ml/ensembles/bagging-vs-boosting.md",
+      "notes/data-science/ml/supervised/decision-tree-splits.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/ml/fundamentals",
+   "map": {
+    "suggested": true,
+    "skill": "machine learning",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "AI vs ML vs DL vs DS",
+     "takeaway": "DL sits inside ML, which sits inside AI, and data science draws on all of them along with statistics.",
+     "path": "notes/data-science/ml/fundamentals/ai-vs-ml-vs-dl-vs-ds.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 1)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/fundamentals/supervised-vs-unsupervised.md",
+      "notes/data-science/recommender-systems/recommender-system-types.md"
+     ]
+    },
+    {
+     "title": "Bias–variance tradeoff",
+     "takeaway": "Aim for a model with low bias and low variance: it fits the true pattern and stays stable across different data splits.",
+     "path": "notes/data-science/ml/fundamentals/bias-variance-tradeoff.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 12, 26, 64)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/ridge-and-lasso-regression.md",
+      "notes/data-science/ml/ensembles/bagging-vs-boosting.md",
+      "notes/data-science/ml/ensembles/random-forest.md"
+     ]
+    },
+    {
+     "title": "Supervised vs unsupervised learning",
+     "takeaway": "Supervised learning trains on labelled data to predict a dependent feature, while unsupervised learning has no dependent feature and finds hidden structure on its own.",
+     "path": "notes/data-science/ml/fundamentals/supervised-vs-unsupervised.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 1–2, 29)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/fundamentals/ai-vs-ml-vs-dl-vs-ds.md",
+      "notes/data-science/ml/supervised/linear-regression.md",
+      "notes/data-science/ml/supervised/logistic-regression.md",
+      "notes/data-science/ml/unsupervised/k-means-and-elbow-method.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/ml/supervised",
+   "map": {
+    "suggested": true,
+    "skill": "machine learning",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "Classification metrics",
+     "takeaway": "Precision cares about false positives, recall cares about false negatives, and the F-β score blends the two with β choosing which one matters more.",
+     "path": "notes/data-science/ml/supervised/classification-metrics.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 6, 15–16)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/roc-auc.md",
+      "notes/data-science/ml/supervised/logistic-regression.md",
+      "notes/data-science/statistics/inferential/p-value-and-errors.md"
+     ]
+    },
+    {
+     "title": "Decision tree splits: entropy, Gini, information gain",
+     "takeaway": "A decision tree picks, at each node, the feature whose split gives the highest information gain, meaning the biggest drop in impurity.",
+     "path": "notes/data-science/ml/supervised/decision-tree-splits.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 17–20)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/ensembles/random-forest.md",
+      "notes/data-science/ml/ensembles/adaboost.md",
+      "notes/data-science/ml/ensembles/xgboost.md"
+     ]
+    },
+    {
+     "title": "Gradient descent",
+     "takeaway": "Gradient descent repeatedly steps each parameter against the slope of the cost function, scaled by a learning rate α, until it converges at the minimum.",
+     "path": "notes/data-science/ml/supervised/gradient-descent.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 9–10)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/linear-regression.md",
+      "notes/data-science/ml/supervised/logistic-regression.md",
+      "notes/data-science/ml/ensembles/gradient-boosting.md"
+     ]
+    },
+    {
+     "title": "K-nearest neighbours (KNN)",
+     "takeaway": "KNN predicts from the k closest training points: a majority vote for classification, an average for regression.",
+     "path": "notes/data-science/ml/supervised/k-nearest-neighbours.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 16–17, 24)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/decision-tree-splits.md",
+      "notes/data-science/ml/ensembles/random-forest.md",
+      "notes/data-science/feature-engineering/feature-engineering-steps.md"
+     ]
+    },
+    {
+     "title": "Linear regression",
+     "takeaway": "Linear regression fits the straight line h(x) = θ₀ + θ₁x that minimises the squared error between predicted and actual values.",
+     "path": "notes/data-science/ml/supervised/linear-regression.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 3, 7–8, 13)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/gradient-descent.md",
+      "notes/data-science/ml/supervised/r-squared-and-adjusted-r-squared.md",
+      "notes/data-science/ml/supervised/ridge-and-lasso-regression.md",
+      "notes/data-science/statistics/probability/z-score-and-standard-normal.md"
+     ]
+    },
+    {
+     "title": "Logistic regression",
+     "takeaway": "Logistic regression is linear regression squashed through a sigmoid into a probability between 0 and 1, trained with log loss so the cost stays convex.",
+     "path": "notes/data-science/ml/supervised/logistic-regression.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 13–14)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/linear-regression.md",
+      "notes/data-science/ml/supervised/gradient-descent.md",
+      "notes/data-science/ml/supervised/classification-metrics.md",
+      "notes/data-science/ml/supervised/roc-auc.md"
+     ]
+    },
+    {
+     "title": "R² and adjusted R²",
+     "takeaway": "R² measures how much better a regression fits than just predicting the mean, and adjusted R² penalises predictors that don't earn their place.",
+     "path": "notes/data-science/ml/supervised/r-squared-and-adjusted-r-squared.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 10–11)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/linear-regression.md",
+      "notes/data-science/ml/supervised/classification-metrics.md",
+      "notes/data-science/statistics/descriptive/central-tendency-and-dispersion.md"
+     ]
+    },
+    {
+     "title": "Ridge and Lasso regression",
+     "takeaway": "Ridge (L2) and Lasso (L1) add a slope penalty to the cost function to stop overfitting, and Lasso can also drop useless features entirely.",
+     "path": "notes/data-science/ml/supervised/ridge-and-lasso-regression.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 12)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/fundamentals/bias-variance-tradeoff.md",
+      "notes/data-science/ml/supervised/linear-regression.md",
+      "notes/data-science/ml/supervised/gradient-descent.md"
+     ]
+    },
+    {
+     "title": "ROC–AUC",
+     "takeaway": "The ROC curve plots TPR against FPR across every threshold, and the area under it (AUC) lets you compare classifiers with a single number.",
+     "path": "notes/data-science/ml/supervised/roc-auc.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 65)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/classification-metrics.md",
+      "notes/data-science/ml/supervised/logistic-regression.md"
+     ]
+    },
+    {
+     "title": "Support vector machines (SVM)",
+     "takeaway": "An SVM classifies by finding the hyperplane w·x + b = 0 that separates the classes with the widest possible margin.",
+     "path": "notes/data-science/ml/supervised/support-vector-machines.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 28)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/supervised/logistic-regression.md",
+      "notes/data-science/ml/supervised/k-nearest-neighbours.md",
+      "notes/data-science/ml/supervised/classification-metrics.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/ml/unsupervised",
+   "map": {
+    "suggested": true,
+    "skill": "machine learning",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "K-means and the elbow method",
+     "takeaway": "K-means groups unlabelled data around k centroids, alternating between assigning points and moving centroids, and the elbow method picks k where WCSS stops dropping sharply.",
+     "path": "notes/data-science/ml/unsupervised/k-means-and-elbow-method.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 29–30)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/ml/fundamentals/supervised-vs-unsupervised.md",
+      "notes/data-science/ml/supervised/k-nearest-neighbours.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/nlp",
+   "map": {
+    "suggested": true,
+    "skill": "natural language processing",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "One-hot encoding and bag of words",
+     "takeaway": "One-hot turns each word into a sparse binary vector, and bag of words turns a whole sentence into a vector of word counts. Both ignore word order and meaning.",
+     "path": "notes/data-science/nlp/one-hot-and-bag-of-words.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 35–37)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/nlp/tf-idf.md",
+      "notes/data-science/nlp/word-embeddings-word2vec.md",
+      "notes/data-science/nlp/tokenization-and-stop-words.md"
+     ]
+    },
+    {
+     "title": "Stemming vs lemmatization",
+     "takeaway": "Stemming chops affixes off to reach a crude root that may not be a real word, while lemmatization maps each word to its dictionary form (the lemma) using its part of speech.",
+     "path": "notes/data-science/nlp/stemming-vs-lemmatization.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 32–35)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/nlp/tokenization-and-stop-words.md",
+      "notes/data-science/nlp/one-hot-and-bag-of-words.md"
+     ]
+    },
+    {
+     "title": "TF-IDF",
+     "takeaway": "TF-IDF scores a word by how often it appears in a sentence, weighted down by how many sentences contain it, so words found everywhere score zero.",
+     "path": "notes/data-science/nlp/tf-idf.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 37–39)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/nlp/one-hot-and-bag-of-words.md",
+      "notes/data-science/nlp/word-embeddings-word2vec.md"
+     ]
+    },
+    {
+     "title": "Tokenization and stop words",
+     "takeaway": "Tokenization breaks text into tokens, and stop-word removal throws away the common words that carry almost no meaning before any further processing.",
+     "path": "notes/data-science/nlp/tokenization-and-stop-words.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 31–32, 34)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/nlp/stemming-vs-lemmatization.md",
+      "notes/data-science/nlp/one-hot-and-bag-of-words.md"
+     ]
+    },
+    {
+     "title": "Word embeddings and Word2Vec",
+     "takeaway": "Word embeddings are dense real-valued vectors where words with similar meanings sit close together, and Word2Vec learns them with a small neural network using CBOW or skip-gram.",
+     "path": "notes/data-science/nlp/word-embeddings-word2vec.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 39–41)",
+     "firstSeen": "2026-11-07T14:58:21+05:30",
+     "lastChanged": "2026-11-07T14:58:21+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/nlp/tf-idf.md",
+      "notes/data-science/nlp/one-hot-and-bag-of-words.md",
+      "notes/data-science/recommender-systems/recommender-system-types.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/recommender-systems",
+   "map": {
+    "suggested": true,
+    "skill": "machine learning",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "Recommender system types",
+     "takeaway": "Collaborative filtering recommends what similar users liked, content-based filtering recommends items similar to the ones you already like, and hybrid systems combine the two to cover each one's weak spots.",
+     "path": "notes/data-science/recommender-systems/recommender-system-types.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 42–43)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/nlp/word-embeddings-word2vec.md",
+      "notes/data-science/ml/fundamentals/ai-vs-ml-vs-dl-vs-ds.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/statistics/descriptive",
+   "map": {
+    "suggested": true,
+    "skill": "statistics",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "Central tendency and dispersion",
+     "takeaway": "Mean, median and mode tell you where the data sits, and range, IQR, variance and SD tell you how spread out it is. With outliers, prefer median and IQR.",
+     "path": "notes/data-science/statistics/descriptive/central-tendency-and-dispersion.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 4, 47)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/descriptive/skewness-and-kurtosis.md",
+      "notes/data-science/statistics/descriptive/percentiles-and-outliers.md",
+      "notes/data-science/statistics/descriptive/types-of-data-and-statistics.md",
+      "notes/data-science/statistics/probability/z-score-and-standard-normal.md"
+     ]
+    },
+    {
+     "title": "Covariance vs correlation",
+     "takeaway": "Covariance tells you only the direction two variables move together, while correlation scales it to the range −1 to +1 so you also get the strength.",
+     "path": "notes/data-science/statistics/descriptive/covariance-vs-correlation.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 50–51)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/descriptive/central-tendency-and-dispersion.md",
+      "notes/data-science/ml/supervised/linear-regression.md"
+     ]
+    },
+    {
+     "title": "Percentiles, the five-number summary and outlier detection",
+     "takeaway": "To flag outliers, use IQR fences (Q1 − 1.5·IQR, Q3 + 1.5·IQR) on skewed data and |z| > 3 on normal data, so check the shape of the distribution before picking a method.",
+     "path": "notes/data-science/statistics/descriptive/percentiles-and-outliers.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 48, 54–55)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/descriptive/central-tendency-and-dispersion.md",
+      "notes/data-science/statistics/descriptive/skewness-and-kurtosis.md",
+      "notes/data-science/statistics/probability/z-score-and-standard-normal.md",
+      "notes/data-science/feature-engineering/feature-engineering-steps.md"
+     ]
+    },
+    {
+     "title": "Skewness and kurtosis",
+     "takeaway": "Skewness measures how lopsided a distribution is, which shows up as the gap between mean and median, and kurtosis measures how heavy its tails are compared with its centre.",
+     "path": "notes/data-science/statistics/descriptive/skewness-and-kurtosis.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 4–5)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/descriptive/central-tendency-and-dispersion.md",
+      "notes/data-science/statistics/descriptive/percentiles-and-outliers.md",
+      "notes/data-science/statistics/probability/common-distributions.md"
+     ]
+    },
+    {
+     "title": "Types of data and types of statistics",
+     "takeaway": "Descriptive statistics summarise the data you have and inferential statistics generalise from a sample to a population, while data itself is either categorical (nominal or ordinal) or numerical (discrete or continuous).",
+     "path": "notes/data-science/statistics/descriptive/types-of-data-and-statistics.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 44–45)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/descriptive/central-tendency-and-dispersion.md",
+      "notes/data-science/statistics/inferential/sampling-methods.md",
+      "notes/data-science/statistics/inferential/hypothesis-testing.md",
+      "notes/data-science/statistics/inferential/chi-square-test.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/statistics/inferential",
+   "map": {
+    "suggested": true,
+    "skill": "statistics",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "Chi-square test",
+     "takeaway": "The chi-square test checks claims about population proportions in categorical data by comparing observed counts with expected counts.",
+     "path": "notes/data-science/statistics/inferential/chi-square-test.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 60–61)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/inferential/hypothesis-testing.md",
+      "notes/data-science/statistics/inferential/p-value-and-errors.md",
+      "notes/data-science/statistics/descriptive/types-of-data-and-statistics.md"
+     ]
+    },
+    {
+     "title": "Confidence intervals, z-test and t-test",
+     "takeaway": "A confidence interval is the point estimate ± a margin of error. Use z when the population SD is known and t (with df = n − 1) when it isn't.",
+     "path": "notes/data-science/statistics/inferential/confidence-intervals-z-and-t.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 58–60)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/inferential/hypothesis-testing.md",
+      "notes/data-science/statistics/inferential/p-value-and-errors.md",
+      "notes/data-science/statistics/probability/z-score-and-standard-normal.md",
+      "notes/data-science/statistics/probability/central-limit-theorem.md"
+     ]
+    },
+    {
+     "title": "Hypothesis testing",
+     "takeaway": "A hypothesis test assumes the null (no effect) and asks whether the experimental data is extreme enough, in one tail or both, to reject it.",
+     "path": "notes/data-science/statistics/inferential/hypothesis-testing.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 51–53)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/inferential/p-value-and-errors.md",
+      "notes/data-science/statistics/inferential/confidence-intervals-z-and-t.md",
+      "notes/data-science/statistics/inferential/chi-square-test.md",
+      "notes/data-science/statistics/inferential/sampling-methods.md"
+     ]
+    },
+    {
+     "title": "P-value, significance and Type I/II errors",
+     "takeaway": "If p ≤ 0.05, reject H₀. A Type I error rejects a true H₀ (a false positive), and a Type II error keeps a false H₀ (a false negative).",
+     "path": "notes/data-science/statistics/inferential/p-value-and-errors.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 57–59, 61)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/inferential/hypothesis-testing.md",
+      "notes/data-science/statistics/inferential/confidence-intervals-z-and-t.md",
+      "notes/data-science/ml/supervised/classification-metrics.md"
+     ]
+    },
+    {
+     "title": "Sampling methods",
+     "takeaway": "In probability sampling every member has an equal, random chance of being picked. Non-probability sampling picks by judgement or convenience, which is easier but biased.",
+     "path": "notes/data-science/statistics/inferential/sampling-methods.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 46)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/descriptive/types-of-data-and-statistics.md",
+      "notes/data-science/statistics/probability/central-limit-theorem.md",
+      "notes/data-science/statistics/inferential/hypothesis-testing.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "data-science/statistics/probability",
+   "map": {
+    "suggested": true,
+    "skill": "probability",
+    "region": "data science"
+   },
+   "items": [
+    {
+     "title": "Central limit theorem (CLT)",
+     "takeaway": "As sample size grows, the distribution of sample means approaches a normal distribution, whatever shape the original data has.",
+     "path": "notes/data-science/statistics/probability/central-limit-theorem.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 69)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/probability/common-distributions.md",
+      "notes/data-science/statistics/inferential/sampling-methods.md",
+      "notes/data-science/statistics/inferential/confidence-intervals-z-and-t.md"
+     ]
+    },
+    {
+     "title": "Common distributions: uniform, normal, Bernoulli",
+     "takeaway": "In a normal distribution 68%, 95% and 99.7% of the data falls within 1, 2 and 3 SDs of the mean. Uniform gives every outcome equal odds, and Bernoulli has only the outcomes 0 and 1.",
+     "path": "notes/data-science/statistics/probability/common-distributions.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 49, 55–56, 62)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/probability/z-score-and-standard-normal.md",
+      "notes/data-science/statistics/probability/central-limit-theorem.md",
+      "notes/data-science/statistics/descriptive/skewness-and-kurtosis.md"
+     ]
+    },
+    {
+     "title": "Conditional probability and Bayes' theorem",
+     "takeaway": "Bayes' theorem turns P(B|A) into P(A|B) by weighting it with the prior P(A) and dividing by the marginal P(B).",
+     "path": "notes/data-science/statistics/probability/conditional-probability-and-bayes.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 5–6)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/probability/probability-basics.md",
+      "notes/data-science/ml/supervised/classification-metrics.md"
+     ]
+    },
+    {
+     "title": "Permutations and combinations",
+     "takeaway": "Use a permutation when order matters (nPr = n!/(n−r)!) and a combination when it doesn't (nCr = n!/(r!(n−r)!)).",
+     "path": "notes/data-science/statistics/probability/permutations-and-combinations.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (p. 57)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/probability/probability-basics.md",
+      "notes/data-science/statistics/probability/conditional-probability-and-bayes.md"
+     ]
+    },
+    {
+     "title": "Probability basics and the addition rule",
+     "takeaway": "P(A ∪ B) = P(A) + P(B) − P(A ∩ B), and the overlap term drops out only when A and B are mutually exclusive.",
+     "path": "notes/data-science/statistics/probability/probability-basics.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 48–49)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/probability/conditional-probability-and-bayes.md",
+      "notes/data-science/statistics/probability/permutations-and-combinations.md",
+      "notes/data-science/statistics/probability/common-distributions.md"
+     ]
+    },
+    {
+     "title": "Z-score and the standard normal distribution",
+     "takeaway": "A z-score gives how many standard deviations a point lies from the mean, and z-scoring normal data produces the standard normal distribution, with μ = 0 and σ = 1.",
+     "path": "notes/data-science/statistics/probability/z-score-and-standard-normal.md",
+     "day": "2026-11-07",
+     "kind": "note",
+     "status": "done",
+     "source": "Data_Science.pdf (pp. 56–57)",
+     "firstSeen": "2026-11-07T14:58:22+05:30",
+     "lastChanged": "2026-11-07T14:58:22+05:30",
+     "revisions": 0,
+     "links": [
+      "notes/data-science/statistics/probability/common-distributions.md",
+      "notes/data-science/statistics/descriptive/percentiles-and-outliers.md",
+      "notes/data-science/statistics/inferential/confidence-intervals-z-and-t.md",
+      "notes/data-science/feature-engineering/feature-engineering-steps.md"
+     ]
+    }
+   ]
+  }
+ ]
+}

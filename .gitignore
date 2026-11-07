@@ -21,3 +21,6 @@ npm-debug.log*
 
 # Vercel
 .vercel/
+
+# synced notes repo (rebuilt every build)
+.cache/
