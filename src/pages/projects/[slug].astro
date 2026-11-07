@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProjects, colorVar } from '../../lib/projects';
+import { skillSlug } from '../../data/skills';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -71,7 +72,7 @@ const { Content } = await render(project);
             <ul>
               {p.skills.map((s) => (
                 <li>
-                  <a href="/skills">{s}</a>
+                  <a href={`/skills#${skillSlug(s)}`}>{s}</a>
                 </li>
               ))}
             </ul>

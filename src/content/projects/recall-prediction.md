@@ -5,7 +5,7 @@ year: 2026
 status: Shipped
 roles: [Data, AI]
 stack: [Python, PySpark, XGBoost, Parquet]
-skills: [Python, PySpark, XGBoost, Feature engineering, Calibration, Statistics]
+skills: ['Python', 'PySpark', 'XGBoost', 'Feature engineering & calibration', 'Model evaluation & statistics']
 repo: https://github.com/AbrahamLinksus/recallPrediction
 featured: true
 order: 3

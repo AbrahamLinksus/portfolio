@@ -1,6 +1,9 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { allSkills } from './data/skills';
+
+const skillNames = allSkills.map((s) => s.name) as [string, ...string[]];
 
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
@@ -12,7 +15,8 @@ const projects = defineCollection({
     // Which of the roles I'm open to this project best shows off.
     roles: z.array(z.enum(['Software', 'AI', 'Data'])),
     stack: z.array(z.string()),
-    skills: z.array(z.string()).default([]),
+    // Must match a name in src/data/skills.ts, so the Skills page can link back here.
+    skills: z.array(z.enum(skillNames)).default([]),
     repo: z.string().url(),
     live: z.string().url().optional(),
     featured: z.boolean().default(false),

@@ -5,7 +5,7 @@ year: 2026
 status: Prototype
 roles: [Software]
 stack: [TypeScript, Next.js, Prisma, Postgres, pgvector, Turborepo]
-skills: [TypeScript, Next.js, PostgreSQL, Software architecture, Security, Testing]
+skills: ['TypeScript', 'Next.js / React', 'PostgreSQL', 'SQL', 'Docker', 'Software architecture', 'Security', 'Testing']
 repo: https://github.com/AbrahamLinksus/queuedup_v2
 featured: false
 order: 5

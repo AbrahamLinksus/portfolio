@@ -5,7 +5,7 @@ year: 2026
 status: Prototype
 roles: [AI, Data]
 stack: [Python, FastAPI, PyTorch, Streamlit, Plotly]
-skills: [Python, FastAPI, Machine learning, Federated learning, Security]
+skills: ['Python', 'FastAPI', 'PyTorch', 'Federated learning', 'Distributed systems', 'Security']
 repo: https://github.com/AbrahamLinksus/fedLearn
 featured: false
 order: 6

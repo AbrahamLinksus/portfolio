@@ -1,11 +1,312 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import ComingSoon from '../components/ComingSoon.astro';
+import { skillGroups, levels, skillSlug, allSkills, type Level } from '../data/skills';
+import { getProjects, colorVar } from '../lib/projects';
+
+const projects = await getProjects();
+const usedIn = (name: string) => projects.filter((p) => p.data.skills.includes(name));
+const count = (l: Level) => allSkills.filter((s) => s.level === l).length;
+const learning = allSkills.filter((s) => s.level === 'Learning');
 ---
 
-<BaseLayout title="Skills" description="What I've learned so far, and the projects where I used it.">
-  <PageIntro number="03" title="Skills" lede="What I've learned so far, and the projects where I used it." />
-  <ComingSoon step="step 4" />
-  <div id="learning"></div>
+<BaseLayout
+  title="Skills"
+  description="What Jake Roberts has learned so far, with levels and the projects where each skill was used."
+>
+  <PageIntro
+    number="03"
+    title="Skills"
+    lede="Things I can do without Stack Overflow (mostly). Each skill links to the projects where I actually used it."
+  />
+
+  <section class="container">
+    <ul class="legend" aria-label="Levels">
+      {
+        (Object.keys(levels) as Level[]).map((l) => (
+          <li style={`--lc: ${levels[l].color}`}>
+            <span class="meter" aria-hidden="true">
+              {[1, 2, 3].map((n) => <i class:list={{ on: n <= levels[l].rank }} />)}
+            </span>
+            <span class="ln">{l}</span>
+            <span class="lnote">{levels[l].note}</span>
+            <span class="lcount">{count(l)}</span>
+          </li>
+        ))
+      }
+    </ul>
+
+    {
+      skillGroups.map((g, gi) => (
+        <section class="group" aria-labelledby={`g-${gi}`}>
+          <div class="ghead">
+            <h2 id={`g-${gi}`} class="display gtitle">{g.title}</h2>
+            <p class="gpun">{g.pun}</p>
+          </div>
+          <ul class="rows">
+            {g.skills.map((s) => {
+              const lv = levels[s.level];
+              const used = usedIn(s.name);
+              return (
+                <li class="row" id={skillSlug(s.name)} style={`--lc: ${lv.color}`}>
+                  <span class="sname">{s.name}</span>
+                  <span class="level">
+                    <span class="meter" aria-hidden="true">
+                      {[1, 2, 3].map((n) => <i class:list={{ on: n <= lv.rank }} />)}
+                    </span>
+                    <span class="lt">{s.level}</span>
+                  </span>
+                  <span class="used">
+                    {used.length > 0 ? (
+                      used.map((p) => (
+                        <a
+                          class="pchip"
+                          href={`/projects/${p.id}`}
+                          style={`--pc: ${colorVar(p.data.color)}`}
+                          title={p.data.title}
+                        >
+                          <span class="pl" aria-hidden="true">{p.data.letter}</span>
+                          <span class="pn">{p.data.title}</span>
+                        </a>
+                      ))
+                    ) : (
+                      <span class="none">No project yet</span>
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))
+    }
+
+    <section class="group learning" id="learning" aria-labelledby="learning-title">
+      <div class="ghead">
+        <h2 id="learning-title" class="display gtitle">Learning log ’26</h2>
+        <p class="gpun">Currently compiling. Expect breaking changes.</p>
+      </div>
+      <ul class="now-learning">
+        {
+          learning.map((s) => (
+            <li>
+              <a href={`#${skillSlug(s.name)}`}>{s.name}</a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="certs">Certifications and courses will be listed here.</p>
+    </section>
+  </section>
 </BaseLayout>
+
+<style>
+  .legend {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .legend li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 14px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 1.5px solid var(--line);
+  }
+  .legend .meter {
+    grid-row: 1 / 3;
+  }
+  .ln {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 17px;
+  }
+  .lnote {
+    grid-column: 2;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .lcount {
+    grid-row: 1 / 3;
+    grid-column: 3;
+    font-family: var(--font-display);
+    font-size: 40px;
+    line-height: 1;
+    color: var(--lc);
+  }
+
+  .meter {
+    display: inline-flex;
+    gap: 4px;
+  }
+  .meter i {
+    display: block;
+    width: 10px;
+    height: 22px;
+    border-radius: 3px;
+    border: 1.5px solid var(--lc);
+  }
+  .meter i.on {
+    background: var(--lc);
+  }
+
+  .group {
+    padding-top: 64px;
+    scroll-margin-top: 24px;
+  }
+  .ghead {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--fg);
+  }
+  .gtitle {
+    font-size: clamp(40px, 6vw, 64px);
+  }
+  .gpun {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) 190px minmax(0, 1.6fr);
+    align-items: center;
+    gap: 16px;
+    padding: 14px 8px;
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: 24px;
+    transition: background-color 0.3s ease;
+  }
+  .row:target {
+    background: color-mix(in srgb, var(--lc) 18%, transparent);
+    border-radius: 10px;
+  }
+  .sname {
+    font-size: 17px;
+    font-weight: 500;
+  }
+  .level {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .level .meter i {
+    width: 8px;
+    height: 16px;
+  }
+  .lt {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .used {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 3px 10px 3px 3px;
+    border-radius: 99px;
+    border: 1px solid var(--line);
+    text-decoration: none;
+    font-size: 12.5px;
+  }
+  .pchip:hover {
+    background: var(--pc);
+    border-color: var(--pc);
+    color: var(--ink);
+  }
+  .pl {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--pc);
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 13px;
+  }
+  .none {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .now-learning {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .now-learning a {
+    display: inline-block;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 18px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: var(--yellow);
+    color: var(--ink);
+    text-decoration: none;
+    transform: rotate(-3deg);
+  }
+  .now-learning li:nth-child(even) a {
+    background: var(--teal);
+    transform: rotate(3deg);
+  }
+  .certs {
+    margin: 24px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 760px) {
+    .legend {
+      grid-template-columns: 1fr;
+    }
+    .row {
+      grid-template-columns: 1fr auto;
+      gap: 10px 12px;
+    }
+    .used {
+      grid-column: 1 / -1;
+    }
+    .pn {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    .pchip {
+      padding-right: 3px;
+    }
+  }
+</style>

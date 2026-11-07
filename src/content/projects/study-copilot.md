@@ -5,7 +5,7 @@ year: 2026
 status: In progress
 roles: [AI, Software]
 stack: [TypeScript, Next.js, LangChain, LangGraph, Chroma, Ollama, Google Calendar API]
-skills: [TypeScript, Next.js, LLMs, RAG, LangGraph, Evaluation, Statistics]
+skills: ['TypeScript', 'Next.js / React', 'LangChain / LangGraph', 'Vector databases (Chroma, pgvector)', 'LLMs & local models (Ollama)', 'RAG / retrieval', 'AI agents', 'Model evaluation & statistics']
 repo: https://github.com/AbrahamLinksus/Study_copilot
 featured: true
 order: 2
