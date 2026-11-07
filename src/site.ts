@@ -12,8 +12,8 @@ export const site = {
 
 // Roles I'm open to, in priority order. Shown on the homepage.
 export const roles = [
-  { rank: '01', role: 'Software Engineer', tag: 'Top priority', pun: 'I ship it. Usually after the tests pass.', color: 'var(--pink)' },
-  { rank: '02', role: 'AI Engineer', tag: 'Also yes', pun: "I'd be a great fit. No overfitting.", color: 'var(--teal)' },
+  { rank: '01', role: 'Software Engineer', tag: 'Top priority', pun: "It works on my machine. Let's get it working on yours.", color: 'var(--pink)' },
+  { rank: '02', role: 'AI Engineer', tag: 'Also yes', pun: 'My attention is all yours.', color: 'var(--teal)' },
   { rank: '03', role: 'Data Scientist', tag: "Wouldn't mind", pun: "Statistically, I'm likely to say yes.", color: 'var(--yellow)' },
 ];
 
@@ -28,8 +28,8 @@ export type NavItem = {
 // Order and colors match the full-page menu design.
 export const nav: NavItem[] = [
   { href: '/projects', label: 'Projects', letter: 'P', description: 'Case studies: problem, process, results', color: 'var(--pink)' },
-  { href: '/now', label: 'Now', letter: 'N', description: 'Fresh commits, served live from GitHub', color: 'var(--teal)' },
-  { href: '/skills', label: 'Skills', letter: 'S', description: 'My stack, fully loaded', color: 'var(--yellow)' },
-  { href: '/hobbies', label: 'Hobbies', letter: 'H', description: 'Life outside the terminal', color: 'var(--orange)' },
-  { href: '/contact', label: 'Contact', letter: 'C', description: "Let's establish a connection", color: 'var(--lime)' },
+  { href: '/now', label: 'Now', letter: 'N', description: 'Hot off the main branch', color: 'var(--teal)' },
+  { href: '/skills', label: 'Skills', letter: 'S', description: 'Things I can do without Stack Overflow', color: 'var(--yellow)' },
+  { href: '/hobbies', label: 'Hobbies', letter: 'H', description: 'Offline mode: on', color: 'var(--orange)' },
+  { href: '/contact', label: 'Contact', letter: 'C', description: "Let's sync up", color: 'var(--lime)' },
 ];
