@@ -1,0 +1,168 @@
+---
+// Stylised map of the rides from Coimbatore. Places are plotted from real coordinates;
+// the coastline is a rough sketch for orientation only.
+interface Place {
+  name: string;
+  lat: number;
+  lon: number;
+  note?: string;
+  longest?: boolean;
+  label?: 'left' | 'right';
+  bend?: number;
+}
+interface Props {
+  home: { name: string; lat: number; lon: number };
+  places: Place[];
+}
+import { km } from '../lib/geo';
+const { home, places } = Astro.props;
+
+const LON0 = 74.9, LAT0 = 13.2, KX = 108, KY = 110, PAD = 30;
+const x = (lon: number) => PAD + (lon - LON0) * KX;
+const y = (lat: number) => PAD + (LAT0 - lat) * KY;
+// Rough coastline of the southern tip: west coast north to south, then east coast back up.
+const coast: [number, number][] = [
+  [13.6, 74.6], [12.9, 74.85], [12.0, 75.3], [11.25, 75.78], [10.5, 76.0], [9.9, 76.25], [9.0, 76.5], [8.5, 76.95], [8.08, 77.54],
+  [8.8, 78.15], [9.3, 79.2], [10.3, 79.85], [11.0, 79.85], [12.0, 79.9], [13.6, 80.3],
+];
+const land = 'M' + coast.map(([la, lo]) => `${x(lo).toFixed(1)},${y(la).toFixed(1)}`).join('L') + 'Z';
+const hx = x(home.lon), hy = y(home.lat);
+const routes = places.map((p) => {
+  const px = x(p.lon), py = y(p.lat);
+  // Bend each route a little so they read as roads, not rulers.
+  const k = p.bend ?? 0.18;
+  const mx = (hx + px) / 2 + (py - hy) * k, my = (hy + py) / 2 - (px - hx) * k;
+  return { ...p, px, py, d: `M${hx.toFixed(1)},${hy.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${px.toFixed(1)},${py.toFixed(1)}`, dist: km(home, p) };
+});
+const W = Math.ceil(x(80.0)) + PAD, H = Math.ceil(y(7.85)) + PAD;
+---
+
+<svg class="ridemap" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Ride map from ${home.name}: ${routes.map((r) => `${r.name}, ${r.dist} km away`).join('; ')}`}>
+  <defs>
+    <pattern id="ride-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="rgba(242,236,228,.06)" stroke-width="1"></path>
+    </pattern>
+    <clipPath id="ride-clip"><rect width={W} height={H} rx="18"></rect></clipPath>
+  </defs>
+  <g clip-path="url(#ride-clip)">
+    <rect width={W} height={H} class="sea"></rect>
+    <rect width={W} height={H} fill="url(#ride-grid)"></rect>
+    <path d={land} class="land"></path>
+    <text class="region" x={x(76.45)} y={y(9.2)} transform={`rotate(-62 ${x(76.45)} ${y(9.2)})`}>KERALA</text>
+    <text class="region" x={x(78.3)} y={y(10.6)}>TAMIL NADU</text>
+    <text class="region" x={x(75.5)} y={y(12.3)}>KARNATAKA</text>
+    {
+      routes.map((r) => (
+        <path d={r.d} class:list={['route', { longest: r.longest }]} />
+      ))
+    }
+    {
+      routes.map((r) => {
+        const right = r.label !== 'left';
+        return (
+          <g class:list={['pin', { longest: r.longest }]}>
+            <circle cx={r.px} cy={r.py} r={r.longest ? 8 : 6} />
+            <text class="pn" x={r.px + (right ? 14 : -14)} y={r.py - 2} text-anchor={right ? 'start' : 'end'}>{r.name}</text>
+            <text class="pd" x={r.px + (right ? 14 : -14)} y={r.py + 14} text-anchor={right ? 'start' : 'end'}>
+              {r.longest ? 'LONGEST RIDE · ' : ''}{r.dist} KM AWAY
+            </text>
+          </g>
+        );
+      })
+    }
+    <g class="home">
+      <circle cx={hx} cy={hy} r="13" class="halo"></circle>
+      <circle cx={hx} cy={hy} r="7"></circle>
+      <text class="hn" x={hx + 16} y={hy + 5}>{home.name.toUpperCase()} · HOME</text>
+    </g>
+  </g>
+</svg>
+
+<style>
+  .ridemap {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .sea {
+    fill: #151313;
+  }
+  .land {
+    fill: #2a221c;
+    stroke: rgba(242, 236, 228, 0.35);
+    stroke-width: 1.5;
+  }
+  .region {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    fill: rgba(242, 236, 228, 0.28);
+  }
+  .route {
+    fill: none;
+    stroke: #ff8a1f;
+    stroke-width: 2.5;
+    stroke-dasharray: 2 6;
+    stroke-linecap: round;
+  }
+  .route.longest {
+    stroke-width: 3.5;
+    stroke-dasharray: none;
+  }
+  .pin circle {
+    fill: #ff8a1f;
+    stroke: #151313;
+    stroke-width: 3;
+  }
+  .pn {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 16px;
+    text-transform: uppercase;
+    fill: #f2ece4;
+    paint-order: stroke;
+    stroke: #151313;
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+  .pd {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    fill: #ffb878;
+    paint-order: stroke;
+    stroke: #151313;
+    stroke-width: 4px;
+  }
+  .home circle {
+    fill: #f2ece4;
+  }
+  .home .halo {
+    fill: rgba(255, 138, 31, 0.25);
+  }
+  .hn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    fill: #f2ece4;
+    paint-order: stroke;
+    stroke: #151313;
+    stroke-width: 4px;
+  }
+  @media (max-width: 600px) {
+    .pn {
+      font-size: 34px;
+      stroke-width: 7px;
+    }
+    .pd {
+      display: none;
+    }
+    .hn {
+      font-size: 24px;
+      stroke-width: 6px;
+    }
+    .region {
+      font-size: 20px;
+    }
+  }
+</style>
