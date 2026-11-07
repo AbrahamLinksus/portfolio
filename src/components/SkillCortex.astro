@@ -148,19 +148,14 @@ const data = {
         <div class="works" data-works></div>
       </div>
       <div class="card">
-        <h3>Neuron type <small>shade = level</small></h3>
+        <h3>Neuron type <small>click to isolate</small></h3>
         <div class="types" data-types></div>
         <div class="keyrow"><span>light: learning</span><span>mid: comfortable</span><span>dark: advanced</span></div>
+        <button type="button" class="show-all" data-show-all hidden>Show all types</button>
       </div>
     </div>
   </div>
 
-  <ul class="dims">
-    <li><b>Position</b>Eight regions of work. A neuron sits between the regions that use it, so shared fundamentals end up in the middle.</li>
-    <li><b>Color & shape</b>The kind of skill: languages, frameworks, data & infra, AI & data, engineering, core CS.</li>
-    <li><b>Shade & size</b>Darker is stronger. Bigger means more of my projects use it. A dashed ring means the level isn't confirmed yet.</li>
-    <li><b>Synapses & memories</b>A line joins two skills used together in a project. Tiny dots are problems and notes from my study repos, clustered around their topic.</li>
-  </ul>
 
   <script type="application/json" data-cortex set:html={JSON.stringify(data)} />
 </section>
@@ -529,7 +524,27 @@ const data = {
     background: var(--bg);
   }
   .types :global(.tbtn[aria-pressed='false']) {
-    opacity: 0.35;
+    opacity: 0.55;
+  }
+  .types :global(.tbtn[aria-pressed='false'] span:not(.shades)) {
+    text-decoration: line-through;
+    text-decoration-color: var(--muted);
+  }
+  .show-all {
+    all: unset;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 12.5px;
+    padding: 5px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--fg);
+  }
+  .show-all[hidden] {
+    display: none;
+  }
+  .show-all:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
   }
   .types :global(canvas) {
     width: 20px;
@@ -552,39 +567,12 @@ const data = {
     color: var(--muted);
     margin-top: 8px;
   }
-  .dims {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-  }
-  .dims li {
-    font-size: 12.5px;
-    color: var(--muted);
-    border-top: 2px solid var(--line);
-    padding-top: 8px;
-  }
-  .dims b {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--fg);
-    font-weight: 500;
-    margin-bottom: 2px;
-  }
   @media (max-width: 1000px) {
     .stage {
       grid-template-columns: 1fr;
     }
     .brain {
       height: 560px;
-    }
-    .dims {
-      grid-template-columns: repeat(2, 1fr);
     }
   }
   @media (max-width: 520px) {
@@ -598,9 +586,6 @@ const data = {
     .hint,
     .hemis {
       display: none;
-    }
-    .dims {
-      grid-template-columns: 1fr;
     }
   }
 </style>
@@ -982,11 +967,17 @@ const data = {
         else if (only) catOn = catOn.map(() => true);
         else catOn[i] = !catOn[i];
         if (!catOn.some(Boolean)) catOn = catOn.map(() => true);
-        typesEl.querySelectorAll('.tbtn').forEach((x, k) => x.setAttribute('aria-pressed', String(catOn[k])));
-        pulses = [];
+        syncTypes();
       });
       typesEl.appendChild(b);
     });
+    const showAll = root.querySelector<HTMLButtonElement>('[data-show-all]')!;
+    function syncTypes() {
+      typesEl.querySelectorAll('.tbtn').forEach((x, k) => x.setAttribute('aria-pressed', String(catOn[k])));
+      showAll.hidden = catOn.every(Boolean);
+      pulses = [];
+    }
+    showAll.addEventListener('click', () => { catOn = catOn.map(() => true); syncTypes(); });
 
     const VIEWS: Record<string, { yaw: number; pitch: number }> = { front: { yaw: 0, pitch: -0.2 }, top: { yaw: 0, pitch: -1.25 }, left: { yaw: Math.PI / 2, pitch: -0.15 }, right: { yaw: -Math.PI / 2, pitch: -0.15 } };
     const spinBtn = root.querySelector<HTMLButtonElement>('[data-toggle="spin"]')!;
