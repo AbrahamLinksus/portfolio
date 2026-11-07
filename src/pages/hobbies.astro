@@ -2,9 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
 import { hobbies, topArtists, drummers, codingSoundtrack } from '../data/hobbies';
+import CourtGraphic from '../components/CourtGraphic.astro';
+import DrumKitGraphic from '../components/DrumKitGraphic.astro';
 
 const music = hobbies.find((h) => h.id === 'music')!;
-const others = hobbies.filter((h) => h.id !== 'music');
 ---
 
 <BaseLayout title="Hobbies" description="Badminton, drums and progressive rock: life outside the terminal.">
@@ -12,7 +13,11 @@ const others = hobbies.filter((h) => h.id !== 'music');
 
   <nav class="container jump" aria-label="Hobbies">
     {
-      hobbies.map((h, i) => (
+      [
+        { id: 'badminton', name: 'Badminton', color: 'var(--lime)' },
+        { id: 'drums', name: 'Drums', color: 'var(--pink)' },
+        { id: 'music', name: 'Music', color: 'var(--teal)' },
+      ].map((h, i) => (
         <a href={`#${h.id}`} style={`--c: ${h.color}`}>
           <span class="num">{String(i + 1).padStart(2, '0')}</span>
           {h.name}
@@ -21,33 +26,43 @@ const others = hobbies.filter((h) => h.id !== 'music');
     }
   </nav>
 
-  {
-    others.map((h, i) => (
-      <section class="hobby container" id={h.id} style={`--c: ${h.color}`} aria-labelledby={`${h.id}-title`}>
-        <div class="head">
-          <span class="label">{String(i + 1).padStart(2, '0')} · Hobby</span>
-          <h2 id={`${h.id}-title`} class="display name">{h.name}</h2>
-          <p class="tagline">{h.tagline}</p>
-        </div>
-        <ul class="stats">
-          {h.stats.map((s) => (
-            <li>
-              <span class="sv">{s.value}</span>
-              <span class="sl">{s.label}</span>
-            </li>
-          ))}
-        </ul>
-        <div class="body">
-          <div class="text">{h.body.map((p) => <p>{p}</p>)}</div>
-          <ul class="stickers">
-            {h.stickers.map((s, k) => (
-              <li style={`--r: ${[-4, 3, -2][k % 3]}deg`}>{s}</li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    ))
-  }
+  <section class="hobby visual container" id="badminton" style="--c: var(--lime)" aria-labelledby="badminton-title">
+    <div class="head">
+      <span class="label">01 · Hobby</span>
+      <h2 id="badminton-title" class="display name">Badminton</h2>
+      <p class="line">Three hours a day on my home court, every day, for five years.</p>
+    </div>
+    <div class="art">
+      <CourtGraphic
+        boxes={[
+          { value: '5', label: 'YEARS PLAYING' },
+          { value: '365', label: 'DAYS A YEAR' },
+          { value: '3H', label: 'EVERY DAY' },
+          { value: '5,000+', label: 'HOURS ON COURT' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="hobby visual container" id="drums" style="--c: var(--pink)" aria-labelledby="drums-title">
+    <div class="head">
+      <span class="label">02 · Hobby</span>
+      <h2 id="drums-title" class="display name">Drums</h2>
+      <p class="line">Thirteen years behind a Yamaha kit, playing progressive rock at home and in church.</p>
+    </div>
+    <div class="art">
+      <DrumKitGraphic
+        kick={{ value: '13', label: 'YEARS PLAYING' }}
+        snare={{ value: 'PROG', label: '& ROCK' }}
+        tom1={{ value: 'FREE BIRD', label: 'FAVOURITE' }}
+        tom2={{ value: 'BAND', label: 'NAME TBA' }}
+        floor={{ value: 'HOME', label: 'PRACTICE' }}
+        hihat={{ value: 'YAMAHA', label: 'THE KIT' }}
+        crash={{ value: 'MIXED', label: 'CYMBALS' }}
+        ride={{ value: 'CHURCH', label: 'LIVE' }}
+      />
+    </div>
+  </section>
 
   <section class="hobby container" id={music.id} style={`--c: ${music.color}`} aria-labelledby="music-title">
     <div class="head">
@@ -163,6 +178,29 @@ const others = hobbies.filter((h) => h.id !== 'music');
   .name {
     font-size: clamp(64px, 12vw, 150px);
     color: var(--c);
+  }
+  .visual {
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr);
+    align-items: end;
+    column-gap: 40px;
+  }
+  .visual .head {
+    align-self: stretch;
+    align-content: start;
+  }
+  .visual .name {
+    font-size: clamp(52px, 6.2vw, 88px);
+    overflow-wrap: anywhere;
+  }
+  .line {
+    margin: 4px 0 0;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 36ch;
+  }
+  .art {
+    min-width: 0;
   }
   .tagline {
     margin: 0;
@@ -336,6 +374,9 @@ const others = hobbies.filter((h) => h.id !== 'music');
   }
 
   @media (max-width: 900px) {
+    .visual {
+      grid-template-columns: 1fr;
+    }
     .body,
     .music-grid {
       grid-template-columns: 1fr;

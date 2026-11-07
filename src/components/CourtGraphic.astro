@@ -1,0 +1,125 @@
+---
+// Top-down doubles badminton court, drawn to scale (13.4 m × 6.1 m), with stats painted in the service courts.
+interface Props {
+  boxes: { value: string; label: string }[]; // four boxes: left-top, left-bottom, right-top, right-bottom
+}
+const { boxes } = Astro.props;
+const S = 50; // px per metre
+const X0 = 30, Y0 = 34;
+const L = 13.4, W = 6.1;
+const x = (m: number) => X0 + m * S;
+const y = (m: number) => Y0 + m * S;
+// Service-court centres (between short service line and long doubles service line, either side of the centre line).
+const centres = [
+  [(0.76 + 4.72) / 2, (0.46 + 3.05) / 2],
+  [(0.76 + 4.72) / 2, (3.05 + 5.64) / 2],
+  [(8.68 + 12.64) / 2, (0.46 + 3.05) / 2],
+  [(8.68 + 12.64) / 2, (3.05 + 5.64) / 2],
+];
+---
+
+<svg class="court" viewBox="0 0 730 378" role="img" aria-label={`Badminton court: ${boxes.map((b) => `${b.value} ${b.label}`).join(', ')}`}>
+  <rect x="0" y="0" width="730" height="378" rx="18" class="runoff"></rect>
+  <rect x={x(0)} y={y(0)} width={L * S} height={W * S} class="floor"></rect>
+  <g class="lines">
+    <rect x={x(0)} y={y(0)} width={L * S} height={W * S} fill="none"></rect>
+    <line x1={x(0)} x2={x(L)} y1={y(0.46)} y2={y(0.46)}></line>
+    <line x1={x(0)} x2={x(L)} y1={y(5.64)} y2={y(5.64)}></line>
+    <line x1={x(4.72)} x2={x(4.72)} y1={y(0)} y2={y(W)}></line>
+    <line x1={x(8.68)} x2={x(8.68)} y1={y(0)} y2={y(W)}></line>
+    <line x1={x(0.76)} x2={x(0.76)} y1={y(0)} y2={y(W)}></line>
+    <line x1={x(12.64)} x2={x(12.64)} y1={y(0)} y2={y(W)}></line>
+    <line x1={x(0)} x2={x(4.72)} y1={y(3.05)} y2={y(3.05)}></line>
+    <line x1={x(8.68)} x2={x(L)} y1={y(3.05)} y2={y(3.05)}></line>
+  </g>
+  <g class="net">
+    <line x1={x(6.7)} x2={x(6.7)} y1={y(-0.3)} y2={y(W + 0.3)}></line>
+    <circle cx={x(6.7)} cy={y(-0.3)} r="6"></circle>
+    <circle cx={x(6.7)} cy={y(W + 0.3)} r="6"></circle>
+  </g>
+  <path class="flight" d={`M ${x(4.95)} ${y(5.35)} Q ${x(6.7)} ${y(-1.2)} ${x(8.45)} ${y(0.75)}`}></path>
+  <g class="shuttle" transform={`translate(${x(8.45)} ${y(0.75)}) rotate(55)`}>
+    <path d="M -15 -9 L 2 -4 L 2 4 L -15 9 Z"></path>
+    <circle cx="5" cy="0" r="5"></circle>
+  </g>
+  {
+    boxes.slice(0, 4).map((b, i) => {
+      const [cx, cy] = centres[i];
+      return (
+        <g class="stat">
+          <text class="v" x={x(cx)} y={y(cy) + 6} text-anchor="middle">{b.value}</text>
+          <text class="l" x={x(cx)} y={y(cy) + 30} text-anchor="middle">{b.label}</text>
+        </g>
+      );
+    })
+  }
+  <text class="tag" x={x(6.7)} y={y(W) + 30} text-anchor="middle">HOME COURT · 13.4 × 6.1 M</text>
+</svg>
+
+<style>
+  .court {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .runoff {
+    fill: #1f3a24;
+  }
+  .floor {
+    fill: #4f9a45;
+  }
+  .lines {
+    stroke: #f2ece4;
+    stroke-width: 3.5;
+  }
+  .net line {
+    stroke: #111112;
+    stroke-width: 5;
+  }
+  .net circle {
+    fill: #111112;
+  }
+  .flight {
+    fill: none;
+    stroke: #f2ece4;
+    stroke-width: 2;
+    stroke-dasharray: 2 7;
+    stroke-linecap: round;
+    opacity: 0.9;
+  }
+  .shuttle path {
+    fill: #f2ece4;
+  }
+  .shuttle circle {
+    fill: #111112;
+  }
+  .stat .v {
+    font-family: var(--font-display);
+    font-size: 58px;
+    fill: #f2ece4;
+  }
+  .stat .l {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    fill: #dfe9d5;
+  }
+  .tag {
+      font-size: 18px;
+    }
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    fill: #9bdb6a;
+  }
+  @media (max-width: 600px) {
+    .stat .l {
+      font-size: 20px;
+      letter-spacing: 0.06em;
+    }
+    .stat .v {
+      font-size: 64px;
+    }
+  </style>
