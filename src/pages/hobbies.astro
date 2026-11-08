@@ -42,16 +42,17 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
 
     <!-- MUSIC -->
     <div class="panel" role="tabpanel" id="panel-music" aria-labelledby="tab-music" tabindex="0" style="--c: var(--teal)">
-      <div class="about">
-        {music.about.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
-      </div>
-
-      <section aria-labelledby="top5-title">
-        <div class="sec-head">
-          <h2 id="top5-title" class="display sec-title">Top 5 artists</h2>
-          <span class="label">{music.genre}</span>
+      <div class="music-top">
+        <div class="about">
+          {music.about.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
         </div>
-        <div class="desk">
+        <section class="top5-wrap" aria-labelledby="top5-title">
+          <div class="desk">
+            <div class="desk-head">
+              <h2 id="top5-title">Top 5 artists</h2>
+              <span>{music.genre}</span>
+            </div>
+
           <ol class="top5">
             {
               music.topArtists.map((a, i) => {
@@ -77,8 +78,9 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
               })
             }
           </ol>
-        </div>
-      </section>
+          </div>
+        </section>
+      </div>
 
       <section aria-labelledby="sound-title">
         <div class="sec-head">
@@ -300,8 +302,37 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     color: var(--fg);
   }
   /* Top 5 as a mixing desk: one channel per artist, #1 pushed to the top. */
+  .music-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 48px;
+    align-items: start;
+  }
+  .music-top .about p.lead {
+    font-size: clamp(19px, 1.9vw, 24px);
+  }
+  .music-top .about p {
+    font-size: 17px;
+  }
+  .desk-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .desk-head h2 {
+    margin: 0;
+    font: inherit;
+    color: var(--c);
+  }
   .desk {
-    padding: 22px;
+    padding: 14px;
     border-radius: 22px;
     background: linear-gradient(180deg, #1c1b1b, #121111);
     border: 1px solid var(--line);
@@ -313,7 +344,7 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     padding: 0;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 10px;
+    gap: 6px;
   }
   .ch {
     display: grid;
@@ -322,9 +353,9 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
       'n n'
       'm f'
       't t';
-    gap: 14px 10px;
+    gap: 10px 4px;
     justify-items: center;
-    padding: 14px 10px 12px;
+    padding: 10px 6px 8px;
     border-radius: 14px;
     background: #181717;
     border: 1px solid #262424;
@@ -332,7 +363,7 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
   .ch-n {
     grid-area: n;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.12em;
     color: var(--muted);
   }
@@ -343,12 +374,12 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     grid-area: m;
     display: flex;
     flex-direction: column-reverse;
-    gap: 3px;
-    height: 220px;
+    gap: 2px;
+    height: 120px;
   }
   .meter i {
     flex: 1;
-    width: 14px;
+    width: 9px;
     border-radius: 2px;
     background: #262424;
   }
@@ -365,8 +396,8 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
   .fader {
     grid-area: f;
     position: relative;
-    width: 6px;
-    height: 220px;
+    width: 5px;
+    height: 120px;
     border-radius: 3px;
     background: #0a0a0a;
     box-shadow: inset 0 0 0 1px #2e2b2b;
@@ -374,9 +405,9 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
   .knob {
     position: absolute;
     left: 50%;
-    bottom: calc(var(--lvl) * (100% - 34px));
-    width: 34px;
-    height: 34px;
+    bottom: calc(var(--lvl) * (100% - 22px));
+    width: 24px;
+    height: 22px;
     transform: translateX(-50%);
     border-radius: 5px;
     background: linear-gradient(180deg, #f2ece4 0 46%, #111112 46% 54%, #d9d1c6 54%);
@@ -387,15 +418,15 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     justify-self: stretch;
     display: grid;
     place-items: center;
-    min-height: 54px;
-    padding: 6px 8px;
+    min-height: 40px;
+    padding: 4px 4px;
     background: var(--panel);
     color: var(--ink);
     font-family: var(--font-sticker);
     font-weight: 800;
     text-transform: uppercase;
     text-align: center;
-    font-size: clamp(14px, 1.5vw, 18px);
+    font-size: clamp(11px, 1vw, 13px);
     line-height: 1.05;
     clip-path: polygon(0 4%, 3% 0, 97% 3%, 100% 0, 99% 50%, 100% 96%, 96% 100%, 4% 97%, 0 100%, 1% 50%);
   }
@@ -590,7 +621,8 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
   }
 
   @media (max-width: 900px) {
-    .bike {
+    .bike,
+    .music-top {
       grid-template-columns: 1fr;
     }
     .albums {
@@ -603,45 +635,33 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     }
     .top5 {
       grid-template-columns: 1fr;
-      gap: 8px;
+      gap: 6px;
     }
     .ch {
-      grid-template-columns: 44px minmax(0, 1fr);
-      grid-template-areas:
-        'n t'
-        'm m'
-        'f f';
+      grid-template-columns: 40px minmax(0, 1fr) 84px;
+      grid-template-areas: 'n t m';
       justify-items: stretch;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px 14px;
+      padding: 8px 10px;
     }
     .meter {
       flex-direction: row;
-      height: 10px;
+      height: 12px;
     }
     .meter i {
       width: auto;
-      height: 10px;
+      height: 12px;
     }
     .fader {
-      width: 100%;
-      height: 6px;
-    }
-    .knob {
-      top: 50%;
-      bottom: auto;
-      left: calc(var(--lvl) * (100% - 30px));
-      width: 30px;
-      height: 22px;
-      transform: translateY(-50%);
-      background: linear-gradient(90deg, #f2ece4 0 46%, #111112 46% 54%, #d9d1c6 54%);
+      display: none;
     }
     .tape {
       min-height: 0;
       justify-items: start;
       text-align: left;
-      font-size: 17px;
+      font-size: 15px;
+      padding: 5px 8px;
     }
     .tablist {
       grid-template-columns: 1fr 1fr;
