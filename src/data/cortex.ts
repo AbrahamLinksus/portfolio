@@ -131,7 +131,7 @@ export const extraNeurons: ExtraNeuron[] = [
   { name: 'Register allocation', parent: 'Compilers & code optimization', work: 'y' },
   { name: 'Big-O analysis', parent: 'Data structures & algorithms', work: 'yb' },
   { name: 'Dynamic programming', parent: 'Data structures & algorithms', work: 'y' },
-  { name: 'Object-oriented programming', cat: 5, level: 'Comfortable', confirmed: false, work: 'bf' },
+  { name: 'Object-oriented programming', cat: 5, level: 'Advanced', work: 'bf' },
 
   // Data engineering
   { name: 'Spark ETL pipelines', parent: 'PySpark', work: 'e', projects: ['recall-prediction'] },
@@ -149,8 +149,8 @@ export const extraNeurons: ExtraNeuron[] = [
   { name: 'Train / calibration / test splits', parent: 'Model evaluation & statistics', work: 'dm', projects: ['recall-prediction'] },
   { name: 'Data leakage detection', parent: 'Feature engineering & calibration', work: 'dm', projects: ['recall-prediction'] },
   { name: 'Live dashboards (Streamlit, Plotly)', parent: 'pandas / NumPy', work: 'd', projects: ['fedlearn'] },
-  { name: 'Probability theory', cat: 3, level: 'Comfortable', confirmed: false, work: 'dm' },
-  { name: 'Linear algebra', cat: 3, level: 'Comfortable', confirmed: false, work: 'md' },
+  { name: 'Probability theory', cat: 3, level: 'Comfortable', work: 'dm' },
+  { name: 'Linear algebra', cat: 3, level: 'Comfortable', work: 'md' },
 
   // Machine learning
   { name: 'Gradient boosting', parent: 'XGBoost', work: 'm', projects: ['recall-prediction'] },
@@ -171,7 +171,7 @@ export const extraNeurons: ExtraNeuron[] = [
   { name: 'Confidence gating', parent: 'AI agents', work: 'a', projects: ['nextup'] },
   { name: 'Prompt-injection defense', parent: 'AI agents', work: 'ab', projects: ['nextup'] },
   { name: 'Graph state machines', parent: 'LangChain / LangGraph', work: 'a', projects: ['study-copilot'] },
-  { name: 'Artificial intelligence (search, logic)', cat: 3, level: 'Comfortable', confirmed: false, work: 'a' },
+  { name: 'Artificial intelligence (search, logic)', cat: 3, level: 'Advanced', work: 'a' },
 ];
 
 // Study notes: topics from note/practice repos become neurons, and each problem or note
