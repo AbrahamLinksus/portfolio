@@ -7,8 +7,6 @@ import { getProjects, colorVar } from '../lib/projects';
 // Second photo of Jake, beside the story. Leave empty to show the placeholder frame.
 const photo = '';
 
-const facts = ['Computer Science, SRM IST', 'Class of 2027', 'Chennai', 'Open to software, AI and data roles'];
-
 const projects = await getProjects();
 const built = chain.map((c, i) => {
   const p = projects.find((x) => x.id === c.project);
@@ -43,10 +41,6 @@ const research = highlights.find((h) => h.kind.startsWith('Research'));
       <div class="intro">
         {intro.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
       </div>
-
-      <ul class="facts" aria-label="Quick facts">
-        {facts.map((f) => <li>{f}</li>)}
-      </ul>
 
       <section aria-labelledby="path-title">
         <div class="sec-head">
@@ -192,6 +186,9 @@ const research = highlights.find((h) => h.kind.startsWith('Research'));
     display: grid;
     gap: 18px;
   }
+  .story > section {
+    margin-top: 16px;
+  }
   .intro p {
     margin: 0;
     max-width: 62ch;
@@ -209,26 +206,8 @@ const research = highlights.find((h) => h.kind.startsWith('Research'));
     font-weight: 500;
   }
 
-  .facts {
-    list-style: none;
-    margin: 0;
-    padding: 14px 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 0;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .facts li:not(:last-child)::after {
-    content: '·';
-    margin: 0 12px;
-    color: var(--line);
-  }
+
+
 
   .sec-head {
     display: flex;
@@ -515,9 +494,7 @@ const research = highlights.find((h) => h.kind.startsWith('Research'));
     .intro p {
       font-size: 17px;
     }
-    .facts {
-      font-size: 11px;
-    }
+
     .sec-title {
       font-size: 34px;
     }
