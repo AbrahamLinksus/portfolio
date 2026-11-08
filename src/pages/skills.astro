@@ -39,7 +39,7 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
 
     {
       skillGroups.map((g, gi) => (
-        <details class="group" data-collapse open>
+        <details class="group" data-collapse>
           <summary class="ghead">
             <h2 id={`g-${gi}`} class="display gtitle">{g.title}</h2>
             <p class="gpun">{g.pun}</p>
@@ -80,7 +80,7 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
       ))
     }
 
-    <details class="group learning" id="learning" data-collapse open>
+    <details class="group learning" id="learning" data-collapse>
       <summary class="ghead">
         <h2 id="learning-title" class="display gtitle">Learning log ’26</h2>
         <p class="gpun">Currently compiling. Expect breaking changes.</p>
@@ -97,7 +97,7 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
       </ul>
     </details>
 
-    <details class="group" id="certifications" data-collapse open>
+    <details class="group" id="certifications" data-collapse>
       <summary class="ghead">
         <h2 id="certs-title" class="display gtitle">Certifications</h2>
         <p class="gpun">Proof I read the docs. Sometimes.</p>
@@ -118,21 +118,12 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
 </BaseLayout>
 
 <style>
-  /* Groups are <details>: always open on desktop, tap-to-open rows on phones. */
+  /* Groups are <details>: closed rows that open on click or tap, on every screen size. */
   .ghead {
     list-style: none;
   }
   .ghead::-webkit-details-marker {
     display: none;
-  }
-  .gcount {
-    display: none;
-  }
-  @media (min-width: 641px) {
-    .ghead {
-      pointer-events: none;
-    }
-  }
   }
   .scroll-cue {
     display: inline-flex;
@@ -422,61 +413,88 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
       padding-right: 3px;
     }
   }
-  /* Phones: every group is one even row: title | count | +/−. */
+  /* Every group is one even row: title | tagline | count | +/− (tagline hidden on phones). */
+  .group {
+    padding-top: 0;
+  }
+  .group:first-of-type {
+    margin-top: 32px;
+    border-top: 1px solid var(--line);
+  }
+  .ghead {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto 22px;
+    grid-template-areas: 'title pun count plus';
+    align-items: center;
+    gap: 6px 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+  }
+  .group[open] > .ghead {
+    border-bottom: 1.5px solid var(--fg);
+  }
+  .ghead::after {
+    content: '+';
+    grid-area: plus;
+    justify-self: end;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+  .ghead:hover::after {
+    color: var(--pink);
+  }
+  .group[open] > .ghead::after {
+    content: '−';
+  }
+  .gtitle {
+    grid-area: title;
+    font-size: clamp(32px, 4vw, 44px);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .gpun {
+    grid-area: pun;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .gcount {
+    grid-area: count;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .group[open] .rows,
+  .group[open] .now-learning,
+  .group[open] .certs {
+    margin: 10px 0 28px;
+  }
   @media (max-width: 640px) {
-    .group {
-      padding-top: 0;
-    }
     .group:first-of-type {
       margin-top: 18px;
-      border-top: 1px solid var(--line);
     }
     .ghead {
-      display: grid;
       grid-template-columns: minmax(0, 1fr) 22px;
       grid-template-areas:
         'title plus'
         'count plus';
-      align-items: center;
       gap: 4px 12px;
       padding: 14px 0;
-      border-bottom: 1px solid var(--line);
-      cursor: pointer;
-    }
-    .group[open] > .ghead {
-      border-bottom: 1.5px solid var(--fg);
-    }
-    .ghead::after {
-      content: '+';
-      grid-area: plus;
-      justify-self: end;
-      font-family: var(--font-mono);
-      font-size: 22px;
-      line-height: 1;
-    }
-    .group[open] > .ghead::after {
-      content: '−';
     }
     .gtitle {
-      grid-area: title;
       font-size: clamp(22px, 6.8vw, 26px);
-      line-height: 1;
-      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .gpun {
       display: none;
-    }
-    .gcount {
-      grid-area: count;
-      display: inline;
-      white-space: nowrap;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
     }
     .group[open] .rows,
     .group[open] .now-learning,
@@ -487,13 +505,6 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
 </style>
 
 <script>
-  // Phones start with every group closed; desktop keeps them open and fixed.
-  const phone = window.matchMedia('(max-width: 640px)');
-  const groups = Array.from(document.querySelectorAll<HTMLDetailsElement>('details[data-collapse]'));
-  const sync = () => groups.forEach((d) => (d.open = !phone.matches));
-  sync();
-  phone.addEventListener('change', sync);
-  groups.forEach((d) => d.addEventListener('toggle', () => !phone.matches && !d.open && (d.open = true)));
   // A link to a skill (or a group) opens the group that holds it.
   const reveal = () => {
     const id = decodeURIComponent(location.hash.slice(1));
