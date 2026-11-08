@@ -27,11 +27,12 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
 
     {
       skillGroups.map((g, gi) => (
-        <section class="group" aria-labelledby={`g-${gi}`}>
-          <div class="ghead">
+        <details class="group" data-collapse open>
+          <summary class="ghead">
             <h2 id={`g-${gi}`} class="display gtitle">{g.title}</h2>
             <p class="gpun">{g.pun}</p>
-          </div>
+            <span class="gcount" aria-hidden="true">{g.skills.length} skills</span>
+          </summary>
           <ul class="rows">
             {g.skills.map((s) => {
               const lv = levels[s.level];
@@ -63,15 +64,16 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
               );
             })}
           </ul>
-        </section>
+        </details>
       ))
     }
 
-    <section class="group learning" id="learning" aria-labelledby="learning-title">
-      <div class="ghead">
+    <details class="group learning" id="learning" data-collapse open>
+      <summary class="ghead">
         <h2 id="learning-title" class="display gtitle">Learning log ’26</h2>
         <p class="gpun">Currently compiling. Expect breaking changes.</p>
-      </div>
+        <span class="gcount" aria-hidden="true">{learning.length} skills</span>
+      </summary>
       <ul class="now-learning">
         {
           learning.map((s) => (
@@ -81,13 +83,14 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
           ))
         }
       </ul>
-    </section>
+    </details>
 
-    <section class="group" id="certifications" aria-labelledby="certs-title">
-      <div class="ghead">
+    <details class="group" id="certifications" data-collapse open>
+      <summary class="ghead">
         <h2 id="certs-title" class="display gtitle">Certifications</h2>
         <p class="gpun">Proof I read the docs. Sometimes.</p>
-      </div>
+        <span class="gcount" aria-hidden="true">{certifications.length} certificates</span>
+      </summary>
       <ul class="certs">
         {
           certifications.map((c) => (
@@ -98,11 +101,67 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
           ))
         }
       </ul>
-    </section>
+    </details>
   </section>
 </BaseLayout>
 
 <style>
+  /* Groups are <details>: always open on desktop, tap-to-open rows on phones. */
+  .ghead {
+    list-style: none;
+  }
+  .ghead::-webkit-details-marker {
+    display: none;
+  }
+  .gcount {
+    display: none;
+  }
+  @media (min-width: 641px) {
+    .ghead {
+      pointer-events: none;
+    }
+  }
+  @media (max-width: 640px) {
+    .ghead {
+      cursor: pointer;
+      position: relative;
+      padding-right: 34px;
+    }
+    .ghead::after {
+      content: '+';
+      position: absolute;
+      right: 0;
+      bottom: 14px;
+      font-family: var(--font-mono);
+      font-size: 22px;
+      line-height: 1;
+    }
+    .group[open] > .ghead::after {
+      content: '−';
+    }
+    .group {
+      padding-top: 16px;
+    }
+    .gtitle {
+      font-size: 34px;
+    }
+    .group[open] .rows,
+    .group[open] .now-learning,
+    .group[open] .certs {
+      margin-top: 8px;
+    }
+    .gpun {
+      display: none;
+    }
+    .gcount {
+      display: inline;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+  }
   .scroll-cue {
     display: inline-flex;
     gap: 8px;
@@ -311,3 +370,25 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
     }
   }
 </style>
+
+<script>
+  // Phones start with every group closed; desktop keeps them open and fixed.
+  const phone = window.matchMedia('(max-width: 640px)');
+  const groups = Array.from(document.querySelectorAll<HTMLDetailsElement>('details[data-collapse]'));
+  const sync = () => groups.forEach((d) => (d.open = !phone.matches));
+  sync();
+  phone.addEventListener('change', sync);
+  groups.forEach((d) => d.addEventListener('toggle', () => !phone.matches && !d.open && (d.open = true)));
+  // A link to a skill (or a group) opens the group that holds it.
+  const reveal = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = id && document.getElementById(id);
+    const d = el ? (el.closest('details') as HTMLDetailsElement | null) : null;
+    if (d && !d.open) {
+      d.open = true;
+      el.scrollIntoView();
+    }
+  };
+  reveal();
+  window.addEventListener('hashchange', reveal);
+</script>

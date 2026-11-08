@@ -265,18 +265,72 @@ const links = chain.map((c, i) => {
       transform: none;
     }
   }
+  /* Phones: a compact timeline instead of boxed cards. */
   @media (max-width: 640px) {
     .chain {
       grid-template-columns: 1fr;
-      gap: 30px;
+      gap: 0;
+    }
+    .link {
+      padding: 0 0 26px 30px;
+    }
+    .link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--c);
     }
     .link:not(:last-child)::after {
-      content: '↓';
+      content: '';
+      left: 6px;
       right: auto;
-      left: 50%;
-      top: auto;
-      bottom: -28px;
-      transform: translateX(-50%);
+      top: 22px;
+      bottom: 0;
+      width: 2px;
+      transform: none;
+      background: var(--line);
+    }
+    .card {
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      gap: 4px;
+    }
+    .card:hover,
+    .card:focus-visible {
+      background: none;
+      color: inherit;
+      transform: none;
+    }
+    .card:hover .problem-label,
+    .card:hover .built-label,
+    .card:focus-visible .problem-label,
+    .card:focus-visible .built-label {
+      color: var(--c);
+    }
+    .top {
+      display: none;
+    }
+    .problem-label {
+      display: none;
+    }
+    .problem {
+      font-size: 18px;
+    }
+    .built-label {
+      margin-top: 6px;
+    }
+    .built {
+      color: var(--muted);
+    }
+    .go {
+      margin-top: 4px;
+      color: var(--c);
+      font-size: 12px;
     }
     .more {
       grid-template-columns: 1fr;

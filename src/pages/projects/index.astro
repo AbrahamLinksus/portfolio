@@ -33,9 +33,10 @@ const filters = [
       }
       <span class="count" aria-live="polite"><span data-count>{projects.length}</span> projects</span>
     </div>
-    <div class="grid">
+    <div class="grid" data-carousel>
       {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
     </div>
+    <p class="swipe-hint" aria-hidden="true">Swipe for more →</p>
   </section>
 </BaseLayout>
 
@@ -79,6 +80,40 @@ const filters = [
   .grid :global(.card[hidden]) {
     display: none;
   }
+  .swipe-hint {
+    display: none;
+  }
+  /* Phones: one card at a time, swiped sideways, with the next one peeking in. */
+  @media (max-width: 640px) {
+    .grid {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-left: var(--gutter-l);
+      margin-left: calc(-1 * var(--gutter-l));
+      margin-right: calc(-1 * var(--gutter-r));
+      padding: 0 var(--gutter-r) 6px var(--gutter-l);
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .grid::-webkit-scrollbar {
+      display: none;
+    }
+    .grid > :global(.card) {
+      flex: 0 0 84%;
+      scroll-snap-align: start;
+    }
+    .swipe-hint {
+      display: block;
+      margin: 14px 0 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+  }
 </style>
 
 <script>
@@ -96,6 +131,8 @@ const filters = [
         if (match) shown++;
       });
       if (count) count.textContent = String(shown);
+      // Start the phone carousel from the first matching card again.
+      document.querySelector('[data-carousel]')?.scrollTo({ left: 0 });
     }),
   );
 </script>
