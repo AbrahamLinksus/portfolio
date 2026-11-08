@@ -663,6 +663,13 @@ const data = {
       grid-template-columns: 1fr;
     }
   }
+  /* Keyboard focus ring for the cortex's own buttons (their resets remove the default one). */
+  .cortex :global(.focus-mem:focus-visible),
+  .cortex :global(.wbtn:focus-visible),
+  .cortex :global(.tbtn:focus-visible) {
+    outline: 2px solid var(--pink);
+    outline-offset: 2px;
+  }
   /* Phones: drop the Regions of work and Neuron type panels. */
   @media (max-width: 640px) {
     .lower {

@@ -15,7 +15,7 @@ const topics = [
   <PageIntro number="04" title="Contact" lede="Let's sync up. Write to me about a role, a project, or a good prog album." />
 
   <section class="container contact">
-    <aside class="side">
+    <div class="side">
       <span class="label">Open to</span>
       <ul class="open">
         {
@@ -37,7 +37,7 @@ const topics = [
           ))
         }
       </ul>
-    </aside>
+    </div>
 
     <form class="form" method="POST" action={endpoint || undefined} data-contact data-endpoint={endpoint} novalidate>
       <fieldset class="topics">
