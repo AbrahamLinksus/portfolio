@@ -100,7 +100,8 @@ function resolveNotesTopic(path: string, map: TopicMap) {
 
 for (const src of studySources) {
   for (const t of src.topics) {
-    const isPath = t.topic.includes('/') || /^[a-z0-9-]+$/.test(t.topic);
+    // Notes-repo topics are lowercase paths like 'ai-engineering/langchain'; anything else is a named topic.
+    const isPath = /^[a-z0-9-]+(\/[a-z0-9-]+)*$/.test(t.topic);
     let parent: Neuron, work: string, lvl: 'A' | 'C' | 'L', confirmed: boolean;
     if (isPath) {
       const r = resolveNotesTopic(t.topic, t.map ?? null);
