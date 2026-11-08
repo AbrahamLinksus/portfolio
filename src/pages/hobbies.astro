@@ -54,7 +54,7 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
         <ol class="top5">
           {
             music.topArtists.map((a, i) => (
-              <li class:list={['artist', { first: i === 0 }]}>
+              <li class="artist">
                 <span class="rank">{String(i + 1).padStart(2, '0')}</span>
                 <span class="name">{a}</span>
               </li>
@@ -282,51 +282,37 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     line-height: 1.18;
     color: var(--fg);
   }
+  /* Ranked like a chart: rows that step down in size from #1 to #5. */
   .top5 {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr));
-    align-items: end;
-    gap: 12px;
   }
+  .artist:nth-child(1) { --rank: clamp(64px, 8vw, 104px); --name: clamp(34px, 5vw, 64px); }
+  .artist:nth-child(2) { --rank: clamp(52px, 6vw, 80px); --name: clamp(28px, 3.8vw, 48px); }
+  .artist:nth-child(3) { --rank: clamp(46px, 5.2vw, 68px); --name: clamp(25px, 3.3vw, 40px); }
+  .artist:nth-child(4) { --rank: clamp(42px, 4.6vw, 60px); --name: clamp(23px, 2.9vw, 35px); }
+  .artist:nth-child(5) { --rank: clamp(40px, 4.2vw, 54px); --name: clamp(22px, 2.6vw, 32px); }
   .artist {
     display: grid;
-    align-content: space-between;
-    gap: 18px;
-    min-height: 150px;
-    padding: 18px;
-    border: 1.5px solid var(--line);
-    border-radius: 16px;
-    min-width: 0;
-  }
-  .artist.first {
-    min-height: 200px;
-    padding: 24px;
-    background: var(--c);
-    border-color: var(--c);
-    color: var(--ink);
+    grid-template-columns: clamp(64px, 9vw, 120px) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 0 12px;
+    border-bottom: 1px solid var(--line);
   }
   .rank {
     font-family: var(--font-display);
-    font-size: 44px;
-    line-height: 0.9;
+    font-size: var(--rank);
+    line-height: 1;
     color: var(--c);
-  }
-  .first .rank {
-    font-size: 64px;
-    color: var(--ink);
   }
   .name {
     font-family: var(--font-sticker);
     font-weight: 800;
     text-transform: uppercase;
-    font-size: clamp(17px, 1.7vw, 21px);
-    line-height: 1.05;
-  }
-  .first .name {
-    font-size: clamp(24px, 2.6vw, 32px);
+    font-size: var(--name);
+    line-height: 1;
   }
   .albums {
     list-style: none;
@@ -502,16 +488,6 @@ const drumFacts = [...drums.stats, { value: drums.favourite, label: 'favourite t
     }
     .albums {
       grid-template-columns: 1fr 1fr;
-    }
-    .top5 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .artist.first {
-      grid-column: 1 / -1;
-      min-height: 0;
-    }
-    .artist {
-      min-height: 120px;
     }
   }
   @media (max-width: 600px) {
