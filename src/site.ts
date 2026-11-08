@@ -2,7 +2,8 @@
 export const site = {
   name: 'Jake Roberts',
   title: 'Software Engineer',
-  description: "Projects, skills, and what I'm building right now.",
+  description:
+    'Jake Roberts: Computer Science student at SRM IST (class of 2027) building software, AI and data tools. Case studies, skills and contact.',
   email: 'jakeroberts.a.05@gmail.com', // receives contact-form messages; not shown on the site
   // Formspree form ID (the part after formspree.io/f/). Messages are emailed to the account that owns the form.
   // Leave empty until the form exists; the page then explains that the form isn't connected yet.

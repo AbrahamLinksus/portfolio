@@ -8,10 +8,31 @@ import { site } from '../site';
 interface Props {
   title?: string;
   description?: string;
+  /** Keep the page out of search results (e.g. the 404 page). */
+  noindex?: boolean;
 }
 
-const { title, description = site.description } = Astro.props;
+const { title, description = site.description, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.title}`;
+
+// Link-preview image: public/og/<page>.png, made by scripts/og.mjs. '/projects/x' -> 'projects-x'.
+const path = Astro.url.pathname.replace(/\/$/, '');
+const ogKey = path === '' ? 'home' : path.slice(1).replace(/\//g, '-');
+const ogKeys = import.meta.glob('/public/og/*.png');
+const ogFile = `/og/${ogKeys[`/public/og/${ogKey}.png`] ? ogKey : 'home'}.png`;
+const canonical = new URL(path || '/', Astro.site);
+const ogImage = new URL(ogFile, Astro.site);
+
+// Tells search engines who this site is about (homepage only).
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: site.title,
+  url: Astro.site?.href,
+  sameAs: site.socials.map((s) => s.href),
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'SRM Institute of Science and Technology' },
+};
 ---
 
 <!doctype html>
@@ -22,8 +43,27 @@ const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.t
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#0e0e0f" />
+    <meta name="author" content={site.name} />
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    <!-- Link previews (LinkedIn, WhatsApp, Slack, X) -->
+    <meta property="og:type" content={path.startsWith('/projects/') ? 'article' : 'website'} />
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={fullTitle} />
+    <meta property="og:locale" content="en_IN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    {path === '' && <script type="application/ld+json" set:html={JSON.stringify(person)} />}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

@@ -2,4 +2,7 @@
 import { defineConfig } from 'astro/config';
 
 // https://docs.astro.build/en/reference/configuration-reference/
-export default defineConfig({});
+export default defineConfig({
+  // Public address; used for canonical links, link previews and the sitemap.
+  site: 'https://myportfolio-ecru-psi.vercel.app',
+});
