@@ -50,24 +50,36 @@ export const highlights = [
 export const activities = [
   {
     kind: 'Music',
+    // Photo on the back of the ticket, e.g. '/images/about/music.webp'. Empty shows a placeholder.
+    photo: '',
+    caption: 'Somewhere mid-album',
     title: 'Prog, by a mile',
     line: 'Dream Theater, Pink Floyd, Tool, Toto and Steven Wilson. Full albums, start to finish, usually while I build.',
     color: 'var(--teal)',
   },
   {
     kind: 'Riding',
+    // Photo on the back of the ticket, e.g. '/images/about/riding.webp'. Empty shows a placeholder.
+    photo: '',
+    caption: 'On the road',
     title: '5 years, ~30,000 km',
     line: 'Mostly up to hill stations: Ooty, Valparai, Yelagiri, the Jawadhu Hills. Riding is how I clear my head.',
     color: 'var(--orange)',
   },
   {
     kind: 'Drums',
+    // Photo on the back of the ticket, e.g. '/images/about/drums.webp'. Empty shows a placeholder.
+    photo: '',
+    caption: 'Behind the kit',
     title: '13 years behind the kit',
     line: 'Prog and rock, at home and at church. Favourite to play: Free Bird.',
     color: 'var(--pink)',
   },
   {
     kind: 'Badminton',
+    // Photo on the back of the ticket, e.g. '/images/about/badminton.webp'. Empty shows a placeholder.
+    photo: '',
+    caption: 'On court',
     title: 'Three hours a day',
     line: 'On my home court, every day, for five years.',
     color: 'var(--lime)',
