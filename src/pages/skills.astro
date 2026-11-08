@@ -133,46 +133,6 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
       pointer-events: none;
     }
   }
-  @media (max-width: 640px) {
-    .ghead {
-      cursor: pointer;
-      position: relative;
-      padding-right: 34px;
-    }
-    .ghead::after {
-      content: '+';
-      position: absolute;
-      right: 0;
-      bottom: 14px;
-      font-family: var(--font-mono);
-      font-size: 22px;
-      line-height: 1;
-    }
-    .group[open] > .ghead::after {
-      content: '−';
-    }
-    .group {
-      padding-top: 16px;
-    }
-    .gtitle {
-      font-size: 34px;
-    }
-    .group[open] .rows,
-    .group[open] .now-learning,
-    .group[open] .certs {
-      margin-top: 8px;
-    }
-    .gpun {
-      display: none;
-    }
-    .gcount {
-      display: inline;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
   }
   .scroll-cue {
     display: inline-flex;
@@ -438,7 +398,7 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
       border: 0;
       font-size: 11px;
     }
-    .src::before {
+    .pchip + .src::before {
       content: '·\00a0';
     }
   }
@@ -460,6 +420,68 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
     }
     .pchip {
       padding-right: 3px;
+    }
+  }
+  /* Phones: every group is one even row: title | count | +/−. */
+  @media (max-width: 640px) {
+    .group {
+      padding-top: 0;
+    }
+    .group:first-of-type {
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .ghead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 22px;
+      grid-template-areas:
+        'title plus'
+        'count plus';
+      align-items: center;
+      gap: 4px 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+    }
+    .group[open] > .ghead {
+      border-bottom: 1.5px solid var(--fg);
+    }
+    .ghead::after {
+      content: '+';
+      grid-area: plus;
+      justify-self: end;
+      font-family: var(--font-mono);
+      font-size: 22px;
+      line-height: 1;
+    }
+    .group[open] > .ghead::after {
+      content: '−';
+    }
+    .gtitle {
+      grid-area: title;
+      font-size: clamp(22px, 6.8vw, 26px);
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .gpun {
+      display: none;
+    }
+    .gcount {
+      grid-area: count;
+      display: inline;
+      white-space: nowrap;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .group[open] .rows,
+    .group[open] .now-learning,
+    .group[open] .certs {
+      margin: 8px 0 20px;
     }
   }
 </style>
