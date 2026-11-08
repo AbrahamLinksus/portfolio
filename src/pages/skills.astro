@@ -24,6 +24,18 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
     <SkillCortex />
     <a class="scroll-cue" href="#details">The full list: every skill, its level, and where I used it <span aria-hidden="true">↓</span></a>
     <div id="details"></div>
+    <ul class="level-key" aria-label="Level key">
+      {
+        (Object.keys(levels) as Level[]).map((k) => (
+          <li style={`--lc: ${levels[k].color}`}>
+            <span class="meter" aria-hidden="true">
+              {[1, 2, 3].map((n) => <i class:list={{ on: n <= levels[k].rank }} />)}
+            </span>
+            {k}
+          </li>
+        ))
+      }
+    </ul>
 
     {
       skillGroups.map((g, gi) => (
@@ -349,6 +361,87 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
     color: var(--muted);
   }
 
+  /* Key for the level bars; only shown on phones, where rows drop the level word. */
+  .level-key {
+    display: none;
+  }
+  @media (max-width: 640px) {
+    .level-key {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      list-style: none;
+      margin: 18px 0 0;
+      padding: 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .level-key li {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .level-key .meter i {
+      width: 5px;
+      height: 11px;
+      border-width: 1px;
+      border-radius: 2px;
+    }
+    /* Compact two-line rows: name + bars, then project dots and sources. */
+    .row {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: 6px 12px !important;
+      padding: 11px 2px !important;
+    }
+    .sname {
+      font-size: 15px;
+      line-height: 1.3;
+    }
+    .lt {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    .level .meter {
+      gap: 3px;
+    }
+    .level .meter i {
+      width: 6px;
+      height: 13px;
+      border-width: 1px;
+      border-radius: 2px;
+    }
+    .used {
+      gap: 4px 8px;
+      align-items: center;
+    }
+    .used:empty {
+      display: none;
+    }
+    .pchip {
+      padding: 0 !important;
+      border: 0;
+    }
+    .pl {
+      width: 20px;
+      height: 20px;
+      font-size: 11.5px;
+    }
+    .src {
+      padding: 0;
+      border: 0;
+      font-size: 11px;
+    }
+    .src::before {
+      content: '·\00a0';
+    }
+  }
   @media (max-width: 760px) {
     .row {
       grid-template-columns: 1fr auto;
