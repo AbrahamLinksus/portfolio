@@ -78,7 +78,7 @@ export const activities = [
   {
     kind: 'Badminton',
     // Photo on the back of the ticket, e.g. '/images/about/badminton.webp'. Empty shows a placeholder.
-    photo: '',
+    photo: '/images/about/badminton.webp',
     caption: 'On court',
     title: 'Three hours a day',
     line: 'On my home court, every day, for five years.',
