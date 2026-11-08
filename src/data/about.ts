@@ -45,3 +45,32 @@ export const highlights = [
     color: 'var(--orange)',
   },
 ];
+
+// Off the keyboard: short, plain lines about what Jake does away from the screen.
+export const activities = [
+  {
+    kind: 'Music',
+    title: 'Prog, by a mile',
+    line: 'Dream Theater, Pink Floyd, Tool, Toto and Steven Wilson. Full albums, start to finish, usually while I build.',
+    color: 'var(--teal)',
+  },
+  {
+    kind: 'Riding',
+    title: '5 years, ~30,000 km',
+    line: 'Mostly up to hill stations: Ooty, Valparai, Yelagiri, the Jawadhu Hills. Riding is how I clear my head.',
+    color: 'var(--orange)',
+  },
+  {
+    kind: 'Drums',
+    title: '13 years behind the kit',
+    line: 'Prog and rock, at home and at church. Favourite to play: Free Bird.',
+    color: 'var(--pink)',
+  },
+  {
+    kind: 'Badminton',
+    title: 'Three hours a day',
+    line: 'On my home court, every day, for five years.',
+    color: 'var(--lime)',
+  },
+];
+
