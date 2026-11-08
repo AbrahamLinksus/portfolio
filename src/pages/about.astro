@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import { intro, chain, highlights, activities } from '../data/about';
+import { intro, chain, activities } from '../data/about';
 import { getProjects, colorVar } from '../lib/projects';
 
 // Second photo of Jake, beside the story. Leave empty to show the placeholder frame.
@@ -16,7 +16,6 @@ const built = chain.map((c, i) => {
   const rest = c.built.toLowerCase().startsWith(lead.toLowerCase()) ? c.built.slice(lead.length) : c.built;
   return { ...c, p, n: String(i + 1).padStart(2, '0'), what: rest.charAt(0).toUpperCase() + rest.slice(1) };
 });
-const research = highlights.find((h) => h.kind.startsWith('Research'));
 ---
 
 <BaseLayout title="About" description="Jake Roberts: Computer Science student at SRM IST (class of 2027), building tools for problems he runs into himself.">
@@ -65,20 +64,6 @@ const research = highlights.find((h) => h.kind.startsWith('Research'));
                 </a>
               </li>
             ))
-          }
-          {
-            research && (
-              <li class="step" style={`--c: ${research.color}`}>
-                <span class="when">{research.kind}</span>
-                <h3 class="what">{research.title}</h3>
-                <p class="detail">{research.line}</p>
-                {research.link && (
-                  <a class="go" href={research.link.href}>
-                    {research.link.label} →
-                  </a>
-                )}
-              </li>
-            )
           }
         </ol>
       </section>
