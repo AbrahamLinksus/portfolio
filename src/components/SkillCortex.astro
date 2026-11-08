@@ -663,6 +663,12 @@ const data = {
       grid-template-columns: 1fr;
     }
   }
+  /* Phones: drop the Regions of work and Neuron type panels. */
+  @media (max-width: 640px) {
+    .lower {
+      display: none;
+    }
+  }
   @media (max-width: 520px) {
     .stage {
       --brain-h: 430px;
