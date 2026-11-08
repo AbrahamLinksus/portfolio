@@ -2,12 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
 import SkillCortex from '../components/SkillCortex.astro';
-import { skillGroups, levels, skillSlug, allSkills, certifications, type Level } from '../data/skills';
+import { skillGroups, levels, skillSlug, type Level } from '../data/skills';
 import { getProjects, colorVar } from '../lib/projects';
 
 const projects = await getProjects();
 const usedIn = (name: string) => projects.filter((p) => p.data.skills.includes(name));
-const learning = allSkills.filter((s) => s.level === 'Learning');
 ---
 
 <BaseLayout
@@ -80,40 +79,6 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
       ))
     }
 
-    <details class="group learning" id="learning" data-collapse>
-      <summary class="ghead">
-        <h2 id="learning-title" class="display gtitle">Learning log ’26</h2>
-        <p class="gpun">Currently compiling. Expect breaking changes.</p>
-        <span class="gcount" aria-hidden="true">{learning.length} skills</span>
-      </summary>
-      <ul class="now-learning">
-        {
-          learning.map((s) => (
-            <li>
-              <a href={`#${skillSlug(s.name)}`}>{s.name}</a>
-            </li>
-          ))
-        }
-      </ul>
-    </details>
-
-    <details class="group" id="certifications" data-collapse>
-      <summary class="ghead">
-        <h2 id="certs-title" class="display gtitle">Certifications</h2>
-        <p class="gpun">Proof I read the docs. Sometimes.</p>
-        <span class="gcount" aria-hidden="true">{certifications.length} certificates</span>
-      </summary>
-      <ul class="certs">
-        {
-          certifications.map((c) => (
-            <li>
-              <span class="cname">{c.name}</span>
-              <span class="cissuer">{c.issuer}</span>
-            </li>
-          ))
-        }
-      </ul>
-    </details>
   </section>
 </BaseLayout>
 
@@ -263,54 +228,13 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
     color: var(--muted);
   }
 
-  .now-learning {
-    list-style: none;
-    margin: 20px 0 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  .now-learning a {
-    display: inline-block;
-    font-family: var(--font-sticker);
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: 18px;
-    padding: 10px 16px;
-    border-radius: 12px;
-    background: var(--yellow);
-    color: var(--ink);
-    text-decoration: none;
-    transform: rotate(-3deg);
-  }
-  .now-learning li:nth-child(even) a {
-    background: var(--teal);
-    transform: rotate(3deg);
-  }
-  .certs {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .certs li {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 14px 8px;
-    border-bottom: 1px solid var(--line);
-  }
-  .cname {
-    font-size: 16px;
-  }
-  .cissuer {
-    flex: none;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+
+
+
+
+
+
+
 
   /* Key for the level bars; only shown on phones, where rows drop the level word. */
   .level-key {
@@ -471,9 +395,7 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
     text-transform: uppercase;
     color: var(--muted);
   }
-  .group[open] .rows,
-  .group[open] .now-learning,
-  .group[open] .certs {
+  .group[open] .rows {
     margin: 10px 0 28px;
   }
   @media (max-width: 640px) {
@@ -496,9 +418,7 @@ const learning = allSkills.filter((s) => s.level === 'Learning');
     .gpun {
       display: none;
     }
-    .group[open] .rows,
-    .group[open] .now-learning,
-    .group[open] .certs {
+    .group[open] .rows {
       margin: 8px 0 20px;
     }
   }

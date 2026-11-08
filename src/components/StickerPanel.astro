@@ -11,7 +11,7 @@ const stickers = [
   { href: '/skills#cortex-title', cls: 'st-b', color: 'var(--teal)', title: 'Study notes ●' },
   { href: '/skills', cls: 'st-c', color: 'var(--yellow)', title: 'Skills &amp;<br>tools →' },
   { href: '/about', cls: 'st-d', color: 'var(--orange)', title: 'About<br>me ©' },
-  { href: '/skills#learning', cls: 'st-e', color: 'var(--teal)', title: 'Learning<br>log ’26' },
+  { href: 'https://github.com/AbrahamLinksus', cls: 'st-e', color: 'var(--teal)', title: 'GitHub ↗' },
   { href: '/contact', cls: 'st-f', color: 'var(--lime)', title: 'Say<br>hello', small: 'contact form' },
 ];
 ---
@@ -20,7 +20,7 @@ const stickers = [
   <nav class="stickers" aria-label="Sections">
     {
       stickers.map((s) => (
-        <a class:list={['sticker', s.cls]} href={s.href} style={`--c: ${s.color}`}>
+        <a class:list={["sticker", s.cls]} href={s.href} rel={s.href.startsWith("http") ? "noopener" : undefined} style={`--c: ${s.color}`}>
           <span class="t" set:html={s.title} />
           {s.small && <small set:html={s.small} />}
         </a>
