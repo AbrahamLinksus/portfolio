@@ -4,6 +4,9 @@ import PageIntro from '../components/PageIntro.astro';
 import { intro, chain, highlights } from '../data/about';
 import { getProjects, colorVar } from '../lib/projects';
 
+// Second photo of Jake, beside the intro. Leave empty to show the placeholder frame.
+const photo = '';
+
 const projects = await getProjects();
 const links = chain.map((c, i) => {
   const p = projects.find((x) => x.id === c.project);
@@ -15,8 +18,21 @@ const links = chain.map((c, i) => {
 <BaseLayout title="About" description="Jake Roberts: Computer Science student at SRM IST (class of 2027), building tools for problems he runs into himself.">
   <PageIntro number="01" title="About" lede="All-rounder, kind of." />
 
-  <section class="container intro">
-    {intro.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
+  <section class="container intro-row">
+    <div class="intro">
+      {intro.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
+    </div>
+    <figure class="portrait">
+      {
+        photo ? (
+          <img src={photo} alt="Jake Roberts" width="800" height="1000" loading="lazy" />
+        ) : (
+          <div class="ph" role="img" aria-label="Photo coming soon">
+            <span>Your photo</span>
+          </div>
+        )
+      }
+    </figure>
   </section>
 
   <section class="container chain-wrap" aria-labelledby="chain-title">
@@ -64,9 +80,49 @@ const links = chain.map((c, i) => {
 </BaseLayout>
 
 <style>
+  .intro-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr);
+    gap: 56px;
+    align-items: start;
+  }
   .intro {
     display: grid;
     gap: 18px;
+  }
+  /* The photo sits in a cream frame, slightly tilted, like a print pinned to the page. */
+  .portrait {
+    margin: 0;
+    padding: 12px;
+    border-radius: 22px;
+    background: var(--panel);
+    transform: rotate(2.5deg);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  }
+  .portrait img,
+  .ph {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 14px;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.05);
+  }
+  .ph {
+    display: grid;
+    place-items: center;
+    background-color: #e4ddd2;
+    background-image:
+      linear-gradient(var(--panel-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--panel-grid) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .ph span {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5e5a55;
   }
   .intro p {
     margin: 0;
@@ -266,6 +322,16 @@ const links = chain.map((c, i) => {
     }
   }
   /* Phones: a compact timeline instead of boxed cards. */
+  @media (max-width: 860px) {
+    .intro-row {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .portrait {
+      order: -1;
+      width: min(280px, 72%);
+    }
+  }
   @media (max-width: 640px) {
     .chain {
       grid-template-columns: 1fr;
