@@ -51,8 +51,8 @@ export const activities = [
   {
     kind: 'Music',
     // Photo on the back of the ticket, e.g. '/images/about/music.webp'. Empty shows a placeholder.
-    photo: '',
-    caption: 'Somewhere mid-album',
+    photo: '/images/about/music.webp',
+    caption: 'Dream Theater, live',
     title: 'Prog, by a mile',
     line: 'Dream Theater, Pink Floyd, Tool, Toto and Steven Wilson. Full albums, start to finish, usually while I build.',
     color: 'var(--teal)',
@@ -60,8 +60,8 @@ export const activities = [
   {
     kind: 'Riding',
     // Photo on the back of the ticket, e.g. '/images/about/riding.webp'. Empty shows a placeholder.
-    photo: '',
-    caption: 'On the road',
+    photo: '/images/about/riding.webp',
+    caption: 'By the water',
     title: '5 years, ~30,000 km',
     line: 'Mostly up to hill stations: Ooty, Valparai, Yelagiri, the Jawadhu Hills. Riding is how I clear my head.',
     color: 'var(--orange)',
@@ -69,8 +69,8 @@ export const activities = [
   {
     kind: 'Drums',
     // Photo on the back of the ticket, e.g. '/images/about/drums.webp'. Empty shows a placeholder.
-    photo: '',
-    caption: 'Behind the kit',
+    photo: '/images/about/drums.webp',
+    caption: 'On stage',
     title: '13 years behind the kit',
     line: 'Prog and rock, at home and at church. Favourite to play: Free Bird.',
     color: 'var(--pink)',

@@ -5,7 +5,7 @@ import { intro, chain, highlights, activities } from '../data/about';
 import { getProjects, colorVar } from '../lib/projects';
 
 // Second photo of Jake, beside the story. Leave empty to show the placeholder frame.
-const photo = '';
+const photo = '/images/about/portrait.webp';
 
 const projects = await getProjects();
 const built = chain.map((c, i) => {
@@ -27,7 +27,7 @@ const research = highlights.find((h) => h.kind.startsWith('Research'));
       <figure class="portrait">
         {
           photo ? (
-            <img src={photo} alt="Jake Roberts" width="800" height="1000" loading="lazy" />
+            <img src={photo} alt="Jake Roberts" width="640" height="800" />
           ) : (
             <div class="ph" role="img" aria-label="Photo coming soon">
               <span>Your photo</span>
@@ -112,7 +112,7 @@ const research = highlights.find((h) => h.kind.startsWith('Research'));
                     </span>
                     <span class="face back" aria-hidden="true">
                       {a.photo ? (
-                        <img src={a.photo} alt="" loading="lazy" />
+                        <img src={a.photo} alt="" width="960" height="640" loading="lazy" />
                       ) : (
                         <span class="t-ph">Photo coming soon</span>
                       )}
@@ -156,6 +156,7 @@ const research = highlights.find((h) => h.kind.startsWith('Research'));
   .ph {
     display: block;
     width: 100%;
+    height: auto;
     aspect-ratio: 4 / 5;
     border-radius: 14px;
     object-fit: cover;
