@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://myportfolio-ecru-psi.vercel.app/sitemap.xml
+Sitemap: https://jakeroberts.vercel.app/sitemap.xml

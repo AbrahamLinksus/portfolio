@@ -10,7 +10,7 @@ const { chromium } = require('playwright');
 
 const ROOT = new URL('..', import.meta.url).pathname;
 const OUT = join(ROOT, 'public/og');
-const HOST = 'myportfolio-ecru-psi.vercel.app';
+const HOST = 'jakeroberts.vercel.app';
 const COLORS = { pink: '#f4507a', teal: '#5cc8c0', yellow: '#f6d23a', orange: '#ff8a1f', lime: '#9bdb6a' };
 
 // Minimal front-matter reader: only the flat `key: value` fields the cards need.
