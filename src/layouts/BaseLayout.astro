@@ -70,16 +70,6 @@ const person = {
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@900&display=swap"
     />
-    <script is:inline>
-      // Set the theme before first paint: saved choice, else dark.
-      // TODO: follow the system setting once light mode has its own design pass.
-      (function () {
-        var t = null;
-        try { t = localStorage.getItem('theme'); } catch (e) {}
-        if (t !== 'light' && t !== 'dark') t = 'dark';
-        document.documentElement.dataset.theme = t;
-      })();
-    </script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

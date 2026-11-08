@@ -1,9 +1,9 @@
 /*
   Design tokens and base styles.
-  Dark is the designed default; light is provisional until it gets its own design pass.
+  The site has one theme: dark.
 */
 :root {
-  /* Fixed brand colors (same in both themes) */
+  /* Brand colors */
   --ink: #111112;
   --pink: #f4507a;
   --teal: #5cc8c0;
@@ -14,7 +14,7 @@
   --panel: #f2ece4;
   --panel-grid: #d6cfc4;
 
-  /* Theme colors: dark */
+  /* Theme colors */
   --bg: #0e0e0f;
   --fg: #f2ece4;
   --muted: #a7a29b;
@@ -33,15 +33,6 @@
   --max: 1120px;
   --gutter-l: max(20px, env(safe-area-inset-left, 0px));
   --gutter-r: max(20px, env(safe-area-inset-right, 0px));
-}
-
-:root[data-theme='light'] {
-  --bg: #f2ece4;
-  --fg: #111112;
-  --muted: #5e5a55;
-  --line: #d6cfc4;
-  --surface: #fbf8f4;
-  color-scheme: light;
 }
 
 *,

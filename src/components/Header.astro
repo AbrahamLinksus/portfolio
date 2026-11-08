@@ -1,6 +1,5 @@
 ---
 import { site } from '../site';
-import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="header container">
@@ -9,7 +8,6 @@ import ThemeToggle from './ThemeToggle.astro';
     <span class="brand-name">{site.name.split(' ')[0]}<br />{site.name.split(' ').slice(1).join(' ')}</span>
   </a>
   <div class="actions">
-    <ThemeToggle />
     <button class="menu-btn" type="button" data-menu-open aria-haspopup="dialog" aria-controls="site-menu">
       Menu
       <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
