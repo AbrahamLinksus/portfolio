@@ -24,6 +24,9 @@ const frontmatter = (file) => {
   return data;
 };
 
+// The homepage card shows the cut-out photo (inlined, since the card is rendered from a string).
+const PHOTO = `data:image/webp;base64,${readFileSync(join(ROOT, 'public/images/me.webp')).toString('base64')}`;
+
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 const pages = [
@@ -60,7 +63,7 @@ const html = (p) => `<!doctype html><html><head><meta charset="utf-8">
   h1 { margin-top: 34px; font: 400 ${p.small ? 104 : 150}px/0.9 Anton, sans-serif; text-transform: uppercase; letter-spacing: -.01em; }
   p { margin-top: 30px; font-size: 28px; line-height: 1.4; color: #a7a29b; max-width: 640px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .foot { margin-top: auto; font: 500 20px 'JetBrains Mono', monospace; letter-spacing: .06em; color: #f2ece4; }
-  .panel { position: absolute; right: 0; top: 0; bottom: 0; width: 400px; border-radius: 999px 0 0 999px; background-color: #f2ece4;
+  .panel { position: absolute; right: 0; top: 0; bottom: 0; width: ${p.stickers ? 470 : 400}px; border-radius: 999px 0 0 999px; background-color: #f2ece4;
     background-image: linear-gradient(#d6cfc4 1px, transparent 1px), linear-gradient(90deg, #d6cfc4 1px, transparent 1px); background-size: 44px 44px; }
   .letter { position: absolute; left: 50%; top: 50%; width: 270px; height: 270px; margin: -135px 0 0 -110px; border-radius: 50%; display: grid; place-items: center;
     font: 900 190px/1 'Playfair Display', serif; color: #111112; transform: rotate(-7deg); box-shadow: 0 6px 0 rgba(0,0,0,.25); }
@@ -76,10 +79,10 @@ const html = (p) => `<!doctype html><html><head><meta charset="utf-8">
 ${
   p.stickers
     ? `<div class="panel">
-        <span class="st" style="background:${COLORS.pink};left:70px;top:90px;width:170px;height:170px;border-radius:50%;display:grid;place-items:center;text-align:center;transform:rotate(-8deg)">Case<br>studies</span>
-        <span class="st" style="background:${COLORS.yellow};left:150px;top:300px;transform:rotate(6deg)">Skills &amp;<br>tools →</span>
-        <span class="st" style="background:${COLORS.teal};left:60px;top:440px;transform:rotate(-5deg)">Study notes ●</span>
-        <span class="st" style="background:${COLORS.lime};left:250px;top:150px;width:120px;height:120px;border-radius:50%;display:grid;place-items:center;text-align:center;font-size:20px;transform:rotate(10deg)">Say<br>hello</span>
+        <img src="${PHOTO}" style="position:absolute;left:58%;bottom:0;height:88%;transform:translateX(-50%)" alt="">
+        <span class="st" style="background:${COLORS.pink};left:40px;top:70px;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;text-align:center;font-size:22px;transform:rotate(-8deg)">Case<br>studies</span>
+        <span class="st" style="background:${COLORS.yellow};left:24px;top:390px;font-size:22px;transform:rotate(6deg)">Skills &amp;<br>tools →</span>
+        <span class="st" style="background:${COLORS.lime};right:26px;top:300px;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;text-align:center;font-size:18px;transform:rotate(10deg)">Say<br>hello</span>
       </div>`
     : p.letter
       ? `<div class="panel"><span class="letter" style="background:${COLORS[p.color] ?? COLORS.pink}">${esc(p.letter)}</span>${p.status ? `<span class="status">${esc(p.status)}</span>` : ''}</div>`
