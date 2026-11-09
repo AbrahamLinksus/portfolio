@@ -1,0 +1,453 @@
+{
+ "syncedAt": "2026-11-09T10:26:38.364Z",
+ "repos": {
+  "AbrahamLinksus/portfolio": {
+   "branch": "main",
+   "total": 57,
+   "last30": 57,
+   "commits": [
+    {
+     "sha": "e784405",
+     "date": "2026-11-08T09:55:30+00:00",
+     "subject": "Home: replace the pulsing dot with a static 'Open to work' sticker"
+    },
+    {
+     "sha": "2c81dd6",
+     "date": "2026-11-08T09:42:27+00:00",
+     "subject": "About: remove the paper from the timeline"
+    },
+    {
+     "sha": "bda4d72",
+     "date": "2026-11-08T09:39:22+00:00",
+     "subject": "About: add the badminton ticket photo"
+    },
+    {
+     "sha": "7873499",
+     "date": "2026-11-08T09:36:26+00:00",
+     "subject": "About: waist-up 4:3 crop of the family photo; wider photo column"
+    },
+    {
+     "sha": "657886d",
+     "date": "2026-11-08T09:34:25+00:00",
+     "subject": "About: use the whole family photo in the main frame"
+    },
+    {
+     "sha": "88d2a3d",
+     "date": "2026-11-08T09:33:55+00:00",
+     "subject": "About: add portrait and music, riding and drums ticket photos"
+    },
+    {
+     "sha": "e14bdac",
+     "date": "2026-11-08T09:30:06+00:00",
+     "subject": "About: remove the facts line"
+    },
+    {
+     "sha": "4b5293c",
+     "date": "2026-11-08T09:26:58+00:00",
+     "subject": "About: tickets flip to show a photo of each activity"
+    },
+    {
+     "sha": "71d4152",
+     "date": "2026-11-08T09:13:52+00:00",
+     "subject": "About: solid ink on ticket labels for contrast"
+    },
+    {
+     "sha": "eb189cd",
+     "date": "2026-11-08T09:12:26+00:00",
+     "subject": "About: Off the keyboard as gig-style tickets on the cream grid board"
+    },
+    {
+     "sha": "2529b6b",
+     "date": "2026-11-08T09:08:55+00:00",
+     "subject": "About: drop internship from the timeline; add Off the keyboard"
+    },
+    {
+     "sha": "a325d35",
+     "date": "2026-11-08T09:06:04+00:00",
+     "subject": "About: profile layout with sticky photo and one timeline"
+    }
+   ]
+  },
+  "AbrahamLinksus/notes": {
+   "branch": "main",
+   "total": 33,
+   "last30": 33,
+   "commits": [
+    {
+     "sha": "903a13f",
+     "date": "2026-11-07T11:12:00+00:00",
+     "subject": "chore(topics): add backend topics"
+    },
+    {
+     "sha": "f3c5e51",
+     "date": "2026-11-07T11:12:00+00:00",
+     "subject": "learn(backend/testing): testing pyramid and tdd"
+    },
+    {
+     "sha": "c435663",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/devops): git basics and ci/cd"
+    },
+    {
+     "sha": "5ca11d5",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/architecture): monolith vs microservices and idempotency"
+    },
+    {
+     "sha": "ced01df",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/databases): migrations, orm, n+1 problem, indexing and sharding"
+    },
+    {
+     "sha": "56524b6",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/caching): caching basics, eviction, read/write strategies, cache types"
+    },
+    {
+     "sha": "79e82fd",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/auth): session, jwt, basic auth, token auth, oauth and sso"
+    },
+    {
+     "sha": "fc884cc",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/apis): api styles, rest, soap and grpc"
+    },
+    {
+     "sha": "d99b880",
+     "date": "2026-11-07T11:11:59+00:00",
+     "subject": "learn(backend/web-fundamentals): http, status codes, dns, browser rendering, web servers"
+    },
+    {
+     "sha": "4b227c4",
+     "date": "2026-11-07T10:34:09+00:00",
+     "subject": "chore(topics): add ai-engineering topics"
+    },
+    {
+     "sha": "2baef00",
+     "date": "2026-11-07T10:34:09+00:00",
+     "subject": "revise(data-science/nlp): link tokenization and word2vec to llm notes"
+    },
+    {
+     "sha": "cd37a69",
+     "date": "2026-11-07T10:34:09+00:00",
+     "subject": "learn(ai-engineering/langchain): core, prompts, parsers and langgraph"
+    }
+   ]
+  },
+  "AbrahamLinksus/advancedDSA": {
+   "branch": "main",
+   "total": 14,
+   "last30": 0,
+   "commits": [
+    {
+     "sha": "32645e3",
+     "date": "2026-06-20T17:56:00+05:30",
+     "subject": "graph and tree revision"
+    },
+    {
+     "sha": "9796680",
+     "date": "2026-06-19T11:41:43+05:30",
+     "subject": "added dijkstras"
+    },
+    {
+     "sha": "9b6ee29",
+     "date": "2026-06-19T10:32:12+05:30",
+     "subject": "added prims to graph"
+    },
+    {
+     "sha": "9b77b6b",
+     "date": "2026-06-18T09:17:24+05:30",
+     "subject": "added files on graphs"
+    },
+    {
+     "sha": "c194bb7",
+     "date": "2026-06-17T14:44:46+05:30",
+     "subject": "added files on graphs"
+    },
+    {
+     "sha": "95721ef",
+     "date": "2026-06-16T17:56:47+05:30",
+     "subject": "added more graphs"
+    },
+    {
+     "sha": "631064f",
+     "date": "2026-06-16T14:23:35+05:30",
+     "subject": "included till graphs"
+    },
+    {
+     "sha": "d1c20c4",
+     "date": "2026-06-12T15:17:45+05:30",
+     "subject": "infected tree problem"
+    },
+    {
+     "sha": "78a3d69",
+     "date": "2026-06-12T10:08:47+05:30",
+     "subject": "added lca"
+    },
+    {
+     "sha": "ab9b4f9",
+     "date": "2026-06-12T09:18:10+05:30",
+     "subject": "iterative traversals"
+    },
+    {
+     "sha": "0e52c7c",
+     "date": "2026-06-11T21:10:37+05:30",
+     "subject": "added morris traversal"
+    },
+    {
+     "sha": "3bab58e",
+     "date": "2026-06-11T18:12:44+05:30",
+     "subject": "tree problem 1"
+    }
+   ]
+  },
+  "AbrahamLinksus/reachinbox-scheduler": {
+   "branch": "main",
+   "total": 52,
+   "last30": 0,
+   "commits": [
+    {
+     "sha": "535d181",
+     "date": "2026-09-30T21:25:19+05:30",
+     "subject": "README: make the live dashboard the first thing anyone sees"
+    },
+    {
+     "sha": "51b2a12",
+     "date": "2026-09-30T21:18:15+05:30",
+     "subject": "README: the live URLs, and what the free tier changes about them"
+    },
+    {
+     "sha": "79d1e18",
+     "date": "2026-09-30T18:34:55+05:30",
+     "subject": "The sidebar counted loaded rows, so a tab of 2000 emails read 50"
+    },
+    {
+     "sha": "a81fdb3",
+     "date": "2026-09-30T18:01:24+05:30",
+     "subject": "seed:senders prints the Ethereal password it told you to use"
+    },
+    {
+     "sha": "f843922",
+     "date": "2026-09-30T17:55:45+05:30",
+     "subject": "Add docs/demo-commands.md: the copy-paste command list for recording"
+    },
+    {
+     "sha": "d3334b8",
+     "date": "2026-09-30T17:53:49+05:30",
+     "subject": "Say what the minimum delay actually guarantees, and how to show it"
+    },
+    {
+     "sha": "88ac8f4",
+     "date": "2026-09-30T17:35:06+05:30",
+     "subject": "Fix seed:senders for an address that has already signed in with Google"
+    },
+    {
+     "sha": "eb62d9a",
+     "date": "2026-09-30T17:17:46+05:30",
+     "subject": "README: the free-tier variant of the VM path"
+    },
+    {
+     "sha": "7a1538c",
+     "date": "2026-09-30T17:11:06+05:30",
+     "subject": "Add a single-VM deployment path alongside the managed one"
+    },
+    {
+     "sha": "0897e2e",
+     "date": "2026-09-30T17:05:51+05:30",
+     "subject": "Deployable to a free-tier host: a blueprint, and migrations at startup"
+    },
+    {
+     "sha": "3330da9",
+     "date": "2026-09-30T17:00:22+05:30",
+     "subject": "Alert on both hourly limits, and promote a day ahead instead of an hour"
+    },
+    {
+     "sha": "56e01a8",
+     "date": "2026-09-30T16:45:38+05:30",
+     "subject": "Docs: restructure the README to the assignment's checklist, and rewrite the demo"
+    }
+   ]
+  },
+  "AbrahamLinksus/Study_copilot": {
+   "branch": "main",
+   "total": 10,
+   "last30": 0,
+   "commits": [
+    {
+     "sha": "24e429d",
+     "date": "2026-08-30T22:04:46+05:30",
+     "subject": "Retune retrieval from what the scaled eval found"
+    },
+    {
+     "sha": "83e6a7f",
+     "date": "2026-08-30T22:04:28+05:30",
+     "subject": "Scale the retrieval eval from 24 queries to 1,060"
+    },
+    {
+     "sha": "f6aef5a",
+     "date": "2026-08-30T10:14:19+05:30",
+     "subject": "Add the UI, and fix coverage checking to use a structural signal"
+    },
+    {
+     "sha": "aa9aa8d",
+     "date": "2026-08-30T09:57:07+05:30",
+     "subject": "Replace the web fallback with per-topic coverage checking"
+    },
+    {
+     "sha": "def39fd",
+     "date": "2026-08-30T09:44:29+05:30",
+     "subject": "Phase 4: persistence, calendar sync, adaptive re-scheduling"
+    },
+    {
+     "sha": "688b934",
+     "date": "2026-08-30T09:26:50+05:30",
+     "subject": "Phase 3: the scheduling algorithm"
+    },
+    {
+     "sha": "20ce59f",
+     "date": "2026-08-30T09:09:47+05:30",
+     "subject": "Switch to local Ollama, then retune decay on real embeddings"
+    },
+    {
+     "sha": "9570958",
+     "date": "2026-08-30T08:51:58+05:30",
+     "subject": "Phase 2: implement time-decay ranking"
+    },
+    {
+     "sha": "22fcc36",
+     "date": "2026-08-30T08:46:27+05:30",
+     "subject": "Phase 0+1: test runner and retrieval eval harness"
+    },
+    {
+     "sha": "900e595",
+     "date": "2026-08-30T08:35:52+05:30",
+     "subject": "Initial commit: Study Copilot v2 scaffold"
+    }
+   ]
+  },
+  "AbrahamLinksus/nextup": {
+   "branch": "main",
+   "total": 2,
+   "last30": 0,
+   "commits": [
+    {
+     "sha": "aeab997",
+     "date": "2026-09-07T08:46:34+05:30",
+     "subject": "Add README"
+    },
+    {
+     "sha": "b965750",
+     "date": "2026-09-07T08:44:52+05:30",
+     "subject": "Initial commit"
+    }
+   ]
+  },
+  "AbrahamLinksus/queuedup_v2": {
+   "branch": "main",
+   "total": 30,
+   "last30": 0,
+   "commits": [
+    {
+     "sha": "d40acd1",
+     "date": "2026-08-27T15:07:36+05:30",
+     "subject": "fix(deploy): drop the pseudo-comments vercel.json is not allowed to have"
+    },
+    {
+     "sha": "c9e1aa1",
+     "date": "2026-08-27T14:35:58+05:30",
+     "subject": "feat(catalog): create domains and review modes in the product"
+    },
+    {
+     "sha": "72053c2",
+     "date": "2026-08-26T20:08:01+05:30",
+     "subject": "fix(db): catch a placeholder hostname before Prisma calls it unreachable"
+    },
+    {
+     "sha": "886fdbe",
+     "date": "2026-08-26T20:03:43+05:30",
+     "subject": "fix(db): stop a remote migration from silently hitting localhost"
+    },
+    {
+     "sha": "c96a617",
+     "date": "2026-08-26T19:51:30+05:30",
+     "subject": "chore: ignore .vercel link state"
+    },
+    {
+     "sha": "2175ae4",
+     "date": "2026-08-26T19:49:01+05:30",
+     "subject": "fix(deploy): make the monorepo build survive Vercel's defaults"
+    },
+    {
+     "sha": "49eceb4",
+     "date": "2026-08-26T19:38:57+05:30",
+     "subject": "fix(outbox): drain from the request path, so the free tier is enough"
+    },
+    {
+     "sha": "7a41ce8",
+     "date": "2026-08-26T19:22:40+05:30",
+     "subject": "chore: pre-deployment readiness, without provisioning anything"
+    },
+    {
+     "sha": "8ab50e6",
+     "date": "2026-08-26T19:13:33+05:30",
+     "subject": "feat(web): adopt the QueuedUp design for the app shell and screens"
+    },
+    {
+     "sha": "ab0bb9e",
+     "date": "2026-08-26T18:57:00+05:30",
+     "subject": "feat(seed): a demo account with eight months of simulated history"
+    },
+    {
+     "sha": "2fa3340",
+     "date": "2026-08-26T18:46:38+05:30",
+     "subject": "feat(outbox): drain on a cron tick instead of in a long-lived process"
+    },
+    {
+     "sha": "be3ab05",
+     "date": "2026-08-26T14:40:51+05:30",
+     "subject": "fix(db): give transaction acquisition enough headroom for a remote endpoint"
+    }
+   ]
+  },
+  "AbrahamLinksus/recallPrediction": {
+   "branch": "master",
+   "total": 1,
+   "last30": 0,
+   "commits": [
+    {
+     "sha": "a6c6188",
+     "date": "2026-09-09T21:42:46+05:30",
+     "subject": "Recall prediction pipeline: PySpark features, XGBoost, calibration"
+    }
+   ]
+  },
+  "AbrahamLinksus/fedLearn": {
+   "branch": "main",
+   "total": 4,
+   "last30": 0,
+   "commits": [
+    {
+     "sha": "014638d",
+     "date": "2026-04-28T07:14:01+05:30",
+     "subject": "updated attack and defense"
+    },
+    {
+     "sha": "65cd030",
+     "date": "2026-04-16T16:19:45+05:30",
+     "subject": "file transfer commit"
+    },
+    {
+     "sha": "cfb56aa",
+     "date": "2026-03-23T21:26:14+05:30",
+     "subject": "first commit"
+    },
+    {
+     "sha": "96aaf46",
+     "date": "2026-03-23T21:16:48+05:30",
+     "subject": "Initial commit"
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,541 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import { nowRepos, ACTIVE_DAYS } from '../data/now';
+import synced from '../data/now.json';
+import notesData from '../data/knowledge/notes.json';
+import dsaData from '../data/knowledge/advanced-dsa.json';
+
+type Commit = { sha: string; date: string; subject: string };
+type Activity = { branch: string; total: number; last30: number; commits: Commit[] };
+const activity = synced.repos as Record<string, Activity>;
+const url = (repo: string) => `https://github.com/${repo}`;
+const fmt = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
+const daysSince = (iso?: string) => (iso ? (Date.now() - Date.parse(iso)) / 864e5 : Infinity);
+
+// Gear speed: busier parts turn faster; a part with no commits this month stands still.
+const spin = (n: number) => (n > 0 ? `${Math.max(3, Math.round(36 / Math.sqrt(n)))}s` : '0s');
+
+// Studying: the notes repo, read as a learning log from its commit messages.
+const notesRepo = nowRepos.find((r) => r.part === 'study')!;
+const notesAct = activity[notesRepo.repo];
+const humanTopic = (t: string) => t.split('/').map((s) => s.replace(/-/g, ' ')).join(' / ');
+const log = (notesAct?.commits ?? [])
+  .map((c) => {
+    const m = c.subject.match(/^(learn|revise|plan)\(([^)]+)\):\s*(.+)$/);
+    return m ? { action: m[1], topic: humanTopic(m[2]), what: m[3], date: c.date, sha: c.sha } : null;
+  })
+  .filter((x): x is NonNullable<typeof x> => !!x)
+  .slice(0, 8);
+const noteCount = notesData.topics.reduce((n: number, t: { items: unknown[] }) => n + t.items.length, 0);
+
+// Practising: advancedDSA.
+const dsaRepo = nowRepos.find((r) => r.part === 'practice')!;
+const dsaAct = activity[dsaRepo.repo];
+const dsaItems = dsaData.topics.flatMap((t: { items: { status: string }[] }) => t.items);
+const solved = dsaItems.filter((i) => i.status === 'done').length;
+
+// Building: project repos and this site, active ones first.
+const builds = nowRepos
+  .filter((r) => r.part === 'build' && activity[r.repo])
+  .map((r) => ({ ...r, a: activity[r.repo], last: activity[r.repo].commits[0]?.date }))
+  .sort((x, y) => Date.parse(y.last ?? '0') - Date.parse(x.last ?? '0'));
+const activeBuilds = builds.filter((b) => daysSince(b.last) <= ACTIVE_DAYS);
+const buildCommits = activeBuilds.reduce((n, b) => n + b.a.last30, 0);
+
+const parts = [
+  { id: 'studying', name: 'Studying', n: notesAct?.last30 ?? 0, unit: 'notes commits', last: notesAct?.commits[0]?.date, size: 1 },
+  { id: 'practising', name: 'Practising', n: dsaAct?.last30 ?? 0, unit: 'practice commits', last: dsaAct?.commits[0]?.date, size: 0.78 },
+  { id: 'building', name: 'Building', n: buildCommits, unit: 'build commits', last: activeBuilds[0]?.last ?? builds[0]?.last, size: 0.9 },
+];
+
+// A gear outline: toothed ring as one path.
+function gearPath(r: number, teeth: number) {
+  const pts: string[] = [];
+  const inner = r * 0.84;
+  for (let i = 0; i < teeth * 4; i++) {
+    const a = (i / (teeth * 4)) * Math.PI * 2;
+    const rr = i % 4 < 2 ? r : inner;
+    pts.push(`${(Math.cos(a) * rr).toFixed(1)},${(Math.sin(a) * rr).toFixed(1)}`);
+  }
+  return `M${pts.join('L')}Z`;
+}
+---
+
+<BaseLayout title="Now" description="The moving parts of Jake Roberts' academics: what he is studying, practising and building, synced from GitHub.">
+  <PageIntro
+    number="04"
+    title="Now"
+    lede="The moving parts of my academics. B.Tech Computer Science, graduating 2027. Each gear turns as fast as that part has moved this month, read straight from GitHub."
+  />
+
+  <section class="container machine" aria-label="Moving parts this month">
+    <div class="gears">
+      {
+        parts.map((p, i) => (
+          <a class="gear" href={`#${p.id}`} style={`--spin: ${spin(p.n)}; --dir: ${i % 2 ? 'reverse' : 'normal'}; --s: ${p.size}`}>
+            <svg viewBox="-110 -110 220 220" aria-hidden="true">
+              <g class="teeth">
+                <path d={gearPath(100, 14)} />
+                <circle r="68" class="hole" />
+              </g>
+            </svg>
+            <span class="g-label">
+              <span class="g-n">{p.n}</span>
+              <span class="g-name">{p.name}</span>
+              <span class="g-sub">{p.n > 0 ? `${p.unit} in ${ACTIVE_DAYS} days` : p.last ? `still since ${fmt(p.last)}` : 'not started'}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container part" id="studying" aria-labelledby="studying-title">
+    <header class="p-head">
+      <span class="p-num">01</span>
+      <h2 id="studying-title" class="display p-title">Studying</h2>
+      <p class="p-meta">
+        <a href={url(notesRepo.repo)} rel="noopener">notes ↗</a> · {noteCount} notes so far · <a href="/skills">see them in the Skill Cortex →</a>
+      </p>
+    </header>
+    {
+      log.length ? (
+        <ol class="log">
+          {log.map((e) => (
+            <li>
+              <span class:list={['act', e.action]}>{e.action}</span>
+              <span class="topic">{e.topic}</span>
+              <a class="what" href={`${url(notesRepo.repo)}/commit/${e.sha}`} rel="noopener">{e.what}</a>
+              <span class="when" data-ago={e.date}>{fmt(e.date)}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="quiet">No new notes this month.</p>
+      )
+    }
+  </section>
+
+  <section class="container part" id="practising" aria-labelledby="practising-title">
+    <header class="p-head">
+      <span class="p-num">02</span>
+      <h2 id="practising-title" class="display p-title">Practising</h2>
+      <p class="p-meta"><a href={url(dsaRepo.repo)} rel="noopener">advancedDSA ↗</a> · {dsaData.topics.length} topics</p>
+    </header>
+    <div class="practice">
+      <div class="big-stat">
+        <span class="bs-n">{solved}</span>
+        <span class="bs-l">problems solved</span>
+      </div>
+      <ol class="commits">
+        {
+          (dsaAct?.commits ?? []).slice(0, 4).map((c) => (
+            <li>
+              <a class="sha" href={`${url(dsaRepo.repo)}/commit/${c.sha}`} rel="noopener">{c.sha}</a>
+              <span class="msg">{c.subject}</span>
+              <span class="when" data-ago={c.date}>{fmt(c.date)}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="container part" id="building" aria-labelledby="building-title">
+    <header class="p-head">
+      <span class="p-num">03</span>
+      <h2 id="building-title" class="display p-title">Building</h2>
+      <p class="p-meta">{activeBuilds.length ? `${activeBuilds.length} active this month` : 'Nothing pushed this month'} · <a href="/projects">all projects →</a></p>
+    </header>
+    <div class="builds">
+      {
+        activeBuilds.map((b) => (
+          <article class="build">
+            <div class="b-top">
+              <a class="b-name" href={url(b.repo)} rel="noopener">{b.name} ↗</a>
+              <span class="b-n"><b>{b.a.last30}</b> commits this month</span>
+            </div>
+            <p class="b-desc">{b.description}</p>
+            <ol class="commits">
+              {b.a.commits.slice(0, 4).map((c) => (
+                <li>
+                  <a class="sha" href={`${url(b.repo)}/commit/${c.sha}`} rel="noopener">{c.sha}</a>
+                  <span class="msg">{c.subject}</span>
+                  <span class="when" data-ago={c.date}>{fmt(c.date)}</span>
+                </li>
+              ))}
+            </ol>
+            {b.project && <a class="b-cs" href={`/projects/${b.project}`}>Read the case study →</a>}
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <p class="container synced">Synced from GitHub <span data-ago={synced.syncedAt}>{fmt(synced.syncedAt)}</span>.</p>
+</BaseLayout>
+
+<style>
+  /* Teal page: Now's colour in the menu. */
+  .machine {
+    padding-bottom: 8px;
+  }
+  .gears {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    align-items: center;
+    padding: 28px 20px;
+    border-radius: 22px;
+    background-color: var(--panel);
+    background-image:
+      linear-gradient(var(--panel-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--panel-grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    color: var(--ink);
+  }
+  .gear {
+    position: relative;
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    color: inherit;
+    margin: 0 -14px; /* teeth overlap so the gears mesh */
+  }
+  .gear svg {
+    width: calc(100% * var(--s));
+    max-width: 300px;
+    height: auto;
+    display: block;
+  }
+  .teeth {
+    transform-origin: 0 0;
+    animation: turn var(--spin) linear infinite;
+    animation-direction: var(--dir);
+  }
+  .gear[style*='--spin: 0s'] .teeth {
+    animation: none;
+  }
+  .teeth path {
+    fill: var(--teal);
+    stroke: var(--ink);
+    stroke-width: 3;
+  }
+  .gear:nth-child(2) .teeth path {
+    fill: #3e9f97;
+  }
+  .gear:nth-child(3) .teeth path {
+    fill: #8fdcd5;
+  }
+  .hole {
+    fill: var(--panel);
+    stroke: var(--ink);
+    stroke-width: 3;
+  }
+  @keyframes turn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .g-label {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    pointer-events: none;
+  }
+  .g-n {
+    font-family: var(--font-display);
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 0.9;
+  }
+  .g-name {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(12px, 1.4vw, 16px);
+  }
+  .g-sub {
+    font-family: var(--font-mono);
+    font-size: clamp(9px, 0.9vw, 11px);
+    color: #4a4642;
+    max-width: 14ch;
+    justify-self: center;
+  }
+  .gear:hover .teeth path,
+  .gear:focus-visible .teeth path {
+    stroke-width: 6;
+  }
+
+  .part {
+    padding-top: 64px;
+    scroll-margin-top: 24px;
+  }
+  .p-head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: end;
+    gap: 6px 16px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--teal);
+    margin-bottom: 18px;
+  }
+  .p-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--teal);
+    padding-bottom: 10px;
+  }
+  .p-title {
+    font-size: clamp(42px, 6vw, 72px);
+  }
+  .p-meta {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .p-meta a {
+    color: var(--teal);
+  }
+  .quiet {
+    color: var(--muted);
+  }
+
+  .log {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+  }
+  .log li {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 0.9fr) minmax(0, 1.6fr) auto;
+    gap: 16px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .act {
+    justify-self: start;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--teal);
+    color: var(--ink);
+  }
+  .act.revise {
+    background: transparent;
+    color: var(--teal);
+    border: 1px solid var(--teal);
+  }
+  .act.plan {
+    background: transparent;
+    color: var(--muted);
+    border: 1px dashed var(--muted);
+  }
+  .topic {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+  .what {
+    font-size: 14.5px;
+    text-decoration: none;
+  }
+  .what:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .when {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .practice {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 32px;
+    align-items: center;
+  }
+  .big-stat {
+    display: grid;
+    padding: 20px 28px;
+    border-radius: 18px;
+    border: 2px solid var(--teal);
+  }
+  .bs-n {
+    font-family: var(--font-display);
+    font-size: 88px;
+    line-height: 0.9;
+    color: var(--teal);
+  }
+  .bs-l {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .commits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .commits li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 6px 0;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+  .sha {
+    color: var(--teal);
+    text-decoration: none;
+  }
+  .sha:hover {
+    text-decoration: underline;
+  }
+  .msg {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .builds {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+    gap: 16px;
+  }
+  .build {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+    border-radius: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--teal);
+  }
+  .b-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .b-name {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 30px;
+    line-height: 1;
+    text-decoration: none;
+  }
+  .b-name:hover {
+    color: var(--teal);
+  }
+  .b-n {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .b-n b {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--teal);
+  }
+  .b-desc {
+    margin: 0;
+    color: var(--muted);
+  }
+  .b-cs {
+    justify-self: start;
+    font-size: 13px;
+    color: var(--teal);
+  }
+  .synced {
+    padding-top: 40px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 760px) {
+    .gears {
+      padding: 16px 8px;
+    }
+    .gears {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 0;
+    }
+    .gear {
+      margin: -18px 0;
+      width: 240px;
+    }
+    .gear svg {
+      width: 100%;
+    }
+    .g-n {
+      font-size: 44px;
+    }
+    .g-name {
+      font-size: 14px;
+    }
+    .g-sub {
+      font-size: 10px;
+    }
+    .log li {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 4px 10px;
+    }
+    .log .what {
+      grid-column: 1 / -1;
+    }
+    .log .when {
+      grid-column: 1 / -1;
+    }
+    .practice {
+      grid-template-columns: 1fr;
+    }
+    .commits li {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .commits .when {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .teeth {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  // "3 days ago" style times, worked out in the visitor's browser so they stay accurate between builds.
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+  const units: [Intl.RelativeTimeFormatUnit, number][] = [
+    ['year', 31536e6],
+    ['month', 2592e6],
+    ['week', 6048e5],
+    ['day', 864e5],
+    ['hour', 36e5],
+    ['minute', 6e4],
+  ];
+  document.querySelectorAll<HTMLElement>('[data-ago]').forEach((el) => {
+    const t = Date.parse(el.dataset.ago!);
+    if (Number.isNaN(t)) return;
+    const diff = t - Date.now();
+    const [unit, ms] = units.find(([, ms]) => Math.abs(diff) >= ms) ?? ['minute', 6e4];
+    el.title = el.textContent ?? '';
+    el.textContent = rtf.format(Math.round(diff / ms), unit);
+  });
+</script>

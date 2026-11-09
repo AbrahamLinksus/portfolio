@@ -34,5 +34,6 @@ export const nav: NavItem[] = [
   { href: '/about', label: 'About', letter: 'A', description: 'Where I come from', color: 'var(--teal)' },
   { href: '/projects', label: 'Projects', letter: 'P', description: 'Case studies: problem, process, results', color: 'var(--pink)' },
   { href: '/skills', label: 'Skills', letter: 'S', description: 'Sorted by strength', color: 'var(--yellow)' },
+  { href: '/now', label: 'Now', letter: 'N', description: 'Hot off the main branch', color: 'var(--orange)' },
   { href: '/contact', label: 'Contact', letter: 'C', description: "Let's sync up", color: 'var(--lime)' },
 ];
