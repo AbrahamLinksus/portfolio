@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import { nowRepos, ACTIVE_DAYS } from '../data/now';
+import { nowRepos, ACTIVE_DAYS, current } from '../data/now';
 import synced from '../data/now.json';
 import notesData from '../data/knowledge/notes.json';
 import dsaData from '../data/knowledge/advanced-dsa.json';
@@ -12,9 +12,6 @@ const activity = synced.repos as Record<string, Activity>;
 const url = (repo: string) => `https://github.com/${repo}`;
 const fmt = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
 const daysSince = (iso?: string) => (iso ? (Date.now() - Date.parse(iso)) / 864e5 : Infinity);
-
-// Gear speed: busier parts turn faster; a part with no commits this month stands still.
-const spin = (n: number) => (n > 0 ? `${Math.max(3, Math.round(36 / Math.sqrt(n)))}s` : '0s');
 
 // Studying: the notes repo, read as a learning log from its commit messages.
 const notesRepo = nowRepos.find((r) => r.part === 'study')!;
@@ -49,46 +46,104 @@ const parts = [
   { id: 'building', name: 'Building', n: buildCommits, unit: 'build commits', last: activeBuilds[0]?.last ?? builds[0]?.last, size: 0.9 },
 ];
 
-// A gear outline: toothed ring as one path.
-function gearPath(r: number, teeth: number) {
-  const pts: string[] = [];
-  const inner = r * 0.84;
-  for (let i = 0; i < teeth * 4; i++) {
-    const a = (i / (teeth * 4)) * Math.PI * 2;
-    const rr = i % 4 < 2 ? r : inner;
-    pts.push(`${(Math.cos(a) * rr).toFixed(1)},${(Math.sin(a) * rr).toFixed(1)}`);
-  }
-  return `M${pts.join('L')}Z`;
+// "What I'm working on": hand-written fields from now.ts, last pushes from GitHub.
+const ago = (iso?: string) => {
+  if (!iso) return '';
+  const d = Math.floor(daysSince(iso));
+  return d < 1 ? 'today' : d < 2 ? 'yesterday' : d < 31 ? `${d} days ago` : `on ${fmt(iso)}`;
+};
+const appRepo = nowRepos.find((r) => r.repo === current.building.repo);
+const appAct = activity[current.building.repo];
+const appPush = appAct?.commits[0];
+// Skip housekeeping commits: show the latest real study note.
+const studyPush = notesAct?.commits.find((c) => /^(learn|revise|plan)\(/.test(c.subject)) ?? notesAct?.commits[0];
+const dsaPush = dsaAct?.commits[0];
+const latestTopic = log[0]?.topic;
+const cards = [
+  {
+    id: 'building',
+    kind: 'Building',
+    color: 'var(--pink)',
+    title: appRepo?.name ?? current.building.repo.split('/')[1],
+    href: appRepo?.project ? `/projects/${appRepo.project}` : url(current.building.repo),
+    working: current.building.working || appRepo?.description || '',
+    stuck: current.building.stuck,
+    next: current.building.next,
+    pushes: appPush ? [{ label: 'App', repo: current.building.repo, ...appPush }] : [],
+  },
+  {
+    id: 'academics',
+    kind: 'Academics',
+    color: 'var(--teal)',
+    title: current.academics.working || (latestTopic ? titleCase(latestTopic) : 'Study notes'),
+    href: '#studying',
+    working: current.academics.working ? '' : 'My latest study notes, plus daily DSA practice.',
+    stuck: current.academics.stuck,
+    next: current.academics.next,
+    pushes: [
+      studyPush && { label: 'Notes', repo: notesRepo.repo, ...studyPush },
+      dsaPush && { label: 'DSA', repo: dsaRepo.repo, ...dsaPush },
+    ].filter(Boolean) as { label: string; repo: string; sha: string; date: string; subject: string }[],
+  },
+];
+function titleCase(t: string) {
+  return t.replace(/\b\w/g, (c) => c.toUpperCase());
 }
+
 ---
 
 <BaseLayout title="Now" description="The moving parts of Jake Roberts' academics: what he is studying, practising and building, synced from GitHub.">
   <PageIntro
     number="04"
     title="Now"
-    lede="The moving parts of my academics. B.Tech Computer Science, graduating 2027. Each gear turns as fast as that part has moved this month, read straight from GitHub."
+    lede="What I'm working on right now: the app I'm building, what I'm studying, where I'm stuck, and my last push. Pushes are read straight from GitHub."
   />
 
-  <section class="container machine" aria-label="Moving parts this month">
-    <div class="gears">
-      {
-        parts.map((p, i) => (
-          <a class="gear" href={`#${p.id}`} style={`--spin: ${spin(p.n)}; --dir: ${i % 2 ? 'reverse' : 'normal'}; --s: ${p.size}`}>
-            <svg viewBox="-110 -110 220 220" aria-hidden="true">
-              <g class="teeth">
-                <path d={gearPath(100, 14)} />
-                <circle r="68" class="hole" />
-              </g>
-            </svg>
-            <span class="g-label">
-              <span class="g-n">{p.n}</span>
-              <span class="g-name">{p.name}</span>
-              <span class="g-sub">{p.n > 0 ? `${p.unit} in ${ACTIVE_DAYS} days` : p.last ? `still since ${fmt(p.last)}` : 'not started'}</span>
-            </span>
-          </a>
-        ))
-      }
-    </div>
+  <section class="container current" aria-label="What I'm working on right now">
+    {
+      cards.map((c) => (
+        <article class="card" style={`--c: ${c.color}`} aria-labelledby={`cur-${c.id}`}>
+          <span class="c-kind">Currently · {c.kind}</span>
+          <h2 id={`cur-${c.id}`} class="c-title display">
+            <a href={c.href}>{c.title}</a>
+          </h2>
+          {c.working && <p class="c-working">{c.working}</p>}
+
+          <dl class="c-rows">
+            <div class="c-row stuck">
+              <dt><span class="badge">Stuck on</span></dt>
+              <dd>{c.stuck ? c.stuck : <span class="todo">To fill in: the problem I'm stuck on</span>}</dd>
+            </div>
+            <div class="c-row">
+              <dt>Last push</dt>
+              <dd>
+                {c.pushes.length ? (
+                  <ul class="pushes">
+                    {c.pushes.map((p) => (
+                      <li>
+                        <a class="p-msg" href={`${url(p.repo)}/commit/${p.sha}`} rel="noopener">
+                          {p.subject}
+                        </a>
+                        <span class="p-meta">
+                          {c.pushes.length > 1 ? `${p.label} · ` : ''}
+                          <code>{p.sha}</code> · {ago(p.date)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  'Nothing pushed yet'
+                )}
+              </dd>
+            </div>
+            <div class="c-row">
+              <dt>Next up</dt>
+              <dd>{c.next ? c.next : <span class="todo">To fill in: what's next</span>}</dd>
+            </div>
+          </dl>
+        </article>
+      ))
+    }
   </section>
 
   <section class="container part" id="studying" aria-labelledby="studying-title">
@@ -178,15 +233,17 @@ function gearPath(r: number, teeth: number) {
 
 <style>
   /* Teal page: Now's colour in the menu. */
-  .machine {
-    padding-bottom: 8px;
-  }
-  .gears {
+  /* Two "currently" cards: the app I'm building and my academics. */
+  .current {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    align-items: center;
-    padding: 28px 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+  }
+  .card {
+    display: grid;
+    gap: 12px;
+    padding: 26px 26px 22px;
     border-radius: 22px;
     background-color: var(--panel);
     background-image:
@@ -194,79 +251,109 @@ function gearPath(r: number, teeth: number) {
       linear-gradient(90deg, var(--panel-grid) 1px, transparent 1px);
     background-size: 40px 40px;
     color: var(--ink);
+    border-top: 8px solid var(--c);
+    min-width: 0;
   }
-  .gear {
-    position: relative;
-    display: grid;
-    place-items: center;
+  .c-kind {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #4a4642;
+  }
+  .c-title {
+    font-size: clamp(34px, 4vw, 52px);
+    line-height: 0.95;
+  }
+  .c-title a {
     text-decoration: none;
-    color: inherit;
-    margin: 0 -14px; /* teeth overlap so the gears mesh */
   }
-  .gear svg {
-    width: calc(100% * var(--s));
-    max-width: 300px;
-    height: auto;
-    display: block;
+  .c-title a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--c);
+    text-decoration-thickness: 4px;
   }
-  .teeth {
-    transform-origin: 0 0;
-    animation: turn var(--spin) linear infinite;
-    animation-direction: var(--dir);
+  .c-working {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #3a3632;
   }
-  .gear[style*='--spin: 0s'] .teeth {
-    animation: none;
-  }
-  .teeth path {
-    fill: var(--teal);
-    stroke: var(--ink);
-    stroke-width: 3;
-  }
-  .gear:nth-child(2) .teeth path {
-    fill: #3e9f97;
-  }
-  .gear:nth-child(3) .teeth path {
-    fill: #8fdcd5;
-  }
-  .hole {
-    fill: var(--panel);
-    stroke: var(--ink);
-    stroke-width: 3;
-  }
-  @keyframes turn {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  .g-label {
-    position: absolute;
-    inset: 0;
+  .c-rows {
+    margin: 6px 0 0;
     display: grid;
-    place-content: center;
-    text-align: center;
-    pointer-events: none;
   }
-  .g-n {
-    font-family: var(--font-display);
-    font-size: clamp(34px, 5vw, 60px);
-    line-height: 0.9;
+  .c-row {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px 0;
+    border-top: 1.5px solid rgba(17, 17, 18, 0.15);
   }
-  .g-name {
+  .c-row dt {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4a4642;
+    padding-top: 3px;
+  }
+  .c-row dd {
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.5;
+    min-width: 0;
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 8px 2px;
+    border-radius: 6px;
+    background: var(--c);
+    color: var(--ink);
     font-family: var(--font-sticker);
     font-weight: 800;
-    text-transform: uppercase;
-    font-size: clamp(12px, 1.4vw, 16px);
+    font-size: 11.5px;
+    letter-spacing: 0.02em;
+    transform: rotate(-3deg);
   }
-  .g-sub {
+  .stuck dd {
+    font-weight: 500;
+  }
+  .todo {
+    display: inline-block;
+    padding: 4px 10px;
+    border: 1.5px dashed rgba(17, 17, 18, 0.35);
+    border-radius: 8px;
     font-family: var(--font-mono);
-    font-size: clamp(9px, 0.9vw, 11px);
-    color: #4a4642;
-    max-width: 14ch;
-    justify-self: center;
+    font-size: 12px;
+    color: #5e5a55;
   }
-  .gear:hover .teeth path,
-  .gear:focus-visible .teeth path {
-    stroke-width: 6;
+  .pushes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .pushes li {
+    display: grid;
+    gap: 2px;
+  }
+  .p-msg {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .p-msg:hover {
+    text-decoration: underline;
+  }
+  .p-meta {
+    font-size: 12.5px;
+    color: #5e5a55;
+  }
+  .p-meta code {
+    font-family: var(--font-mono);
   }
 
   .part {
@@ -468,29 +555,15 @@ function gearPath(r: number, teeth: number) {
   }
 
   @media (max-width: 760px) {
-    .gears {
-      padding: 16px 8px;
-    }
-    .gears {
+    .current {
       grid-template-columns: 1fr;
-      justify-items: center;
-      gap: 0;
     }
-    .gear {
-      margin: -18px 0;
-      width: 240px;
+    .card {
+      padding: 22px 18px 18px;
     }
-    .gear svg {
-      width: 100%;
-    }
-    .g-n {
-      font-size: 44px;
-    }
-    .g-name {
-      font-size: 14px;
-    }
-    .g-sub {
-      font-size: 10px;
+    .c-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
     }
     .log li {
       grid-template-columns: auto minmax(0, 1fr);
