@@ -1,14 +1,19 @@
 {
- "syncedAt": "2026-11-09T12:33:54.747Z",
+ "syncedAt": "2026-11-09T12:37:39.100Z",
  "source": "list",
  "repos": {
   "AbrahamLinksus/portfolio": {
    "description": "My portfolio site",
    "language": "Astro",
    "branch": "main",
-   "total": 62,
-   "last30": 62,
+   "total": 63,
+   "last30": 63,
    "commits": [
+    {
+     "sha": "43d3ea8",
+     "date": "2026-11-09T12:34:10+00:00",
+     "subject": "Nav: About, Projects, Now, Skills, Contact"
+    },
     {
      "sha": "8e4b55a",
      "date": "2026-11-09T12:31:10+00:00",
@@ -28,11 +33,6 @@
      "sha": "3b0458e",
      "date": "2026-11-09T11:34:01+00:00",
      "subject": "Now: replace the gears with 'currently working on' cards"
-    },
-    {
-     "sha": "2683c0e",
-     "date": "2026-11-09T10:28:49+00:00",
-     "subject": "Bring back the Now page"
     }
    ]
   },

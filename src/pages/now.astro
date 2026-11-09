@@ -73,9 +73,7 @@ const cards = Object.entries(activity)
 
               <div class="commit">
                 <span class="c-label">Latest commit · <span data-ago={c.last!.date}>{fmt(c.last!.date)}</span></span>
-                <a class="c-msg" href={`${gh(c.repo)}/commit/${c.last!.sha}`} rel="noopener">
-                  {c.last!.subject}
-                </a>
+                <p class="c-msg">{c.last!.subject}</p>
                 <code class="c-sha">{c.last!.sha}</code>
               </div>
 
@@ -243,18 +241,13 @@ const cards = Object.entries(activity)
     color: #4a4642;
   }
   .c-msg {
+    margin: 0;
     font-family: var(--font-display);
     font-size: clamp(30px, 4.2vw, 52px);
     line-height: 1;
     text-transform: uppercase;
-    text-decoration: none;
     overflow-wrap: anywhere;
     text-wrap: balance;
-  }
-  .c-msg:hover {
-    text-decoration: underline;
-    text-decoration-color: var(--c);
-    text-decoration-thickness: 4px;
   }
   .c-sha {
     justify-self: start;
