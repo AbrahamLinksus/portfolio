@@ -1,9 +1,9 @@
-# Rebuilds the site every 6 hours so the Now page picks up commits pushed to other repos.
+# Rebuilds the site every hour so the Now page picks up commits pushed to other repos.
 # Needs a repository secret VERCEL_DEPLOY_HOOK (the same deploy hook URL used by the notes repo).
 name: Scheduled rebuild
 on:
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 jobs:
   rebuild:
