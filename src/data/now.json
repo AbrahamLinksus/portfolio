@@ -1,14 +1,19 @@
 {
- "syncedAt": "2026-11-09T12:29:48.482Z",
+ "syncedAt": "2026-11-09T12:33:54.747Z",
  "source": "list",
  "repos": {
   "AbrahamLinksus/portfolio": {
    "description": "My portfolio site",
    "language": "Astro",
    "branch": "main",
-   "total": 61,
-   "last30": 61,
+   "total": 62,
+   "last30": 62,
    "commits": [
+    {
+     "sha": "8e4b55a",
+     "date": "2026-11-09T12:31:10+00:00",
+     "subject": "Now: find repos from GitHub instead of a fixed list"
+    },
     {
      "sha": "3f498f6",
      "date": "2026-11-09T12:22:28+00:00",
@@ -28,11 +33,6 @@
      "sha": "2683c0e",
      "date": "2026-11-09T10:28:49+00:00",
      "subject": "Bring back the Now page"
-    },
-    {
-     "sha": "e784405",
-     "date": "2026-11-08T09:55:30+00:00",
-     "subject": "Home: replace the pulsing dot with a static 'Open to work' sticker"
     }
    ]
   },
