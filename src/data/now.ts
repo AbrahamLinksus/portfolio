@@ -24,19 +24,9 @@ export const nowRepos: NowRepo[] = [
 // A repo counts as active if it had a commit in this many days.
 export const ACTIVE_DAYS = 30;
 
-// "What I'm working on right now": the parts only Jake can write. Last pushes come from GitHub.
-// Leave a field empty ('') and the page shows a dashed "to fill in" slot instead.
-export const current = {
-  building: {
-    repo: 'AbrahamLinksus/reachinbox-scheduler', // the app I'm working on (a repo from nowRepos)
-    working: '',
-    stuck: '',
-    next: '',
-  },
-  academics: {
-    working: '', // empty: uses my latest study note topic
-    stuck: '',
-    next: '',
-  },
+// What only Jake can write: where each project is stuck and what's next. Last pushes come from GitHub.
+// Fields left out are simply not shown.
+export type NowNote = { stuck?: string; next?: string };
+export const projectNotes: Record<string, NowNote> = {
+  // 'AbrahamLinksus/reachinbox-scheduler': { stuck: '...', next: '...' },
 };
-

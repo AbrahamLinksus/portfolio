@@ -1,249 +1,153 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import { nowRepos, ACTIVE_DAYS, current } from '../data/now';
+import { nowRepos, ACTIVE_DAYS, projectNotes } from '../data/now';
+import { getProjects, colorVar } from '../lib/projects';
 import synced from '../data/now.json';
-import notesData from '../data/knowledge/notes.json';
-import dsaData from '../data/knowledge/advanced-dsa.json';
 
 type Commit = { sha: string; date: string; subject: string };
 type Activity = { branch: string; total: number; last30: number; commits: Commit[] };
 const activity = synced.repos as Record<string, Activity>;
-const url = (repo: string) => `https://github.com/${repo}`;
+const gh = (repo: string) => `https://github.com/${repo}`;
 const fmt = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
-const daysSince = (iso?: string) => (iso ? (Date.now() - Date.parse(iso)) / 864e5 : Infinity);
 
-// Studying: the notes repo, read as a learning log from its commit messages.
-const notesRepo = nowRepos.find((r) => r.part === 'study')!;
-const notesAct = activity[notesRepo.repo];
-const humanTopic = (t: string) => t.split('/').map((s) => s.replace(/-/g, ' ')).join(' / ');
-const log = (notesAct?.commits ?? [])
-  .map((c) => {
-    const m = c.subject.match(/^(learn|revise|plan)\(([^)]+)\):\s*(.+)$/);
-    return m ? { action: m[1], topic: humanTopic(m[2]), what: m[3], date: c.date, sha: c.sha } : null;
+// Projects: one card each, most recently pushed first. They stack as you scroll.
+const projects = await getProjects();
+const cards = nowRepos
+  .filter((r) => r.part === 'build')
+  .map((r) => {
+    const p = r.project ? projects.find((x) => x.id === r.project) : undefined;
+    const a = activity[r.repo];
+    return {
+      ...r,
+      title: p?.data.title ?? r.name,
+      letter: p?.data.letter ?? r.name.charAt(0).toUpperCase(),
+      color: p ? colorVar(p.data.color) : 'var(--orange)',
+      status: p?.data.status ?? 'Live',
+      summary: p?.data.summary ?? r.description,
+      last: a?.commits[0],
+      month: a?.last30 ?? 0,
+      note: projectNotes[r.repo] ?? {},
+    };
   })
-  .filter((x): x is NonNullable<typeof x> => !!x)
-  .slice(0, 8);
-const noteCount = notesData.topics.reduce((n: number, t: { items: unknown[] }) => n + t.items.length, 0);
-
-// Practising: advancedDSA.
-const dsaRepo = nowRepos.find((r) => r.part === 'practice')!;
-const dsaAct = activity[dsaRepo.repo];
-const dsaItems = dsaData.topics.flatMap((t: { items: { status: string }[] }) => t.items);
-const solved = dsaItems.filter((i) => i.status === 'done').length;
-
-// Building: project repos and this site, active ones first.
-const builds = nowRepos
-  .filter((r) => r.part === 'build' && activity[r.repo])
-  .map((r) => ({ ...r, a: activity[r.repo], last: activity[r.repo].commits[0]?.date }))
-  .sort((x, y) => Date.parse(y.last ?? '0') - Date.parse(x.last ?? '0'));
-const activeBuilds = builds.filter((b) => daysSince(b.last) <= ACTIVE_DAYS);
-const buildCommits = activeBuilds.reduce((n, b) => n + b.a.last30, 0);
-
-const parts = [
-  { id: 'studying', name: 'Studying', n: notesAct?.last30 ?? 0, unit: 'notes commits', last: notesAct?.commits[0]?.date, size: 1 },
-  { id: 'practising', name: 'Practising', n: dsaAct?.last30 ?? 0, unit: 'practice commits', last: dsaAct?.commits[0]?.date, size: 0.78 },
-  { id: 'building', name: 'Building', n: buildCommits, unit: 'build commits', last: activeBuilds[0]?.last ?? builds[0]?.last, size: 0.9 },
-];
-
-// "What I'm working on": hand-written fields from now.ts, last pushes from GitHub.
-const ago = (iso?: string) => {
-  if (!iso) return '';
-  const d = Math.floor(daysSince(iso));
-  return d < 1 ? 'today' : d < 2 ? 'yesterday' : d < 31 ? `${d} days ago` : `on ${fmt(iso)}`;
-};
-const appRepo = nowRepos.find((r) => r.repo === current.building.repo);
-const appAct = activity[current.building.repo];
-const appPush = appAct?.commits[0];
-// Skip housekeeping commits: show the latest real study note.
-const studyPush = notesAct?.commits.find((c) => /^(learn|revise|plan)\(/.test(c.subject)) ?? notesAct?.commits[0];
-const dsaPush = dsaAct?.commits[0];
-const latestTopic = log[0]?.topic;
-const cards = [
-  {
-    id: 'building',
-    kind: 'Building',
-    color: 'var(--pink)',
-    title: appRepo?.name ?? current.building.repo.split('/')[1],
-    href: appRepo?.project ? `/projects/${appRepo.project}` : url(current.building.repo),
-    working: current.building.working || appRepo?.description || '',
-    stuck: current.building.stuck,
-    next: current.building.next,
-    pushes: appPush ? [{ label: 'App', repo: current.building.repo, ...appPush }] : [],
-  },
-  {
-    id: 'academics',
-    kind: 'Academics',
-    color: 'var(--teal)',
-    title: current.academics.working || (latestTopic ? titleCase(latestTopic) : 'Study notes'),
-    href: '#studying',
-    working: current.academics.working ? '' : 'My latest study notes, plus daily DSA practice.',
-    stuck: current.academics.stuck,
-    next: current.academics.next,
-    pushes: [
-      studyPush && { label: 'Notes', repo: notesRepo.repo, ...studyPush },
-      dsaPush && { label: 'DSA', repo: dsaRepo.repo, ...dsaPush },
-    ].filter(Boolean) as { label: string; repo: string; sha: string; date: string; subject: string }[],
-  },
-];
-function titleCase(t: string) {
-  return t.replace(/\b\w/g, (c) => c.toUpperCase());
-}
+  .sort((x, y) => Date.parse(y.last?.date ?? '0') - Date.parse(x.last?.date ?? '0'));
 
 ---
 
-<BaseLayout title="Now" description="The moving parts of Jake Roberts' academics: what he is studying, practising and building, synced from GitHub.">
+<BaseLayout title="Now" description="What Jake Roberts is working on right now: every project, where it stands and its last push.">
   <PageIntro
     number="04"
     title="Now"
-    lede="What I'm working on right now: the app I'm building, what I'm studying, where I'm stuck, and my last push. Pushes are read straight from GitHub."
+    lede="What I'm working on right now. Every project, where it stands and its last push, read straight from GitHub."
   />
 
-  <section class="container current" aria-label="What I'm working on right now">
-    {
-      cards.map((c) => (
-        <article class="card" style={`--c: ${c.color}`} aria-labelledby={`cur-${c.id}`}>
-          <span class="c-kind">Currently · {c.kind}</span>
-          <h2 id={`cur-${c.id}`} class="c-title display">
-            <a href={c.href}>{c.title}</a>
-          </h2>
-          {c.working && <p class="c-working">{c.working}</p>}
+  <section class="container" aria-labelledby="projects-title">
+    <div class="sec-head">
+      <h2 id="projects-title" class="display sec-title">Projects</h2>
+      <span class="label">Most recent push first</span>
+    </div>
 
-          <dl class="c-rows">
-            <div class="c-row stuck">
-              <dt><span class="badge">Stuck on</span></dt>
-              <dd>{c.stuck ? c.stuck : <span class="todo">To fill in: the problem I'm stuck on</span>}</dd>
-            </div>
-            <div class="c-row">
-              <dt>Last push</dt>
-              <dd>
-                {c.pushes.length ? (
-                  <ul class="pushes">
-                    {c.pushes.map((p) => (
-                      <li>
-                        <a class="p-msg" href={`${url(p.repo)}/commit/${p.sha}`} rel="noopener">
-                          {p.subject}
+    <ol class="stack">
+      {
+        cards.map((c, i) => (
+          <li class="slot" style={`--i: ${i}`}>
+            <article class="card" style={`--c: ${c.color}`} aria-labelledby={`p-${c.repo}`} data-card>
+              <span class="c-mark" aria-hidden="true">{c.letter}</span>
+              <header class="c-top">
+                <span class="c-letter" aria-hidden="true">{c.letter}</span>
+                <span class="c-kind">{c.status}</span>
+                <span class="c-count">
+                  {String(i + 1).padStart(2, '0')} / {String(cards.length).padStart(2, '0')}
+                </span>
+                <span class="c-month">
+                  {c.month > 0 ? `${c.month} commits this month` : `quiet for ${ACTIVE_DAYS}+ days`}
+                </span>
+              </header>
+              <h3 id={`p-${c.repo}`} class="c-title display">{c.title}</h3>
+              <p class="c-summary">{c.summary}</p>
+              <dl class="c-rows">
+                {c.note.stuck && (
+                  <div class="c-row">
+                    <dt><span class="badge">Stuck on</span></dt>
+                    <dd class="strong">{c.note.stuck}</dd>
+                  </div>
+                )}
+                <div class="c-row">
+                  <dt>Last push</dt>
+                  <dd>
+                    {c.last ? (
+                      <>
+                        <a class="p-msg" href={`${gh(c.repo)}/commit/${c.last.sha}`} rel="noopener">
+                          {c.last.subject}
                         </a>
                         <span class="p-meta">
-                          {c.pushes.length > 1 ? `${p.label} · ` : ''}
-                          <code>{p.sha}</code> · {ago(p.date)}
+                          <code>{c.last.sha}</code> · <span data-ago={c.last.date}>{fmt(c.last.date)}</span>
                         </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  'Nothing pushed yet'
+                      </>
+                    ) : (
+                      'Nothing pushed yet'
+                    )}
+                  </dd>
+                </div>
+                {c.note.next && (
+                  <div class="c-row">
+                    <dt>Next up</dt>
+                    <dd>{c.note.next}</dd>
+                  </div>
                 )}
-              </dd>
-            </div>
-            <div class="c-row">
-              <dt>Next up</dt>
-              <dd>{c.next ? c.next : <span class="todo">To fill in: what's next</span>}</dd>
-            </div>
-          </dl>
-        </article>
-      ))
-    }
-  </section>
-
-  <section class="container part" id="studying" aria-labelledby="studying-title">
-    <header class="p-head">
-      <span class="p-num">01</span>
-      <h2 id="studying-title" class="display p-title">Studying</h2>
-      <p class="p-meta">
-        <a href={url(notesRepo.repo)} rel="noopener">notes ↗</a> · {noteCount} notes so far · <a href="/skills">see them in the Skill Cortex →</a>
-      </p>
-    </header>
-    {
-      log.length ? (
-        <ol class="log">
-          {log.map((e) => (
-            <li>
-              <span class:list={['act', e.action]}>{e.action}</span>
-              <span class="topic">{e.topic}</span>
-              <a class="what" href={`${url(notesRepo.repo)}/commit/${e.sha}`} rel="noopener">{e.what}</a>
-              <span class="when" data-ago={e.date}>{fmt(e.date)}</span>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <p class="quiet">No new notes this month.</p>
-      )
-    }
-  </section>
-
-  <section class="container part" id="practising" aria-labelledby="practising-title">
-    <header class="p-head">
-      <span class="p-num">02</span>
-      <h2 id="practising-title" class="display p-title">Practising</h2>
-      <p class="p-meta"><a href={url(dsaRepo.repo)} rel="noopener">advancedDSA ↗</a> · {dsaData.topics.length} topics</p>
-    </header>
-    <div class="practice">
-      <div class="big-stat">
-        <span class="bs-n">{solved}</span>
-        <span class="bs-l">problems solved</span>
-      </div>
-      <ol class="commits">
-        {
-          (dsaAct?.commits ?? []).slice(0, 4).map((c) => (
-            <li>
-              <a class="sha" href={`${url(dsaRepo.repo)}/commit/${c.sha}`} rel="noopener">{c.sha}</a>
-              <span class="msg">{c.subject}</span>
-              <span class="when" data-ago={c.date}>{fmt(c.date)}</span>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
-  </section>
-
-  <section class="container part" id="building" aria-labelledby="building-title">
-    <header class="p-head">
-      <span class="p-num">03</span>
-      <h2 id="building-title" class="display p-title">Building</h2>
-      <p class="p-meta">{activeBuilds.length ? `${activeBuilds.length} active this month` : 'Nothing pushed this month'} · <a href="/projects">all projects →</a></p>
-    </header>
-    <div class="builds">
-      {
-        activeBuilds.map((b) => (
-          <article class="build">
-            <div class="b-top">
-              <a class="b-name" href={url(b.repo)} rel="noopener">{b.name} ↗</a>
-              <span class="b-n"><b>{b.a.last30}</b> commits this month</span>
-            </div>
-            <p class="b-desc">{b.description}</p>
-            <ol class="commits">
-              {b.a.commits.slice(0, 4).map((c) => (
-                <li>
-                  <a class="sha" href={`${url(b.repo)}/commit/${c.sha}`} rel="noopener">{c.sha}</a>
-                  <span class="msg">{c.subject}</span>
-                  <span class="when" data-ago={c.date}>{fmt(c.date)}</span>
-                </li>
-              ))}
-            </ol>
-            {b.project && <a class="b-cs" href={`/projects/${b.project}`}>Read the case study →</a>}
-          </article>
+              </dl>
+              <div class="c-links">
+                {c.project && <a href={`/projects/${c.project}`}>Case study →</a>}
+                <a href={gh(c.repo)} rel="noopener">GitHub ↗</a>
+              </div>
+            </article>
+          </li>
         ))
       }
-    </div>
+    </ol>
   </section>
+
 
   <p class="container synced">Synced from GitHub <span data-ago={synced.syncedAt}>{fmt(synced.syncedAt)}</span>.</p>
 </BaseLayout>
 
 <style>
-  /* Teal page: Now's colour in the menu. */
-  /* Two "currently" cards: the app I'm building and my academics. */
-  .current {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-    align-items: start;
+  .sec-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--fg);
+    margin-bottom: 22px;
   }
+  .sec-title {
+    font-size: clamp(36px, 5vw, 60px);
+  }
+
+  /* Project cards stick as you scroll, so each new one slides up over the last. */
+  .stack {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 24px;
+    display: grid;
+    gap: 22px;
+  }
+  .slot {
+    position: sticky;
+    top: calc(20px + var(--i) * 14px);
+  }
+
   .card {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transform-origin: 50% 0;
+    will-change: transform, filter;
     display: grid;
     gap: 12px;
-    padding: 26px 26px 22px;
+    padding: 24px 26px 20px;
     border-radius: 22px;
     background-color: var(--panel);
     background-image:
@@ -251,43 +155,88 @@ function titleCase(t: string) {
       linear-gradient(90deg, var(--panel-grid) 1px, transparent 1px);
     background-size: 40px 40px;
     color: var(--ink);
-    border-top: 8px solid var(--c);
+    box-shadow:
+      inset 0 8px 0 var(--c),
+      0 -10px 30px rgba(0, 0, 0, 0.35);
     min-width: 0;
   }
-  .c-kind {
+  /* Big project letter in the card's colour, sitting behind the content. */
+  .c-mark {
+    position: absolute;
+    right: -0.04em;
+    bottom: -0.32em;
+    z-index: -1;
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: clamp(200px, 26vw, 320px);
+    line-height: 1;
+    color: var(--c);
+    opacity: 0.9;
+    transform: rotate(-8deg);
+    pointer-events: none;
+    user-select: none;
+  }
+  .c-count {
     font-family: var(--font-mono);
     font-size: 11.5px;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
+    color: #4a4642;
+  }
+  .c-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 6px;
+  }
+  .c-letter {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--c);
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 22px;
+    transform: rotate(-6deg);
+  }
+  .c-kind {
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1.5px solid var(--ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+  .c-month {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
     color: #4a4642;
   }
   .c-title {
-    font-size: clamp(34px, 4vw, 52px);
+    font-size: clamp(32px, 4vw, 48px);
     line-height: 0.95;
   }
-  .c-title a {
-    text-decoration: none;
-  }
-  .c-title a:hover {
-    text-decoration: underline;
-    text-decoration-color: var(--c);
-    text-decoration-thickness: 4px;
-  }
-  .c-working {
+  .c-summary {
     margin: 0;
+    max-width: 58ch;
     font-size: 16px;
     line-height: 1.5;
     color: #3a3632;
   }
   .c-rows {
-    margin: 6px 0 0;
+    margin: 4px 0 0;
     display: grid;
+    max-width: 640px;
   }
   .c-row {
     display: grid;
-    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-columns: 96px minmax(0, 1fr);
     gap: 14px;
-    padding: 14px 0;
+    padding: 12px 0;
     border-top: 1.5px solid rgba(17, 17, 18, 0.15);
   }
   .c-row dt {
@@ -300,9 +249,14 @@ function titleCase(t: string) {
   }
   .c-row dd {
     margin: 0;
+    display: grid;
+    gap: 2px;
     font-size: 15.5px;
     line-height: 1.5;
     min-width: 0;
+  }
+  .strong {
+    font-weight: 500;
   }
   .badge {
     display: inline-block;
@@ -313,31 +267,7 @@ function titleCase(t: string) {
     font-family: var(--font-sticker);
     font-weight: 800;
     font-size: 11.5px;
-    letter-spacing: 0.02em;
     transform: rotate(-3deg);
-  }
-  .stuck dd {
-    font-weight: 500;
-  }
-  .todo {
-    display: inline-block;
-    padding: 4px 10px;
-    border: 1.5px dashed rgba(17, 17, 18, 0.35);
-    border-radius: 8px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: #5e5a55;
-  }
-  .pushes {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 10px;
-  }
-  .pushes li {
-    display: grid;
-    gap: 2px;
   }
   .p-msg {
     font-family: var(--font-mono);
@@ -355,199 +285,33 @@ function titleCase(t: string) {
   .p-meta code {
     font-family: var(--font-mono);
   }
-
-  .part {
-    padding-top: 64px;
-    scroll-margin-top: 24px;
-  }
-  .p-head {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: end;
-    gap: 6px 16px;
-    padding-bottom: 14px;
-    border-bottom: 2px solid var(--teal);
-    margin-bottom: 18px;
-  }
-  .p-num {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--teal);
-    padding-bottom: 10px;
-  }
-  .p-title {
-    font-size: clamp(42px, 6vw, 72px);
-  }
-  .p-meta {
-    grid-column: 1 / -1;
-    margin: 0;
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .p-meta a {
-    color: var(--teal);
-  }
-  .quiet {
-    color: var(--muted);
-  }
-
-  .log {
+  .pushes {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
+    gap: 10px;
   }
-  .log li {
-    display: grid;
-    grid-template-columns: 76px minmax(0, 0.9fr) minmax(0, 1.6fr) auto;
-    gap: 16px;
-    align-items: baseline;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .act {
-    justify-self: start;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 99px;
-    background: var(--teal);
-    color: var(--ink);
-  }
-  .act.revise {
-    background: transparent;
-    color: var(--teal);
-    border: 1px solid var(--teal);
-  }
-  .act.plan {
-    background: transparent;
-    color: var(--muted);
-    border: 1px dashed var(--muted);
-  }
-  .topic {
-    font-family: var(--font-sticker);
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: 14px;
-  }
-  .what {
-    font-size: 14.5px;
-    text-decoration: none;
-  }
-  .what:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-  .when {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .practice {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 32px;
-    align-items: center;
-  }
-  .big-stat {
-    display: grid;
-    padding: 20px 28px;
-    border-radius: 18px;
-    border: 2px solid var(--teal);
-  }
-  .bs-n {
-    font-family: var(--font-display);
-    font-size: 88px;
-    line-height: 0.9;
-    color: var(--teal);
-  }
-  .bs-l {
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .commits {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  .pushes li {
     display: grid;
     gap: 2px;
   }
-  .commits li {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 12px;
-    align-items: baseline;
-    padding: 6px 0;
-    font-family: var(--font-mono);
-    font-size: 12.5px;
+  .c-links {
+    max-width: 640px;
+    display: flex;
+    gap: 18px;
+    padding-top: 12px;
+    border-top: 1.5px solid rgba(17, 17, 18, 0.15);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
-  .sha {
-    color: var(--teal);
+  .c-links a {
     text-decoration: none;
-  }
-  .sha:hover {
-    text-decoration: underline;
-  }
-  .msg {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    border-bottom: 1.5px solid var(--c);
   }
 
-  .builds {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
-    gap: 16px;
-  }
-  .build {
-    display: grid;
-    gap: 12px;
-    padding: 20px;
-    border-radius: 18px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-left: 4px solid var(--teal);
-  }
-  .b-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .b-name {
-    font-family: var(--font-display);
-    text-transform: uppercase;
-    font-size: 30px;
-    line-height: 1;
-    text-decoration: none;
-  }
-  .b-name:hover {
-    color: var(--teal);
-  }
-  .b-n {
-    font-size: 13px;
-    color: var(--muted);
-  }
-  .b-n b {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: 22px;
-    color: var(--teal);
-  }
-  .b-desc {
-    margin: 0;
-    color: var(--muted);
-  }
-  .b-cs {
-    justify-self: start;
-    font-size: 13px;
-    color: var(--teal);
-  }
   .synced {
     padding-top: 40px;
     font-size: 13px;
@@ -555,44 +319,63 @@ function titleCase(t: string) {
   }
 
   @media (max-width: 760px) {
-    .current {
-      grid-template-columns: 1fr;
-    }
     .card {
       padding: 22px 18px 18px;
+    }
+    .slot {
+      top: calc(12px + var(--i) * 10px);
     }
     .c-row {
       grid-template-columns: 1fr;
       gap: 6px;
     }
-    .log li {
-      grid-template-columns: auto minmax(0, 1fr);
-      gap: 4px 10px;
+    .c-month {
+      margin-left: 0;
+      width: 100%;
     }
-    .log .what {
-      grid-column: 1 / -1;
+    .c-mark {
+      opacity: 0.22;
     }
-    .log .when {
-      grid-column: 1 / -1;
-    }
-    .practice {
+    .s-grid {
       grid-template-columns: 1fr;
-    }
-    .commits li {
-      grid-template-columns: auto minmax(0, 1fr);
-    }
-    .commits .when {
-      display: none;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .teeth {
-      animation: none;
+      gap: 26px;
     }
   }
 </style>
 
 <script>
+  // As each project card slides over the one before, the cards behind shrink, tilt back and dim.
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-card]'));
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let queued = false;
+  const depth = () => {
+    queued = false;
+    cards.forEach((card, i) => {
+      const next = cards[i + 1];
+      if (!next || still.matches) {
+        card.style.transform = '';
+        card.style.filter = '';
+        return;
+      }
+      const a = card.getBoundingClientRect();
+      const b = next.getBoundingClientRect();
+      // 0 when the next card is just touching, 1 when it has fully slid over this one.
+      const p = Math.min(1, Math.max(0, (a.bottom - b.top) / a.height));
+      card.style.transform = p ? `perspective(1400px) rotateX(${(p * 7).toFixed(2)}deg) scale(${(1 - p * 0.07).toFixed(3)})` : '';
+      card.style.filter = p ? `brightness(${(1 - p * 0.32).toFixed(3)}) saturate(${(1 - p * 0.3).toFixed(3)})` : '';
+    });
+  };
+  const onScroll = () => {
+    if (!queued) {
+      queued = true;
+      requestAnimationFrame(depth);
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  still.addEventListener('change', onScroll);
+  depth();
+
   // "3 days ago" style times, worked out in the visitor's browser so they stay accurate between builds.
   const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
   const units: [Intl.RelativeTimeFormatUnit, number][] = [
