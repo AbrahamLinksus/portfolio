@@ -24,6 +24,7 @@ export const nowRepos: NowRepo[] = [
   { repo: 'AbrahamLinksus/nextup', name: 'nextup', description: 'A personal assistant that knows what it may do alone and what to ask about.', project: 'nextup', kind: 'project', part: 'build' },
   { repo: 'AbrahamLinksus/queuedup_v2', name: 'QueuedUp', description: 'Spaced repetition where anything you can be graded on is a card.', project: 'queuedup', kind: 'project', part: 'build' },
   { repo: 'AbrahamLinksus/recallPrediction', name: 'Recall Prediction', description: 'Calibrated predictions of whether a learner remembers a word.', project: 'recall-prediction', kind: 'project', part: 'build' },
+  { repo: 'AbrahamLinksus/dev-team-setup', name: 'Dev Team Setup', description: 'A Claude Code plugin that builds a project with a team of AI agents, with your approval at every step.', project: 'dev-team-setup', kind: 'project', part: 'build' },
   { repo: 'AbrahamLinksus/fedLearn', name: 'fedLearn', description: 'Federated learning that spots and removes poisoned clients.', project: 'fedlearn', kind: 'project', part: 'build' },
 ];
 

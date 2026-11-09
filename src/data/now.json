@@ -1,14 +1,29 @@
 {
- "syncedAt": "2026-11-09T12:37:39.100Z",
+ "syncedAt": "2026-11-09T15:17:35.674Z",
  "source": "list",
  "repos": {
   "AbrahamLinksus/portfolio": {
    "description": "My portfolio site",
    "language": "Astro",
    "branch": "main",
-   "total": 63,
-   "last30": 63,
+   "total": 66,
+   "last30": 66,
    "commits": [
+    {
+     "sha": "4e2dc35",
+     "date": "2026-11-09T14:08:57+00:00",
+     "subject": "Rebuild hourly so the Now page stays fresh"
+    },
+    {
+     "sha": "60f8f10",
+     "date": "2026-11-09T18:44:13+05:30",
+     "subject": "removed local deployment"
+    },
+    {
+     "sha": "8fc242e",
+     "date": "2026-11-09T12:37:43+00:00",
+     "subject": "Now: commit messages are display only, not links"
+    },
     {
      "sha": "43d3ea8",
      "date": "2026-11-09T12:34:10+00:00",
@@ -18,21 +33,6 @@
      "sha": "8e4b55a",
      "date": "2026-11-09T12:31:10+00:00",
      "subject": "Now: find repos from GitHub instead of a fixed list"
-    },
-    {
-     "sha": "3f498f6",
-     "date": "2026-11-09T12:22:28+00:00",
-     "subject": "Now: show this week's latest commit per project"
-    },
-    {
-     "sha": "23800a6",
-     "date": "2026-11-09T11:49:08+00:00",
-     "subject": "Now: projects only, as a stack of cards with depth"
-    },
-    {
-     "sha": "3b0458e",
-     "date": "2026-11-09T11:34:01+00:00",
-     "subject": "Now: replace the gears with 'currently working on' cards"
     }
    ]
   },
@@ -168,6 +168,40 @@
      "sha": "a6c6188",
      "date": "2026-09-09T21:42:46+05:30",
      "subject": "Recall prediction pipeline: PySpark features, XGBoost, calibration"
+    }
+   ]
+  },
+  "AbrahamLinksus/dev-team-setup": {
+   "description": "",
+   "language": "",
+   "branch": "main",
+   "total": 15,
+   "last30": 15,
+   "commits": [
+    {
+     "sha": "ee52153",
+     "date": "2026-11-09T20:42:54+05:30",
+     "subject": "fix: no XML-like tags in skill/agent descriptions (Claude app validation) (v0.5.1)"
+    },
+    {
+     "sha": "b2d7835",
+     "date": "2026-11-09T17:03:54+05:30",
+     "subject": "bench: replace bench/ with a single bench.py that runs the whole benchmark"
+    },
+    {
+     "sha": "4f94b4a",
+     "date": "2026-11-09T16:00:02+05:30",
+     "subject": "bench: rebuild as small + production benchmarks with a step-by-step guide"
+    },
+    {
+     "sha": "89f1b68",
+     "date": "2026-11-09T15:54:17+05:30",
+     "subject": "bench: token_report totals from Claude Code's cost-state (matches /cost)"
+    },
+    {
+     "sha": "8a33efc",
+     "date": "2026-11-09T15:52:10+05:30",
+     "subject": "bench: diagnose_logs shows cost-state and request line structure (text cut)"
     }
    ]
   },
