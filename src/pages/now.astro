@@ -1,12 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import { nowRepos, WINDOW_DAYS, projectNotes } from '../data/now';
+import { nowRepos, nowExclude, WINDOW_DAYS, projectNotes } from '../data/now';
 import { getProjects, colorVar } from '../lib/projects';
 import synced from '../data/now.json';
 
 type Commit = { sha: string; date: string; subject: string };
-type Activity = { branch: string; total: number; last30: number; commits: Commit[] };
+type Activity = { description?: string; language?: string; branch: string; total: number; last30: number; commits: Commit[] };
 const activity = synced.repos as Record<string, Activity>;
 const gh = (repo: string) => `https://github.com/${repo}`;
 const fmt = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
@@ -16,19 +16,26 @@ const projects = await getProjects();
 // One card per repo with a push in the last week, holding only that repo's latest commit.
 // Cards drop off once their latest push is older than WINDOW_DAYS (checked again in the browser).
 const builtAt = Date.parse(synced.syncedAt);
-const cards = nowRepos
-  .filter((r) => r.part === 'build')
-  .map((r) => {
-    const p = r.project ? projects.find((x) => x.id === r.project) : undefined;
+const PALETTE = ['var(--pink)', 'var(--teal)', 'var(--yellow)', 'var(--orange)', 'var(--lime)'];
+const pretty = (name: string) => name.replace(/[-_]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^\w/, (c) => c.toUpperCase());
+const excluded = new Set(nowExclude.map((r) => r.toLowerCase()));
+const cards = Object.entries(activity)
+  .filter(([repo]) => !excluded.has(repo.toLowerCase()))
+  .map(([repo, a], i) => {
+    const known = nowRepos.find((r) => r.repo.toLowerCase() === repo.toLowerCase());
+    const p = known?.project ? projects.find((x) => x.id === known.project) : undefined;
+    const name = repo.split('/')[1];
+    const title = p?.data.title ?? known?.name ?? pretty(name);
     return {
-      ...r,
-      title: p?.data.title ?? r.name,
-      letter: p?.data.letter ?? r.name.charAt(0).toUpperCase(),
-      color: p ? colorVar(p.data.color) : 'var(--orange)',
-      status: p?.data.status ?? 'Live',
-      summary: p?.data.summary ?? r.description,
-      last: activity[r.repo]?.commits[0],
-      note: projectNotes[r.repo] ?? {},
+      repo,
+      project: known?.project,
+      title,
+      letter: p?.data.letter ?? title.charAt(0).toUpperCase(),
+      color: p ? colorVar(p.data.color) : PALETTE[[...name].reduce((n, ch) => n + ch.charCodeAt(0), 0) % PALETTE.length],
+      status: p?.data.status ?? a.language ?? '',
+      summary: p?.data.summary ?? known?.description ?? a.description ?? '',
+      last: a.commits[0],
+      note: projectNotes[repo] ?? {},
     };
   })
   .filter((c) => c.last && builtAt - Date.parse(c.last.date) <= WINDOW_DAYS * 864e5)
@@ -58,7 +65,7 @@ const cards = nowRepos
               <header class="c-top">
                 <span class="c-letter" aria-hidden="true">{c.letter}</span>
                 <h3 id={`p-${c.repo}`} class="c-name">{c.title}</h3>
-                <span class="c-kind">{c.status}</span>
+                {c.status && <span class="c-kind">{c.status}</span>}
                 <span class="c-count" data-count>
                   {String(i + 1).padStart(2, '0')} / {String(cards.length).padStart(2, '0')}
                 </span>
@@ -72,7 +79,7 @@ const cards = nowRepos
                 <code class="c-sha">{c.last!.sha}</code>
               </div>
 
-              <p class="c-summary">{c.summary}</p>
+              {c.summary && <p class="c-summary">{c.summary}</p>}
 
               {(c.note.stuck || c.note.next) && (
                 <dl class="c-rows">

@@ -1,5 +1,11 @@
-// Repos shown on the Now page. Activity (commits, dates) is synced from GitHub at every build
-// by scripts/sync-now.mjs; descriptions live here because git has no description field.
+// The Now page finds repos by itself: at every build, scripts/sync-now.mjs asks GitHub for every
+// public repo of NOW_OWNER and keeps those pushed in the last WINDOW_DAYS.
+// The list below is optional extra detail for known repos (a case-study link, a nicer name),
+// and the fallback list if the GitHub API can't be reached.
+export const NOW_OWNER = 'AbrahamLinksus';
+// Repos never shown on the Now page (study and practice repos).
+export const nowExclude = ['AbrahamLinksus/notes', 'AbrahamLinksus/advancedDSA'];
+
 export type NowRepo = {
   repo: string; // owner/name on GitHub
   name: string;

@@ -5,7 +5,6 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "prebuild": "node scripts/sync-notes.mjs && node scripts/sync-now.mjs",
     "build": "astro build",
     "sync-notes": "node scripts/sync-notes.mjs",
     "sync-now": "node scripts/sync-now.mjs",
