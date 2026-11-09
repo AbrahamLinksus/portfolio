@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageIntro from '../components/PageIntro.astro';
-import { nowRepos, ACTIVE_DAYS, projectNotes } from '../data/now';
+import { nowRepos, WINDOW_DAYS, projectNotes } from '../data/now';
 import { getProjects, colorVar } from '../lib/projects';
 import synced from '../data/now.json';
 
@@ -13,11 +13,13 @@ const fmt = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'n
 
 // Projects: one card each, most recently pushed first. They stack as you scroll.
 const projects = await getProjects();
+// One card per repo with a push in the last week, holding only that repo's latest commit.
+// Cards drop off once their latest push is older than WINDOW_DAYS (checked again in the browser).
+const builtAt = Date.parse(synced.syncedAt);
 const cards = nowRepos
   .filter((r) => r.part === 'build')
   .map((r) => {
     const p = r.project ? projects.find((x) => x.id === r.project) : undefined;
-    const a = activity[r.repo];
     return {
       ...r,
       title: p?.data.title ?? r.name,
@@ -25,77 +27,69 @@ const cards = nowRepos
       color: p ? colorVar(p.data.color) : 'var(--orange)',
       status: p?.data.status ?? 'Live',
       summary: p?.data.summary ?? r.description,
-      last: a?.commits[0],
-      month: a?.last30 ?? 0,
+      last: activity[r.repo]?.commits[0],
       note: projectNotes[r.repo] ?? {},
     };
   })
-  .sort((x, y) => Date.parse(y.last?.date ?? '0') - Date.parse(x.last?.date ?? '0'));
+  .filter((c) => c.last && builtAt - Date.parse(c.last.date) <= WINDOW_DAYS * 864e5)
+  .sort((x, y) => Date.parse(y.last!.date) - Date.parse(x.last!.date));
 
 ---
 
-<BaseLayout title="Now" description="What Jake Roberts is working on right now: every project, where it stands and its last push.">
+<BaseLayout title="Now" description="What Jake Roberts pushed this week: the latest commit from each project he's working on.">
   <PageIntro
     number="04"
     title="Now"
-    lede="What I'm working on right now. Every project, where it stands and its last push, read straight from GitHub."
+    lede="What I pushed this week. Each project shows its latest commit, read straight from GitHub. A card drops off once its last push is a week old."
   />
 
   <section class="container" aria-labelledby="projects-title">
     <div class="sec-head">
-      <h2 id="projects-title" class="display sec-title">Projects</h2>
-      <span class="label">Most recent push first</span>
+      <h2 id="projects-title" class="display sec-title">This week</h2>
+      <span class="label">Latest commit per project · last {WINDOW_DAYS} days</span>
     </div>
 
-    <ol class="stack">
+    <ol class="stack" data-stack hidden={cards.length === 0}>
       {
         cards.map((c, i) => (
-          <li class="slot" style={`--i: ${i}`}>
+          <li class="slot" style={`--i: ${i}`} data-date={c.last!.date}>
             <article class="card" style={`--c: ${c.color}`} aria-labelledby={`p-${c.repo}`} data-card>
               <span class="c-mark" aria-hidden="true">{c.letter}</span>
               <header class="c-top">
                 <span class="c-letter" aria-hidden="true">{c.letter}</span>
+                <h3 id={`p-${c.repo}`} class="c-name">{c.title}</h3>
                 <span class="c-kind">{c.status}</span>
-                <span class="c-count">
+                <span class="c-count" data-count>
                   {String(i + 1).padStart(2, '0')} / {String(cards.length).padStart(2, '0')}
                 </span>
-                <span class="c-month">
-                  {c.month > 0 ? `${c.month} commits this month` : `quiet for ${ACTIVE_DAYS}+ days`}
-                </span>
               </header>
-              <h3 id={`p-${c.repo}`} class="c-title display">{c.title}</h3>
+
+              <div class="commit">
+                <span class="c-label">Latest commit · <span data-ago={c.last!.date}>{fmt(c.last!.date)}</span></span>
+                <a class="c-msg" href={`${gh(c.repo)}/commit/${c.last!.sha}`} rel="noopener">
+                  {c.last!.subject}
+                </a>
+                <code class="c-sha">{c.last!.sha}</code>
+              </div>
+
               <p class="c-summary">{c.summary}</p>
-              <dl class="c-rows">
-                {c.note.stuck && (
-                  <div class="c-row">
-                    <dt><span class="badge">Stuck on</span></dt>
-                    <dd class="strong">{c.note.stuck}</dd>
-                  </div>
-                )}
-                <div class="c-row">
-                  <dt>Last push</dt>
-                  <dd>
-                    {c.last ? (
-                      <>
-                        <a class="p-msg" href={`${gh(c.repo)}/commit/${c.last.sha}`} rel="noopener">
-                          {c.last.subject}
-                        </a>
-                        <span class="p-meta">
-                          <code>{c.last.sha}</code> · <span data-ago={c.last.date}>{fmt(c.last.date)}</span>
-                        </span>
-                      </>
-                    ) : (
-                      'Nothing pushed yet'
-                    )}
-                  </dd>
-                </div>
-                {c.note.next && (
-                  <div class="c-row">
-                    <dt>Next up</dt>
-                    <dd>{c.note.next}</dd>
-                  </div>
-                )}
-              </dl>
+
+              {(c.note.stuck || c.note.next) && (
+                <dl class="c-rows">
+                  {c.note.stuck && (
+                    <div class="c-row">
+                      <dt><span class="badge">Stuck on</span></dt>
+                      <dd class="strong">{c.note.stuck}</dd>
+                    </div>
+                  )}
+                  {c.note.next && (
+                    <div class="c-row">
+                      <dt>Next up</dt>
+                      <dd>{c.note.next}</dd>
+                    </div>
+                  )}
+                </dl>
+              )}
               <div class="c-links">
                 {c.project && <a href={`/projects/${c.project}`}>Case study →</a>}
                 <a href={gh(c.repo)} rel="noopener">GitHub ↗</a>
@@ -105,6 +99,10 @@ const cards = nowRepos
         ))
       }
     </ol>
+    <div class="empty" data-empty hidden={cards.length > 0}>
+      <p class="e-title display">Quiet week</p>
+      <p class="e-line">Nothing pushed in the last {WINDOW_DAYS} days. The <a href="/projects">projects page</a> has everything I've built.</p>
+    </div>
   </section>
 
 
@@ -210,15 +208,73 @@ const cards = nowRepos
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
-  .c-month {
+  .c-count {
     margin-left: auto;
     font-family: var(--font-mono);
     font-size: 11.5px;
     color: #4a4642;
   }
-  .c-title {
-    font-size: clamp(32px, 4vw, 48px);
-    line-height: 0.95;
+  .c-name {
+    margin: 0;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 17px;
+    text-transform: uppercase;
+  }
+  /* The latest commit is the headline of each card. */
+  .commit {
+    display: grid;
+    gap: 8px;
+    max-width: 760px;
+    padding: 6px 0 4px;
+  }
+  .c-label {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4a4642;
+  }
+  .c-msg {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 4.2vw, 52px);
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+  .c-msg:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--c);
+    text-decoration-thickness: 4px;
+  }
+  .c-sha {
+    justify-self: start;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--c);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .empty {
+    display: grid;
+    gap: 10px;
+    padding: 34px 28px;
+    border-radius: 22px;
+    border: 2px dashed var(--line);
+  }
+  .empty[hidden],
+  .stack[hidden] {
+    display: none;
+  }
+  .e-title {
+    margin: 0;
+    font-size: clamp(36px, 5vw, 56px);
+  }
+  .e-line {
+    margin: 0;
+    color: var(--muted);
   }
   .c-summary {
     margin: 0;
@@ -329,10 +385,7 @@ const cards = nowRepos
       grid-template-columns: 1fr;
       gap: 6px;
     }
-    .c-month {
-      margin-left: 0;
-      width: 100%;
-    }
+
     .c-mark {
       opacity: 0.22;
     }
@@ -344,6 +397,24 @@ const cards = nowRepos
 </style>
 
 <script>
+  // Drop cards whose latest push is now more than a week old, even if the site hasn't rebuilt yet.
+  const WEEK = 7 * 864e5;
+  const slots = Array.from(document.querySelectorAll<HTMLElement>('.slot[data-date]'));
+  const live = slots.filter((s) => {
+    const fresh = Date.now() - Date.parse(s.dataset.date!) <= WEEK;
+    if (!fresh) s.remove();
+    return fresh;
+  });
+  live.forEach((s, i) => {
+    s.style.setProperty('--i', String(i));
+    const n = s.querySelector<HTMLElement>('[data-count]');
+    if (n) n.textContent = `${String(i + 1).padStart(2, '0')} / ${String(live.length).padStart(2, '0')}`;
+  });
+  if (!live.length) {
+    document.querySelector<HTMLElement>('[data-stack]')?.setAttribute('hidden', '');
+    document.querySelector<HTMLElement>('[data-empty]')?.removeAttribute('hidden');
+  }
+
   // As each project card slides over the one before, the cards behind shrink, tilt back and dim.
   const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-card]'));
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');

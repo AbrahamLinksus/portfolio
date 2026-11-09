@@ -23,6 +23,8 @@ export const nowRepos: NowRepo[] = [
 
 // A repo counts as active if it had a commit in this many days.
 export const ACTIVE_DAYS = 30;
+// The Now page shows only repos pushed within this many days; older cards drop off.
+export const WINDOW_DAYS = 7;
 
 // What only Jake can write: where each project is stuck and what's next. Last pushes come from GitHub.
 // Fields left out are simply not shown.

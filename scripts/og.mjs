@@ -34,7 +34,7 @@ const pages = [
   { key: 'about', title: 'About', line: 'Computer Science at SRM IST, class of 2027. Building tools for problems I run into myself.', letter: 'A', color: 'teal' },
   { key: 'projects', title: 'Projects', line: 'Case studies: the problem, the decisions, and what I learned.', letter: 'P', color: 'pink' },
   { key: 'skills', title: 'Skills', line: 'Every skill, its level, and the projects where I used it.', letter: 'S', color: 'yellow' },
-  { key: 'now', title: 'Now', line: 'The moving parts of my academics: studying, practising and building, synced from GitHub.', letter: 'N', color: 'orange' },
+  { key: 'now', title: 'Now', line: 'What I pushed this week: the latest commit from each project, straight from GitHub.', letter: 'N', color: 'orange' },
   { key: 'contact', title: 'Contact', line: 'Write to me about a role, a project, or anything else.', letter: 'C', color: 'lime' },
 ];
 
