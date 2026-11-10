@@ -148,6 +148,10 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     --red: #c4202f;
     position: relative;
     padding-top: 30px;
+    /* A portrait document, like a real case file, centred under the toy. */
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
   }
   /* Manila folder tab. */
   .tab {
@@ -492,7 +496,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   /* Verdict with a rubber stamp. */
   .f-verdict {
     position: relative;
-    margin-top: 18px;
+    margin-top: 44px;
     padding: 22px;
     border: 2px solid var(--paper-ink);
     border-radius: 4px;
@@ -607,10 +611,25 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     color: #fff;
   }
 
-  @media (max-width: 900px) {
-    .ptab-l {
-      display: none;
+  /* Letter-size sheets (8.5 x 11) on wider screens; a page grows if its content is longer. */
+  @media (min-width: 761px) {
+    .pages {
+      grid-template-columns: minmax(0, 1fr);
     }
+    .page {
+      min-width: 0;
+      aspect-ratio: 8.5 / 11;
+    }
+    .typed {
+      font-size: 18px;
+      line-height: 1.9;
+    }
+    .f-verdict {
+      margin-top: 64px;
+    }
+  }
+  .ptab-l {
+    display: none;
   }
   @media (max-width: 760px) {
     .clues {
