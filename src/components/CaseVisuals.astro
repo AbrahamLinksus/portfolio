@@ -251,6 +251,8 @@ const num = (n: number, decimals?: number) => (decimals === undefined ? String(n
     flex-wrap: wrap;
     align-items: stretch;
     gap: 14px 30px;
+    /* An arrow after the last box in a wrapped row would poke past the edge. */
+    overflow-x: clip;
   }
   .node {
     position: relative;
