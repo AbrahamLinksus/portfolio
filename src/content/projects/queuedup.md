@@ -14,6 +14,7 @@ color: lime
 highlights:
   - { value: '3', label: 'database roles, enforced by Postgres' }
   - { value: '0', label: 'rows returned without a user scope' }
+visual: {"glance": {"problem": "Flashcard apps assume every card is a question and an answer.", "built": "A spaced-repetition system where anything you can be graded on is a card, with security enforced by Postgres.", "result": "A working skeleton: sign in, add a card, review it, watch its interval move."}, "shots": [{"caption": "Reviewing a card"}, {"caption": "Interval growing after reviews"}], "flow": {"title": "How a review flows", "steps": [{"label": "Magic-link sign-in", "kind": "input"}, {"label": "App role", "note": "One of 3 database roles", "kind": "gate"}, {"label": "Postgres + row-level security", "note": "No user scope, no rows", "kind": "store"}, {"label": "Pure scheduler", "note": "Time passed in, fully replayable", "kind": "step"}, {"label": "Outbox → worker", "note": "Side effects outside the request", "kind": "output"}]}}
 ---
 
 ## Problem & goal

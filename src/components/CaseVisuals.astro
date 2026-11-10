@@ -1,0 +1,477 @@
+---
+// The visual opening of a case study: the story in three lines, screenshots, a how-it-works
+// flow and charts of the results. Everything comes from the project's `visual` front matter.
+import type { Project } from '../lib/projects';
+
+interface Props {
+  visual: Project['data']['visual'];
+}
+const { visual: v } = Astro.props;
+const fmt = (f: string, n: number, decimals?: number) => f.replace('{v}', num(n, decimals));
+
+// Line charts: an SVG drawn to scale. Drawn twice: wide for desktop, taller and sparser for phones.
+type LineChart = Extract<(typeof v.charts)[number], { type: 'line' }>;
+const SIZES = { wide: { W: 640, H: 300, L: 46, R: 16, T: 18, B: 44, every: 1 }, phone: { W: 360, H: 300, L: 44, R: 14, T: 30, B: 46, every: 2 } };
+function line(c: LineChart, size: keyof typeof SIZES) {
+  const { W, H, L, R, T, B, every } = SIZES[size];
+  const n = c.points.length;
+  const x = (i: number) => L + (i * (W - L - R)) / (n - 1);
+  const y = (val: number) => T + ((c.yMax - val) * (H - T - B)) / (c.yMax - c.yMin);
+  const ticks: number[] = [];
+  const step = c.yMax - c.yMin <= 8 ? 1 : 5;
+  for (let t = Math.ceil(c.yMin / step) * step; t <= c.yMax; t += step) ticks.push(t);
+  const d = c.points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.y).toFixed(1)}`).join('');
+  const area = `${d}L${x(n - 1).toFixed(1)},${y(c.yMin)}L${x(0)},${y(c.yMin)}Z`;
+  // Phones label every other point, always keeping the last one.
+  const showX = (i: number) => i % every === 0 || i === n - 1;
+  return { W, H, L, R, B, n, x, y, ticks, d, area, showX };
+}
+const num = (n: number, decimals?: number) => (decimals === undefined ? String(n) : n.toFixed(decimals));
+---
+
+<section class="visuals container" aria-label="At a glance">
+  {
+    v.glance && (
+      <dl class="glance">
+        <div><dt>Problem</dt><dd>{v.glance.problem}</dd></div>
+        <div><dt>Built</dt><dd>{v.glance.built}</dd></div>
+        <div class="res"><dt>Result</dt><dd>{v.glance.result}</dd></div>
+      </dl>
+    )
+  }
+
+  {
+    v.shots.length > 0 && (
+      <div class="block">
+        <h2 class="bh">The output</h2>
+        <div class:list={['shots', { one: v.shots.length === 1 }]}>
+          {v.shots.map((s) => (
+            <figure class="shot">
+              {s.src ? (
+                <img src={s.src} alt={s.caption} loading="lazy" />
+              ) : (
+                <div class="ph" role="img" aria-label={`Screenshot coming: ${s.caption}`}>
+                  <span>Screenshot coming</span>
+                </div>
+              )}
+              <figcaption>{s.caption}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  {
+    v.flow && (
+      <div class="block">
+        <h2 class="bh">{v.flow.title}</h2>
+        <ol class="flow">
+          {v.flow.steps.map((s) => (
+            <li class:list={['node', s.kind]}>
+              {s.kind === 'human' && <span class="tag">You</span>}
+              {s.kind === 'gate' && <span class="tag">Check</span>}
+              <span class="nl">{s.label}</span>
+              {s.note && <span class="nn">{s.note}</span>}
+            </li>
+          ))}
+        </ol>
+        {v.flow.footnote && <p class="foot">{v.flow.footnote}</p>}
+      </div>
+    )
+  }
+
+  {
+    v.charts.map((c) =>
+      c.type === 'bars' ? (
+        <figure class="block chart">
+          <h2 class="bh">{c.title}</h2>
+          <ul class="bars">
+            {c.bars.map((b) => {
+              const max = c.max ?? Math.max(...c.bars.map((x) => x.value));
+              const pct = Math.max(1.5, ((b.value - c.min) / (max - c.min)) * 100);
+              return (
+                <li class:list={{ hi: b.highlight }}>
+                  <span class="bl">{b.label}</span>
+                  <span class="track" aria-hidden="true">
+                    <i style={`width: ${pct.toFixed(1)}%`} />
+                  </span>
+                  <span class="bv">{fmt(c.format, b.value, c.decimals)}</span>
+                </li>
+              );
+            })}
+          </ul>
+          {c.note && <figcaption class="note">{c.note}</figcaption>}
+        </figure>
+      ) : (
+        <figure class="block chart">
+          <h2 class="bh">{c.title}</h2>
+          {(['wide', 'phone'] as const).map((size) => {
+            const g = line(c, size);
+            const last = c.points.length - 1;
+            return (
+              <svg viewBox={`0 0 ${g.W} ${g.H}`} class:list={['lc', size]} role="img" aria-label={`${c.title}: ${c.points.map((p) => `${p.x} ${fmt(c.yFormat, p.y)}`).join(', ')}`}>
+                {g.ticks.map((t) => (
+                  <g>
+                    <line x1={g.L} x2={g.W - g.R} y1={g.y(t)} y2={g.y(t)} class="grid" />
+                    <text x={g.L - 8} y={g.y(t) + 4} class="ax" text-anchor="end">{fmt(c.yFormat, t)}</text>
+                  </g>
+                ))}
+                <path d={g.area} class="area" />
+                <path d={g.d} class="ln" />
+                {c.points.map((p, i) => (
+                  <g>
+                    <circle cx={g.x(i)} cy={g.y(p.y)} r={i === 0 || i === last ? 5.5 : 3.5} class:list={['pt', { end: i === 0 || i === last }]} />
+                    {g.showX(i) && (
+                      <text x={g.x(i)} y={g.H - g.B + 20} class="ax" text-anchor={i === last ? 'end' : i === 0 ? 'start' : 'middle'}>
+                        {p.x}
+                      </text>
+                    )}
+                  </g>
+                ))}
+                <text x={g.x(0) + 10} y={g.y(c.points[0].y) - 10} class="callout">{fmt(c.yFormat, c.points[0].y)}</text>
+                <text x={g.x(last) - 4} y={g.y(c.points[last].y) + 34} class="callout" text-anchor="end">{fmt(c.yFormat, c.points[last].y)}</text>
+                <text x={(g.L + g.W - g.R) / 2} y={g.H - 4} class="ax xl" text-anchor="middle">{c.xLabel}</text>
+              </svg>
+            );
+          })}
+          {c.note && <figcaption class="note">{c.note}</figcaption>}
+          {c.source && <p class="src">{c.source}</p>}
+        </figure>
+      ),
+    )
+  }
+</section>
+
+<style>
+  .visuals {
+    display: grid;
+    gap: 44px;
+    padding-top: 8px;
+    padding-bottom: 12px;
+  }
+  .block {
+    margin: 0;
+    display: grid;
+    gap: 16px;
+    min-width: 0;
+  }
+  .bh {
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid var(--fg);
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 18px;
+    text-transform: uppercase;
+  }
+
+  /* The story in three lines. */
+  .glance {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .glance div {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 18px 20px 20px;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .glance .res {
+    background: var(--c);
+    border-color: var(--c);
+    color: var(--ink);
+  }
+  .glance dt {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c);
+  }
+  .glance .res dt {
+    color: var(--ink);
+  }
+  .glance dd {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.45;
+    font-weight: 500;
+  }
+
+  /* Screenshots */
+  .shots {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .shots.one {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .shot {
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .shot img,
+  .ph {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+  }
+  .ph {
+    display: grid;
+    place-items: center;
+    border: 2px dashed color-mix(in srgb, var(--c) 45%, var(--line));
+    background: var(--surface);
+  }
+  .ph span,
+  figcaption,
+  .src {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+
+  /* How it works */
+  .flow {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 14px 30px;
+  }
+  .node {
+    position: relative;
+    flex: 1 1 130px;
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    padding: 14px 14px 15px;
+    border-radius: 14px;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+  }
+  .node:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--c);
+    font-size: 18px;
+  }
+  .node.input,
+  .node.output {
+    background: var(--panel);
+    border-color: var(--panel);
+    color: var(--ink);
+  }
+  .node.output {
+    box-shadow: inset 0 -5px 0 var(--c);
+  }
+  .node.store {
+    border-style: double;
+    border-width: 4px;
+  }
+  .node.gate,
+  .node.human {
+    border: 2px dashed var(--c);
+  }
+  .tag {
+    justify-self: start;
+    padding: 1px 7px;
+    border-radius: 6px;
+    background: var(--c);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .nl {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 15px;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+  .nn {
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: var(--muted);
+  }
+  .node.input .nn,
+  .node.output .nn {
+    color: #4a4642;
+  }
+  .foot {
+    margin: 0;
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  /* Bar charts */
+  .bars {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .bars li {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 2fr) 72px;
+    align-items: center;
+    gap: 14px;
+    font-size: 15px;
+  }
+  .track {
+    height: 14px;
+    border-radius: 99px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .track i {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    background: var(--muted);
+  }
+  .hi .track i {
+    background: var(--c);
+  }
+  .hi .bl {
+    font-weight: 600;
+  }
+  .bv {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .hi .bv {
+    color: var(--c);
+    font-weight: 500;
+  }
+  .note {
+    margin: 0;
+    max-width: 68ch;
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    line-height: 1.6;
+    letter-spacing: 0;
+    color: var(--fg);
+  }
+
+  /* Line chart */
+  .lc.phone {
+    display: none;
+  }
+  .lc {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 760px;
+  }
+  .grid {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+  .ax {
+    fill: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .xl {
+    font-size: 12.5px;
+  }
+  .area {
+    fill: color-mix(in srgb, var(--c) 18%, transparent);
+  }
+  .ln {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 3;
+    stroke-linejoin: round;
+  }
+  .pt {
+    fill: var(--bg);
+    stroke: var(--c);
+    stroke-width: 2.5;
+  }
+  .pt.end {
+    fill: var(--c);
+  }
+  .callout {
+    fill: var(--fg);
+    font-family: var(--font-display);
+    font-size: 26px;
+  }
+
+  @media (max-width: 760px) {
+    .glance {
+      grid-template-columns: 1fr;
+    }
+  }
+  /* Phones: flow reads top to bottom; text sizes follow the phone readability pass. */
+  @media (max-width: 640px) {
+    .visuals {
+      gap: 40px;
+    }
+    .glance dd {
+      font-size: 17px;
+    }
+    .shots {
+      grid-template-columns: 1fr;
+    }
+    .flow {
+      flex-direction: column;
+      gap: 26px;
+    }
+    .node {
+      flex: none;
+    }
+    .node:not(:last-child)::after {
+      content: '↓';
+      right: auto;
+      left: 50%;
+      top: auto;
+      bottom: -24px;
+      transform: translateX(-50%);
+    }
+    .nn {
+      font-size: 14.5px;
+    }
+    .lc.wide {
+      display: none;
+    }
+    .lc.phone {
+      display: block;
+    }
+    .bars li {
+      grid-template-columns: minmax(0, 1fr) 72px;
+      gap: 6px 12px;
+    }
+    .bl {
+      grid-column: 1 / -1;
+    }
+    .ax {
+      font-size: 12.5px;
+    }
+    .callout {
+      font-size: 24px;
+    }
+  }
+</style>

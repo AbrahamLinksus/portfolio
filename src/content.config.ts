@@ -24,6 +24,50 @@ const projects = defineCollection({
     letter: z.string().length(1),
     color: z.enum(['pink', 'teal', 'yellow', 'orange', 'lime']),
     highlights: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
+    // The visual "at a glance" opening of a case study. All parts are optional.
+    visual: z
+      .object({
+        glance: z.object({ problem: z.string(), built: z.string(), result: z.string() }).optional(),
+        // Screenshots of the output; a shot without src shows a "screenshot coming" frame.
+        shots: z.array(z.object({ caption: z.string(), src: z.string().optional() })).default([]),
+        // How it works, as a left-to-right flow (top-to-bottom on phones).
+        flow: z
+          .object({
+            title: z.string(),
+            steps: z.array(z.object({ label: z.string(), note: z.string().optional(), kind: z.enum(['input', 'step', 'store', 'gate', 'human', 'output']).default('step') })),
+            footnote: z.string().optional(),
+          })
+          .optional(),
+        charts: z
+          .array(
+            z.discriminatedUnion('type', [
+              z.object({
+                type: z.literal('bars'),
+                title: z.string(),
+                note: z.string().optional(),
+                min: z.number().default(0),
+                max: z.number().optional(),
+                format: z.string().default('{v}'),
+                decimals: z.number().optional(),
+                lowerIsBetter: z.boolean().default(false),
+                bars: z.array(z.object({ label: z.string(), value: z.number(), highlight: z.boolean().default(false) })),
+              }),
+              z.object({
+                type: z.literal('line'),
+                title: z.string(),
+                note: z.string().optional(),
+                yMin: z.number(),
+                yMax: z.number(),
+                yFormat: z.string().default('{v}'),
+                xLabel: z.string(),
+                points: z.array(z.object({ x: z.string(), y: z.number() })),
+                source: z.string().optional(),
+              }),
+            ]),
+          )
+          .default([]),
+      })
+      .default({ shots: [], charts: [] }),
   }),
 });
 

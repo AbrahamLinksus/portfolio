@@ -14,6 +14,7 @@ color: pink
 highlights:
   - { value: '100', label: 'simulated IoT clients' }
   - { value: '3', label: 'attack types simulated' }
+visual: {"glance": {"problem": "In federated learning, one compromised device can quietly poison the shared model.", "built": "A 100-device smart-home simulation where the server scores every client and responds in stages.", "result": "Poisoned, replayed and flooding clients get caught and contained, live on a dashboard."}, "shots": [{"caption": "Live dashboard: rounds and reputations"}, {"caption": "A client being quarantined"}], "flow": {"title": "One training round", "steps": [{"label": "100 home devices", "note": "Each trains an LSTM autoencoder", "kind": "input"}, {"label": "Send updates", "note": "Never the raw data", "kind": "step"}, {"label": "Aggregator", "note": "FastAPI", "kind": "step"}, {"label": "Reputation score", "note": "Per client, every round", "kind": "gate"}, {"label": "Allow · monitor · quarantine · remove", "kind": "gate"}, {"label": "Shared model", "kind": "output"}]}}
 ---
 
 ## Problem & goal

@@ -15,6 +15,7 @@ highlights:
   - { value: '4', label: 'rules decide what it may do alone' }
   - { value: '2', label: 'model calls in the action path' }
   - { value: '1', label: 'gate every action must pass' }
+visual: {"glance": {"problem": "Most AI assistants act on everything, including what they should have asked about.", "built": "An assistant for my Notion and Gmail that acts only when four rules pass, and queues a draft otherwise.", "result": "Runs end to end on fixtures, with commands to audit every decision and its cost."}, "shots": [{"caption": "Review queue with ready-made drafts"}, {"caption": "Decision audit for one item"}], "flow": {"title": "What happens to each new item", "steps": [{"label": "Notion / Gmail", "note": "Verified webhooks", "kind": "input"}, {"label": "Chunk + embed", "kind": "step"}, {"label": "Classify", "kind": "step"}, {"label": "Propose action", "kind": "step"}, {"label": "Gate: 4 rules", "note": "Confident, fields sure, date valid, no injection flag", "kind": "gate"}, {"label": "Act, or queue for me", "note": "Failing the gate leaves a draft", "kind": "output"}]}}
 ---
 
 ## Problem & goal

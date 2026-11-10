@@ -15,6 +15,7 @@ highlights:
   - { value: '26', label: 'specialist agents across software, AI/ML and data science' }
   - { value: '9', label: 'stages from first question to handover' }
   - { value: '33', label: 'automated tests, run in CI on every push' }
+visual: {"glance": {"problem": "One AI session building a whole app forgets decisions and edits what it should not.", "built": "A Claude Code plugin: an orchestrator runs a team of 26 agents through a pipeline with your approval at every step.", "result": "v0.5.1, with 33 tests in CI and a benchmark against a normal session."}, "shots": [{"caption": "Result card: Approve, Change, Reject"}, {"caption": "How it works, idea to handover"}], "flow": {"title": "From one line to a working project", "steps": [{"label": "Your idea", "note": "/setup-project …", "kind": "input"}, {"label": "Spec interview", "note": "With wireframes", "kind": "human"}, {"label": "Design", "note": "High-level, then team pick, then low-level", "kind": "step"}, {"label": "Build loop", "note": "Agents work inside their scope", "kind": "step"}, {"label": "Result card", "note": "Approve · Change · Reject", "kind": "human"}, {"label": "Handover", "note": "As-built docs and a walkthrough", "kind": "output"}], "footnote": "Every step is checkpointed in git, so a build can resume on any device."}}
 ---
 
 ## Problem & goal

@@ -16,6 +16,7 @@ highlights:
   - { value: '497', label: 'tests across 48 files' }
   - { value: '2,000', label: 'emails in the load test, none lost or duplicated' }
   - { value: '0', label: 'cron jobs' }
+visual: {"glance": {"problem": "Campaign emails get lost or sent twice when servers crash or workers race.", "built": "A scheduler where Postgres is the source of truth, with BullMQ jobs and a shared hourly rate limit.", "result": "2,000-email load test across 4 workers: nothing lost, nothing sent twice, the cap held."}, "shots": [{"caption": "Campaign dashboard"}, {"caption": "Scheduled emails moving through the queue"}], "flow": {"title": "How an email gets sent", "steps": [{"label": "Dashboard", "note": "Form carries an idempotency key", "kind": "input"}, {"label": "API", "note": "Saves the campaign", "kind": "step"}, {"label": "Postgres outbox", "note": "Source of truth", "kind": "store"}, {"label": "Relay", "note": "Moves due emails to Redis", "kind": "step"}, {"label": "BullMQ delayed jobs", "note": "No cron anywhere", "kind": "store"}, {"label": "Rate limit", "note": "Lua script, per sender per hour", "kind": "gate"}, {"label": "SMTP send", "kind": "output"}], "footnote": "A reconciler repairs anything that drifts, so Redis can be wiped and rebuilt from Postgres."}}
 ---
 
 ## Problem & goal

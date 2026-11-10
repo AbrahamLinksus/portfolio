@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProjects, colorVar } from '../../lib/projects';
 import { skillSlug } from '../../data/skills';
+import CaseVisuals from '../../components/CaseVisuals.astro';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -60,10 +61,18 @@ const { Content } = await render(project);
       )
     }
 
+    <CaseVisuals visual={p.visual} />
+
     <div class="container">
-      <div class="prose">
-        <Content />
-      </div>
+      <details class="story">
+        <summary>
+          <span class="s-title">Read the full story</span>
+          <span class="s-sub">Problem, process and lessons · about {Math.max(1, Math.round((project.body ?? '').split(/\s+/).length / 220))} min</span>
+        </summary>
+        <div class="prose">
+          <Content />
+        </div>
+      </details>
 
       {
         p.skills.length > 0 && (
@@ -390,5 +399,55 @@ const { Content } = await render(project);
     .btn {
       font-size: 14px;
     }
+  }
+  /* The written case study, folded under the visuals. */
+  .story {
+    margin-top: 48px;
+    border-top: 1.5px solid var(--fg);
+    border-bottom: 1px solid var(--line);
+  }
+  .story > summary {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 16px;
+    padding: 20px 0;
+    cursor: pointer;
+  }
+  .story > summary::-webkit-details-marker {
+    display: none;
+  }
+  .story > summary::after {
+    content: '+';
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-family: var(--font-mono);
+    font-size: 26px;
+    color: var(--c);
+  }
+  .story[open] > summary::after {
+    content: '−';
+  }
+  .story > summary:focus-visible {
+    outline: 2px solid var(--c);
+    outline-offset: 4px;
+    border-radius: 6px;
+  }
+  .s-title {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1;
+  }
+  .s-sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .story[open] .prose {
+    padding: 12px 0 28px;
   }
 </style>
