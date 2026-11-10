@@ -6,9 +6,23 @@ import { skillSlug } from '../../data/skills';
 import CaseVisuals from '../../components/CaseVisuals.astro';
 import CaseFile from '../../components/CaseFile.astro';
 import RecallToy from '../../components/toys/RecallToy.astro';
+import ReachInboxToy from '../../components/toys/ReachInboxToy.astro';
+import StudyCopilotToy from '../../components/toys/StudyCopilotToy.astro';
+import NextUpToy from '../../components/toys/NextUpToy.astro';
+import QueuedUpToy from '../../components/toys/QueuedUpToy.astro';
+import FedLearnToy from '../../components/toys/FedLearnToy.astro';
+import DevTeamToy from '../../components/toys/DevTeamToy.astro';
 
-// Projects with a playable toy. The toy leads the page; the case file sits below it.
-const TOYS: Record<string, any> = { 'recall-prediction': RecallToy };
+// Each project's playable toy. The toy leads the page; the case file sits below it.
+const TOYS: Record<string, any> = {
+  'recall-prediction': RecallToy,
+  'reachinbox-scheduler': ReachInboxToy,
+  'study-copilot': StudyCopilotToy,
+  nextup: NextUpToy,
+  queuedup: QueuedUpToy,
+  fedlearn: FedLearnToy,
+  'dev-team-setup': DevTeamToy,
+};
 
 export async function getStaticPaths() {
   const projects = await getProjects();

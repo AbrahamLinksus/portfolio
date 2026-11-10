@@ -223,7 +223,7 @@ const rules = ['Sure what kind of item it is', 'Sure of every field', 'Date is n
     min-height: 1.5em;
     font-size: 15px;
   }
-  .out b {
+  .out :global(b) {
     color: var(--c);
   }
   .lists {
@@ -239,21 +239,21 @@ const rules = ['Sure what kind of item it is', 'Sure of every field', 'Date is n
     display: grid;
     gap: 6px;
   }
-  .done li,
-  .queue li {
+  .done :global(li),
+  .queue :global(li) {
     padding: 8px 10px;
     border-radius: 8px;
     font-size: 13.5px;
     line-height: 1.4;
   }
-  .done li {
+  .done :global(li) {
     background: color-mix(in srgb, var(--lime) 18%, transparent);
   }
-  .queue li {
+  .queue :global(li) {
     background: color-mix(in srgb, var(--yellow) 16%, transparent);
   }
-  .done li.empty,
-  .queue li.empty {
+  .done :global(li.empty),
+  .queue :global(li.empty) {
     background: none;
     padding: 0;
     color: var(--muted);

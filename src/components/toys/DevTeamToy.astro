@@ -1,0 +1,296 @@
+---
+// Toy for Dev Team Setup: you are the owner. Each stage ends with a result card; approve it,
+// send it back with a note, or reject it, and the pipeline moves (or doesn't). Stage names are
+// the plugin's; the habit-tracker results are an example run.
+import ToyShell from './ToyShell.astro';
+const stages = [
+  { name: 'Spec', agent: 'planner', goals: ['Daily streak counter', 'Reminder at a time you pick', 'Works offline'], tests: 'Spec + 3 wireframes', note: 'Add a weekly summary screen', extra: 'Weekly summary screen' },
+  { name: 'Design', agent: 'architect', goals: ['Next.js app, SQLite on device', 'Streak logic in its own module', 'Sync is optional'], tests: 'HLD + LLD approved', note: 'Use Postgres so it can sync later', extra: 'Postgres with a sync table' },
+  { name: 'Team pick', agent: 'orchestrator', goals: ['frontend-coder for the UI', 'backend-coder for streaks', 'tester, reviewer, docs'], tests: '5 agents for 4 modules', note: 'Add a devops agent for deploys', extra: 'devops for Vercel deploys' },
+  { name: 'Build', agent: 'backend-coder', goals: ['Streak survives timezone changes', 'Missed day resets the streak', 'Tests for both'], tests: '14 / 14 tests pass', note: 'Allow one "freeze" day a week', extra: 'One freeze day per week' },
+  { name: 'Handover', agent: 'architect', goals: ['ARCHITECTURE.md as built', 'WALKTHROUGH.md of the code', 'README with setup'], tests: 'Docs match the code', note: 'Add a diagram of the data flow', extra: 'Data-flow diagram' },
+];
+---
+
+<ToyShell
+  kicker="Try it · you are the owner"
+  title="Approve the build"
+  lede="You asked for “a habit tracker with daily streaks”. Each stage ends with a result card on your phone. Approve it, send it back with a note, or reject it."
+>
+  <div class="dt" data-dt data-stages={JSON.stringify(stages)}>
+    <ol class="pipe" aria-label="Pipeline">
+      {stages.map((s, i) => (
+        <li class="st" data-st={i}>
+          <span class="st-n">{i + 1}</span>
+          <span class="st-l">{s.name}</span>
+        </li>
+      ))}
+    </ol>
+
+    <div class="phone">
+      <div class="rc" data-rc>
+        <div class="rc-top">
+          <span class="rc-stage" data-stage>Stage 1 · Spec</span>
+          <span class="rc-v" data-ver>v1</span>
+        </div>
+        <span class="rc-agent" data-agent>from planner</span>
+        <ul class="rc-goals" data-goals></ul>
+        <span class="rc-tests" data-tests></span>
+        <div class="rc-btns" data-btns>
+          <button type="button" class="b ok" data-act="approve">Approve</button>
+          <button type="button" class="b" data-act="change">Change</button>
+          <button type="button" class="b no" data-act="reject">Reject</button>
+        </div>
+      </div>
+      <p class="say" data-say aria-live="polite"></p>
+    </div>
+  </div>
+  <Fragment slot="moral">
+    <b>Why every step stops for you:</b> one AI session building a whole app forgets decisions and edits what it
+    shouldn't. Here each agent works inside its own scope, every step is checkpointed in git, and nothing reaches the
+    repo until you approve the card, from your laptop or your phone.
+  </Fragment>
+</ToyShell>
+
+<style>
+  .dt {
+    display: grid;
+    gap: 22px;
+  }
+  .pipe {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .st {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+    text-align: center;
+  }
+  .st-n {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .st-l {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .st.now .st-n {
+    border-color: var(--c);
+    color: var(--c);
+  }
+  .st.now .st-l {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .st.done .st-n {
+    background: var(--c);
+    border-color: var(--c);
+    color: var(--ink);
+  }
+  .phone {
+    justify-self: center;
+    width: min(380px, 100%);
+    display: grid;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 30px;
+    border: 1.5px solid var(--line);
+    background: #050505;
+  }
+  .rc {
+    display: grid;
+    gap: 10px;
+    padding: 18px;
+    border-radius: 20px;
+    background: var(--panel);
+    color: var(--ink);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .rc.swap {
+    transform: translateX(-24px);
+    opacity: 0;
+  }
+  .rc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .rc-stage {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 16px;
+    text-transform: uppercase;
+  }
+  .rc-v {
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--ink);
+    color: var(--panel);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .rc-agent {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #5e5a55;
+  }
+  .rc-goals {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  .rc-goals :global(li) {
+    display: flex;
+    gap: 8px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .rc-goals :global(li)::before {
+    content: '✓';
+    color: #2f7a1f;
+    font-weight: 700;
+  }
+  .rc-goals :global(li.new) {
+    font-weight: 600;
+  }
+  .rc-tests {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--lime) 40%, transparent);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+  .rc-btns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .b {
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 11px 4px;
+    border-radius: 10px;
+    border: 2px solid var(--ink);
+    text-align: center;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+  .b.ok {
+    background: var(--ink);
+    color: var(--panel);
+  }
+  .b.no {
+    border-color: #c4202f;
+    color: #c4202f;
+  }
+  .b:focus-visible {
+    outline: 3px solid var(--c);
+    outline-offset: 2px;
+  }
+  .b[disabled] {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .say {
+    margin: 0 4px 4px;
+    min-height: 3em;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  @media (max-width: 480px) {
+    .st-l {
+      font-size: 11px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rc {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  type Stage = { name: string; agent: string; goals: string[]; tests: string; note: string; extra: string };
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll<HTMLElement>('[data-dt]').forEach((root) => {
+    const stages: Stage[] = JSON.parse(root.dataset.stages!);
+    const $ = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const steps = Array.from(root.querySelectorAll<HTMLElement>('[data-st]'));
+    const btns = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-act]'));
+    let at = 0, ver = 1, changed = false, attempt = 1;
+    const say = (t: string) => ($('[data-say]').textContent = t);
+    const paint = () => {
+      steps.forEach((s, i) => (s.className = 'st' + (i < at ? ' done' : i === at ? ' now' : '')));
+      if (at >= stages.length) {
+        $('[data-stage]').textContent = 'Handed over';
+        $('[data-ver]').textContent = 'done';
+        $('[data-agent]').textContent = 'your repo';
+        $('[data-goals]').innerHTML = '<li>A working habit tracker</li><li>Docs that walk you through the code</li><li>Every step checkpointed in git</li>';
+        $('[data-tests]').textContent = 'All stages approved';
+        btns.forEach((b) => (b.disabled = true));
+        return;
+      }
+      const s = stages[at];
+      $('[data-stage]').textContent = `Stage ${at + 1} · ${s.name}`;
+      $('[data-ver]').textContent = `v${ver}`;
+      $('[data-agent]').textContent = `from ${s.agent}${attempt > 1 ? ` · attempt ${attempt}` : ''}`;
+      const ul = $('[data-goals]');
+      ul.innerHTML = '';
+      [...s.goals, ...(changed ? [s.extra] : [])].forEach((g, i) => {
+        const li = document.createElement('li');
+        li.textContent = g;
+        if (i >= s.goals.length) li.className = 'new';
+        ul.appendChild(li);
+      });
+      $('[data-tests]').textContent = s.tests;
+    };
+    const swap = (fn: () => void) => {
+      const rc = $('[data-rc]');
+      btns.forEach((b) => (b.disabled = true));
+      if (still.matches) return fn(), paint(), btns.forEach((b) => (b.disabled = at >= stages.length));
+      rc.classList.add('swap');
+      window.setTimeout(() => {
+        fn();
+        paint();
+        rc.classList.remove('swap');
+        btns.forEach((b) => (b.disabled = at >= stages.length));
+      }, 300);
+    };
+    btns.forEach((b) =>
+      b.addEventListener('click', () => {
+        const s = stages[at];
+        if (b.dataset.act === 'approve') {
+          say(at === stages.length - 1 ? 'Approved. The project is yours: repo, docs and a walkthrough.' : `Approved. Saved to the repo; the ${stages[at + 1].name.toLowerCase()} stage starts.`);
+          swap(() => ((at += 1), (ver = 1), (changed = false), (attempt = 1)));
+        } else if (b.dataset.act === 'change') {
+          if (changed) return say('Already reworked once. Approve it, or reject it to start this step again.');
+          say(`Sent back with your note: “${s.note}”. The ${s.agent} reworks it.`);
+          swap(() => ((ver += 1), (changed = true)));
+        } else {
+          say('Rejected. That work is thrown away and the agent starts this step again, fresh.');
+          swap(() => ((ver = 1), (changed = false), (attempt += 1)));
+        }
+      }),
+    );
+    say('Read the card, then decide.');
+    paint();
+  });
+</script>

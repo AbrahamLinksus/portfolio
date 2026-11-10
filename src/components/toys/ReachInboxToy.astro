@@ -9,7 +9,7 @@ const N = 30;
 <ToyShell
   kicker="Try it · a simulation of the design"
   title="Crash a worker"
-  lede="30 emails, 4 workers, and a cap of 6 sends per sender per hour (an hour here lasts 4 seconds). Start it, then crash workers while they're sending."
+  lede="30 emails, 4 workers, and a cap of 10 sends per sender per hour (an hour here lasts 4 seconds). Start it, then crash workers while they're sending."
 >
   <div class="rb" data-rb data-n={N}>
     <div class="bar">
@@ -45,7 +45,7 @@ const N = 30;
         <div class="cap">
           <span class="lbl">This hour</span>
           <span class="capbar" aria-hidden="true"><i data-capbar /></span>
-          <span class="capn" data-cap>0 / 6</span>
+          <span class="capn" data-cap>0 / 10</span>
         </div>
       </div>
     </div>
@@ -297,7 +297,7 @@ const N = 30;
   type Status = 'outbox' | 'queued' | 'sending' | 'stranded' | 'sent' | 'lost';
   document.querySelectorAll<HTMLElement>('[data-rb]').forEach((root) => {
     const N = Number(root.dataset.n);
-    const CAP = 6, HOUR = 16, TICK = 250, SEND = 3, DOWN = 10, RECONCILE = 4;
+    const CAP = 10, HOUR = 16, TICK = 250, SEND = 5, DOWN = 10, RECONCILE = 4;
     const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
     const mails = Array.from(root.querySelectorAll<HTMLElement>('[data-m]'));
     const wEls = Array.from(root.querySelectorAll<HTMLElement>('[data-w]'));

@@ -1,0 +1,335 @@
+---
+// Toy for fedLearn: 100 smart-home devices train a shared model. Poison some, run rounds, and
+// watch reputation scores catch them. A simulation of the idea; the numbers are illustrative.
+import ToyShell from './ToyShell.astro';
+---
+
+<ToyShell
+  kicker="Try it · a simulation of the idea"
+  title="Poison the network"
+  lede="100 smart-home devices each train locally and send only their updates. Click devices to poison them (or poison 10 at random), then run rounds and watch the server learn whom to trust."
+>
+  <div class="fl" data-fl>
+    <div class="bar">
+      <button type="button" class="btn bad" data-poison>Poison 10 at random</button>
+      <button type="button" class="btn go" data-run>Run 10 rounds</button>
+      <button type="button" class="btn" data-reset>Reset</button>
+      <label class="tog">
+        <input type="checkbox" data-defence checked />
+        <span>Reputation defence on</span>
+      </label>
+    </div>
+
+    <div class="stage">
+      <div class="grid" data-grid aria-label="100 devices. Click a device to poison it." role="group"></div>
+      <div class="side">
+        <div class="acc">
+          <span class="lbl">Shared model accuracy</span>
+          <span class="acc-v" data-acc>94%</span>
+          <span class="accbar" aria-hidden="true"><i data-accbar /></span>
+        </div>
+        <dl class="stats">
+          <div><dt>Round</dt><dd data-round>0</dd></div>
+          <div><dt>Poisoned</dt><dd data-pois>0</dd></div>
+          <div><dt>Contained</dt><dd data-caught>0</dd></div>
+          <div><dt>Honest blocked</dt><dd data-fp>0</dd></div>
+        </dl>
+        <p class="key" aria-hidden="true">
+          <i class="d allowed" /> allowed <i class="d monitored" /> monitored <i class="d quarantined" /> quarantined <i class="d removed" /> removed <i class="d allowed p" /> poisoned
+        </p>
+      </div>
+    </div>
+    <p class="log" data-log aria-live="polite">Poison a few devices, then run some rounds.</p>
+  </div>
+  <Fragment slot="moral">
+    <b>Why graduated:</b> one bad round shouldn't ban an honest device, and one good round shouldn't clear a poisoned
+    one. Each client is allowed, monitored, quarantined or removed based on its reputation over time. Turn the defence
+    off and the same poisoned updates drag the shared model down.
+  </Fragment>
+</ToyShell>
+
+<style>
+  .fl {
+    display: grid;
+    gap: 18px;
+  }
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn {
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+  .btn.go {
+    background: var(--c);
+    border-color: var(--c);
+    color: var(--ink);
+  }
+  .btn.bad {
+    border-color: #c4202f;
+  }
+  .btn[disabled] {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+  }
+  .tog {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .tog input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--c);
+  }
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+  }
+  .fl :global(.d) {
+    display: inline-block;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+  }
+  .grid :global(.d:hover) {
+    transform: scale(1.15);
+  }
+  .fl :global(.d.allowed) {
+    background: var(--c);
+  }
+  .fl :global(.d.monitored) {
+    background: var(--yellow);
+  }
+  .fl :global(.d.quarantined) {
+    background: var(--orange);
+  }
+  .fl :global(.d.removed) {
+    background: #2a2a2c;
+    border-color: #4a4a4e;
+  }
+  .fl :global(.d.p) {
+    border-color: #ff3b4a;
+    box-shadow: inset 0 0 0 3px #1a0004;
+  }
+  .side {
+    display: grid;
+    gap: 14px;
+  }
+  .lbl {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .acc {
+    display: grid;
+    gap: 4px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: var(--bg);
+  }
+  .acc-v {
+    font-family: var(--font-display);
+    font-size: 48px;
+    line-height: 1;
+    color: var(--c);
+  }
+  .acc-v.low {
+    color: #ff6b74;
+  }
+  .accbar {
+    height: 8px;
+    border-radius: 99px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .accbar i {
+    display: block;
+    height: 100%;
+    background: var(--c);
+    transition: width 0.3s ease;
+  }
+  .stats {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stats div {
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--bg);
+  }
+  .stats dt {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .stats dd {
+    margin: 2px 0 0;
+    font-family: var(--font-display);
+    font-size: 28px;
+    line-height: 1;
+  }
+  .key {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .key :global(.d) {
+    width: 14px;
+    cursor: default;
+  }
+  .log {
+    margin: 0;
+    min-height: 1.6em;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  @media (max-width: 760px) {
+    .stage {
+      grid-template-columns: 1fr;
+    }
+    .tog {
+      margin-left: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fl :global(.d),
+    .accbar i {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  type St = 'allowed' | 'monitored' | 'quarantined' | 'removed';
+  document.querySelectorAll<HTMLElement>('[data-fl]').forEach((root) => {
+    const $ = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+    const grid = $('[data-grid]');
+    const defence = $<HTMLInputElement>('[data-defence]');
+    const run = $<HTMLButtonElement>('[data-run]');
+    // Seeded random, so a run is repeatable.
+    let seed = 7;
+    const rand = () => ((seed = (seed * 1664525 + 1013904223) >>> 0), seed / 4294967296);
+    let poisoned: boolean[], rep: number[], round = 0, acc = 0.94, timer = 0;
+    const dots = Array.from({ length: 100 }, (_, i) => {
+      const s = document.createElement('span');
+      s.className = 'd allowed';
+      s.title = `Device ${i + 1}`;
+      s.addEventListener('click', () => {
+        poisoned[i] = !poisoned[i];
+        paint();
+      });
+      grid.appendChild(s);
+      return s;
+    });
+    const state = (r: number): St => (!defence.checked ? 'allowed' : r >= 0.75 ? 'allowed' : r >= 0.5 ? 'monitored' : r >= 0.25 ? 'quarantined' : 'removed');
+    const paint = () => {
+      dots.forEach((d, i) => (d.className = `d ${state(rep[i])}${poisoned[i] ? ' p' : ''}`));
+      const pc = poisoned.filter(Boolean).length;
+      const caught = poisoned.filter((p, i) => p && ['quarantined', 'removed'].includes(state(rep[i]))).length;
+      const fp = poisoned.filter((p, i) => !p && ['quarantined', 'removed'].includes(state(rep[i]))).length;
+      $('[data-round]').textContent = String(round);
+      $('[data-pois]').textContent = String(pc);
+      $('[data-caught]').textContent = `${caught} / ${pc}`;
+      $('[data-fp]').textContent = String(fp);
+      const a = $('[data-acc]');
+      a.textContent = `${Math.round(acc * 100)}%`;
+      a.classList.toggle('low', acc < 0.8);
+      $('[data-accbar]').style.width = `${acc * 100}%`;
+    };
+    const step = () => {
+      round++;
+      for (let i = 0; i < 100; i++) {
+        if (poisoned[i]) rep[i] -= rand() < 0.75 ? 0.2 : 0.02;
+        else rep[i] = Math.min(1, rep[i] + 0.03 - (rand() < 0.01 ? 0.12 : 0));
+        rep[i] = Math.max(0, rep[i]);
+      }
+      // Weight of each update in the average: allowed 1, monitored 0.5, quarantined/removed 0.
+      let w = 0, bad = 0;
+      for (let i = 0; i < 100; i++) {
+        const s = state(rep[i]);
+        const k = s === 'allowed' ? 1 : s === 'monitored' ? 0.5 : 0;
+        w += k;
+        if (poisoned[i]) bad += k;
+      }
+      const target = 0.94 - 1.6 * (w ? bad / w : 0);
+      acc = Math.max(0.3, acc + (target - acc) * 0.5);
+      paint();
+    };
+    const reset = () => {
+      clearInterval(timer);
+      timer = 0;
+      seed = 7;
+      poisoned = Array(100).fill(false);
+      rep = Array(100).fill(1);
+      round = 0;
+      acc = 0.94;
+      run.disabled = false;
+      $('[data-log]').textContent = 'Poison a few devices, then run some rounds.';
+      paint();
+    };
+    $('[data-poison]').addEventListener('click', () => {
+      const clean = poisoned.map((p, i) => (p ? -1 : i)).filter((i) => i >= 0);
+      for (let k = 0; k < 10 && clean.length; k++) poisoned[clean.splice(Math.floor(rand() * clean.length), 1)[0]] = true;
+      paint();
+    });
+    run.addEventListener('click', () => {
+      if (!poisoned.some(Boolean)) $('[data-log]').textContent = 'No poisoned devices yet, so every round is clean.';
+      run.disabled = true;
+      let n = 0;
+      timer = window.setInterval(() => {
+        step();
+        if (++n >= 10) {
+          clearInterval(timer);
+          timer = 0;
+          run.disabled = false;
+          const pc = poisoned.filter(Boolean).length;
+          if (pc)
+            $('[data-log]').textContent = defence.checked
+              ? `After ${round} rounds the model is at ${Math.round(acc * 100)}%: poisoned devices were monitored, then quarantined.`
+              : `Defence off: the ${pc} poisoned devices still count fully, and the model has dropped to ${Math.round(acc * 100)}%.`;
+        }
+      }, 260);
+    });
+    defence.addEventListener('change', paint);
+    $('[data-reset]').addEventListener('click', reset);
+    reset();
+  });
+</script>
