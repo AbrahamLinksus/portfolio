@@ -11,6 +11,10 @@ interface Props {
 }
 const { file: f, number, title } = Astro.props;
 const hasEvidence = f.exhibits.length > 0 || f.evidence.length > 0;
+// With no before values, results read better as stat tiles than as a table with an empty column.
+const hasBefore = f.evidence.some((e) => e.before);
+// Tiles fill the page on their own; the table is kept only beside an exhibit photo.
+const tiles = !hasBefore || f.exhibits.length === 0;
 const pages = ['The case', 'The clues', ...(hasEvidence ? ['The evidence'] : []), 'The verdict'];
 const pageNo = (name: string) => pages.indexOf(name) + 1;
 ---
@@ -65,7 +69,21 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
                   <figcaption>{e.caption}</figcaption>
                 </figure>
               ))}
-              {f.evidence.length > 0 && (
+              {f.evidence.length > 0 && tiles && (
+                <div class="lab">
+                  <h4 class="lab-h">Lab results</h4>
+                  <ul class="tiles">
+                    {f.evidence.map((e) => (
+                      <li>
+                        <span class="tv">{e.after}</span>
+                        {e.before && <span class="tb">was <s>{e.before}</s></span>}
+                        <span class="tl">{e.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {f.evidence.length > 0 && !tiles && (
                 <div class="lab">
                   <h4 class="lab-h">Lab results</h4>
                   <table>
@@ -81,7 +99,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
                         <tr>
                           <th scope="row">{e.label}</th>
                           <td class:list={['before', { none: !e.before }]} data-l="Before">{e.before || '—'}</td>
-                          <td class="after" data-l={e.before ? 'Now' : ''}>{e.after}</td>
+                          <td class="after">{e.after}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -340,7 +358,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   /* Evidence */
   .f-exhibits {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: 34px;
     align-items: start;
   }
@@ -384,8 +402,12 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     text-transform: uppercase;
     color: #6a6155;
   }
+  .lab {
+    min-width: 0;
+  }
   .lab table {
     width: 100%;
+    max-width: 640px;
     border-collapse: collapse;
     font-variant-numeric: tabular-nums;
   }
@@ -414,7 +436,57 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   }
   .lab td.after {
     font-weight: 600;
-    background: color-mix(in srgb, var(--c) 35%, transparent);
+  }
+  .lab td.after::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: var(--c);
+    vertical-align: 1px;
+  }
+  /* Stat tiles, like index cards: big result, small label. */
+  .tiles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+    gap: 14px;
+  }
+  .tiles li {
+    display: grid;
+    align-content: start;
+    gap: 8px;
+    padding: 16px 18px 18px;
+    border-radius: 4px;
+    background: #fffdf7;
+    border-top: 5px solid var(--c);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.12);
+  }
+  .tv {
+    font-family: var(--font-display);
+    font-size: clamp(26px, 2.6vw, 34px);
+    line-height: 1.05;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+  .tb {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: #5a5045;
+  }
+  .tb s {
+    text-decoration-color: var(--red);
+  }
+  .tl {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #5a5045;
   }
 
   /* Verdict with a rubber stamp. */
@@ -675,8 +747,6 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     }
     .lab td.after {
       justify-self: start;
-      padding: 2px 8px;
-      border-radius: 4px;
       font-size: 15px;
     }
     .f-verdict {
