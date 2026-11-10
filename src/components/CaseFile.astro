@@ -260,6 +260,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   .cv-back {
     transform: rotateY(180deg);
     border-radius: 22px 0 0 22px;
+    overflow: hidden;
     background: var(--kraft-layers), var(--worn), var(--kraft-inside);
     background-size: var(--kraft-sizes), auto, auto;
   }
@@ -403,6 +404,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 22px;
+    position: relative;
     perspective: 2200px;
   }
   /* The open spread is two letter-size pages side by side; both pages share its height. */
@@ -453,39 +455,64 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     background-size: 100% 100%, 100% 100%, 100% 30px;
     transform-origin: left center;
   }
-  /* Page turns. On a spread the right page folds over the spine; one-up pages slide. */
-  .page.fold-r {
-    animation: fold-r 0.32s ease-in forwards;
+  .spread .page.left {
+    grid-column: 1;
+    grid-row: 1;
   }
-  .page.unfold-l {
-    animation: unfold-l 0.32s ease-out;
+  .spread .page.right {
+    grid-column: 2;
+    grid-row: 1;
   }
-  .page.fold-l {
-    animation: fold-l 0.32s ease-in forwards;
+  /* While the cover swings, the left page rides on the inside of the cover, so the real one
+     (and the folder's own labels) stay out of sight until it lands. */
+  .file.swing .book > .page.left,
+  .file.swing .folder > .f-meta,
+  .file.swing .flip,
+  .file.swing .tab {
+    visibility: hidden;
   }
-  .page.unfold-r {
-    animation: unfold-r 0.32s ease-out;
+  /* A turning leaf: the old page on the front, the next page on the back. Built by the script. */
+  :global(.leaf) {
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.45, 0.05, 0.25, 1);
+    pointer-events: none;
   }
-  @keyframes fold-r {
-    to {
-      transform: rotateY(-90deg);
+  :global(.leaf-face) {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    overflow: hidden;
+    backface-visibility: hidden;
+  }
+  :global(.leaf-face.back) {
+    transform: rotateY(180deg);
+  }
+  :global(.leaf-face > *) {
+    min-height: 0 !important;
+  }
+  :global(.leaf-face::after) {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(29, 20, 10, 0.35), transparent 70%);
+    opacity: 0;
+    animation: leaf-shade 0.7s ease-in-out;
+    pointer-events: none;
+  }
+  :global(.leaf-face.back::after) {
+    background: linear-gradient(270deg, rgba(29, 20, 10, 0.35), transparent 70%);
+  }
+  @keyframes -global-leaf-shade {
+    50% {
+      opacity: 1;
     }
   }
-  @keyframes unfold-l {
-    from {
-      transform: rotateY(90deg);
-    }
-  }
-  @keyframes fold-l {
-    to {
-      transform: rotateY(90deg);
-    }
-  }
-  @keyframes unfold-r {
-    from {
-      transform: rotateY(-90deg);
-    }
-  }
+  /* Page turns: one-up pages slide. */
   .page.slide-out {
     animation: slide-out 0.26s ease-in forwards;
   }
@@ -977,10 +1004,8 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     .folder {
       transition: none;
     }
-    .page.fold-r,
-    .page.unfold-l,
-    .page.fold-l,
-    .page.unfold-r,
+    :global(.leaf),
+    :global(.leaf-face::after),
     .page.slide-out,
     .page.slide-in {
       animation: none;
@@ -1042,6 +1067,33 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     const per = () => (wide.matches ? 2 : 1);
     const views = () => Math.ceil(pages.length / per());
     const shown = (v: number) => pages.slice(v * per(), v * per() + per());
+    const place = (left?: HTMLElement, right?: HTMLElement) =>
+      pages.forEach((p) => {
+        p.hidden = p !== left && p !== right;
+        p.classList.toggle('left', p === left);
+        p.classList.toggle('right', p === right);
+      });
+    // A look-alike of a page for the turning leaf or the inside of the cover.
+    const copy = (el: HTMLElement) => {
+      const c = el.cloneNode(true) as HTMLElement;
+      c.hidden = false;
+      c.removeAttribute('aria-label');
+      c.removeAttribute('data-page');
+      [c, ...c.querySelectorAll<HTMLElement>('[id]')].forEach((e) => e.removeAttribute('id'));
+      c.querySelectorAll('[data-board]').forEach((e) => e.removeAttribute('data-board'));
+      return c;
+    };
+    const ghost = (p: HTMLElement | undefined, side: string, face: string) => {
+      const g = document.createElement('div');
+      g.className = `leaf-face ${face}`;
+      if (p) {
+        const c = copy(p);
+        c.classList.remove('left', 'right');
+        c.classList.add(side);
+        g.appendChild(c);
+      }
+      return g;
+    };
 
     const sync = () => {
       file.classList.toggle('spread', wide.matches);
@@ -1077,16 +1129,30 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       const fwd = to > view;
       const cur = shown(view);
       if (wide.matches) {
-        const leaving = fwd ? cur[cur.length - 1] : cur[0];
-        leaving.classList.add(fwd ? 'fold-r' : 'fold-l');
-        await later(300);
-        leaving.classList.remove('fold-r', 'fold-l');
+        // A real leaf turns over the spine. Underneath, the page that stays put and the page the
+        // leaf uncovers; on the leaf, the page it lifts away (front) and the page it lays down (back).
+        const [oldL, oldR] = cur;
+        const [newL, newR] = shown(to);
+        const before = book.offsetHeight;
+        place(newL, newR);
+        drawStrings(); // lay the new spread out once so its red strings are drawn before cloning
+        book.style.minHeight = `${Math.max(before, book.offsetHeight)}px`;
+        if (fwd) place(oldL, newR);
+        else place(newL, oldR);
+        const leaf = document.createElement('div');
+        leaf.className = 'leaf';
+        leaf.setAttribute('aria-hidden', 'true');
+        leaf.style.left = fwd ? '50%' : '0';
+        leaf.style.transformOrigin = fwd ? 'left center' : 'right center';
+        leaf.append(ghost(fwd ? oldR : oldL, fwd ? 'right' : 'left', 'front'), ghost(fwd ? newL : newR, fwd ? 'left' : 'right', 'back'));
+        book.appendChild(leaf);
+        void leaf.offsetWidth;
+        leaf.style.transform = `rotateY(${fwd ? -180 : 180}deg)`;
+        await later(720);
         view = to;
         sync();
-        const arriving = fwd ? shown(view)[0] : shown(view)[shown(view).length - 1];
-        arriving?.classList.add(fwd ? 'unfold-l' : 'unfold-r');
-        await later(320);
-        arriving?.classList.remove('unfold-l', 'unfold-r');
+        leaf.remove();
+        book.style.minHeight = '';
       } else {
         cur[0].classList.add('slide-out');
         await later(240);
@@ -1107,14 +1173,45 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       book.inert = closed;
       nav.inert = closed;
     };
+    const back = cover.querySelector<HTMLElement>('.cv-back')!;
+    const meta = folder.querySelector<HTMLElement>('.f-meta')!;
+    // On a spread the left page is printed on the inside of the cover: copy it (and the label
+    // above it) onto the cover's back so it arrives and leaves with the cover.
+    const carry = () => {
+      back.replaceChildren();
+      if (!wide.matches) return;
+      file.classList.add('swing');
+      const fr = folder.getBoundingClientRect();
+      for (const el of [meta, shown(view)[0]]) {
+        const r = el.getBoundingClientRect();
+        const c = copy(el);
+        Object.assign(c.style, {
+          position: 'absolute',
+          margin: '0',
+          minHeight: '0',
+          visibility: 'visible',
+          left: `${r.left - fr.left}px`,
+          top: `${r.top - fr.top}px`,
+          width: `${r.width}px`,
+          height: `${r.height}px`,
+        });
+        back.appendChild(c);
+      }
+    };
+    const land = () => {
+      file.classList.remove('swing');
+      back.replaceChildren();
+    };
     const open = async () => {
       if (busy) return;
       busy = true;
       view = 0;
       sync();
+      carry();
       cover.classList.remove('gone');
-      setClosed(false); // the cover swings left over the spine; the left page slides into view
+      setClosed(false); // the cover swings left over the spine, lifting off the right page
       await later(760);
+      land();
       cover.classList.add('gone');
       busy = false;
       next.focus({ preventScroll: true });
@@ -1126,10 +1223,12 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       stamp.textContent = read ? 'Solved' : 'Case study';
       openBtn.textContent = read ? 'Read it again →' : 'Open the file →';
       if (file.getBoundingClientRect().top < 0) file.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
+      carry();
       cover.classList.remove('gone');
       void cover.offsetWidth; // start from the open position, then swing back from the left
       setClosed(true);
       await later(760);
+      land();
       view = 0;
       sync();
       busy = false;
