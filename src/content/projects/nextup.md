@@ -8,7 +8,7 @@ stack: [Python, FastAPI, Postgres, pgvector, Ollama, Claude, MCP]
 skills: ['Python', 'FastAPI', 'PostgreSQL', 'Vector databases (Chroma, pgvector)', 'LLMs & local models (Ollama)', 'RAG / retrieval', 'AI agents', 'Docker', 'Security', 'REST APIs', 'GCP (incl. Pub/Sub)']
 repo: https://github.com/AbrahamLinksus/nextup
 featured: true
-order: 4
+order: 5
 letter: N
 color: orange
 highlights:

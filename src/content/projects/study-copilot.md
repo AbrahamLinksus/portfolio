@@ -8,7 +8,7 @@ stack: [TypeScript, Next.js, LangChain, LangGraph, Chroma, Ollama, Google Calend
 skills: ['TypeScript', 'Next.js / React', 'LangChain / LangGraph', 'Vector databases (Chroma, pgvector)', 'LLMs & local models (Ollama)', 'RAG / retrieval', 'AI agents', 'Model evaluation & statistics', 'OpenAI API']
 repo: https://github.com/AbrahamLinksus/Study_copilot
 featured: true
-order: 2
+order: 1
 letter: S
 color: teal
 highlights:

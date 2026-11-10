@@ -8,7 +8,7 @@ stack: [Python, FastAPI, PyTorch, Streamlit, Plotly]
 skills: ['Python', 'FastAPI', 'PyTorch', 'Federated learning', 'Distributed systems', 'Security', 'REST APIs']
 repo: https://github.com/AbrahamLinksus/fedLearn
 featured: false
-order: 6
+order: 7
 letter: F
 color: pink
 highlights:

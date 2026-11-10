@@ -8,7 +8,7 @@ stack: [Claude Code, Python, Bash, Git, GitHub Actions]
 skills: ['AI agents', 'Python', 'Software architecture', 'Testing & TDD', 'Git / GitHub', 'CI/CD (GitHub Actions)', 'Security', 'Linux']
 repo: https://github.com/AbrahamLinksus/dev-team-setup
 featured: false
-order: 7
+order: 2
 letter: D
 color: yellow
 highlights:
