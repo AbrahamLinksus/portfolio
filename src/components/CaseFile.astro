@@ -22,17 +22,18 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
 <section class="file" aria-labelledby={`file-${number}`} data-file>
   <span class="tab" aria-hidden="true">Case {number}</span>
 
-  <div class="cover" data-cover hidden>
-    <div class="cv-in">
-      <p class="cv-meta">Case file {number}</p>
-      <h2 id={`file-${number}`} class="cv-title display">{f.codename}</h2>
-      <p class="cv-sub">{title}</p>
-      <span class="cv-stamp" data-stamp aria-hidden="true">Confidential</span>
-      <button type="button" class="cv-open" data-open>Open the file →</button>
-    </div>
-  </div>
-
   <div class="folder" data-folder>
+    <div class="cover" data-cover hidden>
+      <div class="cv-face cv-front">
+        <span class="cv-tab" aria-hidden="true">Case {number}</span>
+        <p class="cv-meta">Case file {number}</p>
+        <h2 id={`file-${number}`} class="cv-title display">{f.codename}</h2>
+        <p class="cv-sub">{title}</p>
+        <span class="cv-stamp" data-stamp aria-hidden="true">Case study</span>
+        <button type="button" class="cv-open" data-open>Open the file →</button>
+      </div>
+      <div class="cv-face cv-back" aria-hidden="true"></div>
+    </div>
     <p class="f-meta">Case file {number} · {title} · {f.codename}</p>
 
     <div class="book" data-book>
@@ -155,8 +156,17 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     max-width: 1120px;
     margin-inline: auto;
   }
-  .file.closed {
-    max-width: 520px;
+  /* Closed: only the right half (the cover) shows, centred where the open file will be. */
+  .file.closed .tab {
+    visibility: hidden;
+  }
+  .file.closed.spread .folder {
+    clip-path: inset(-40px -40px -60px 50%);
+    transform: translateX(-25%);
+  }
+  .file.closed .f-meta,
+  .file.closed .flip {
+    visibility: hidden;
   }
   /* Manila folder tab. */
   .tab {
@@ -173,31 +183,77 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     text-transform: uppercase;
   }
 
-  /* The closed folder. */
+  /* The cover: exactly one page of the open file. Closed on a wide screen it sits over the
+     right-hand page with the left half folded away; opening hinges it at the spine. */
+  .file {
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.27 0 0 0 0 0.15 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --fibres: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03 0.35' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.22 0 0 0 0 0.1 0 0 0 0.5 -0.22'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+    /* Worn edges: darker towards the borders, like a much-handled folder. */
+    --worn: radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(110, 82, 40, 0.28) 100%);
+  }
   .cover {
-    position: relative;
-    z-index: 2;
-    border-radius: 6px 22px 22px 22px;
-    background: linear-gradient(135deg, #e7d8ba, #d6c199);
-    color: var(--paper-ink);
-    box-shadow:
-      6px 6px 0 -2px #efe4cf,
-      12px 12px 0 -4px #e3d3b4,
-      0 16px 40px rgba(0, 0, 0, 0.5);
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    right: 0;
     transform-origin: left center;
-    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.75s cubic-bezier(0.45, 0.05, 0.25, 1);
   }
   .cover[hidden] {
     display: none;
   }
-  .cv-in {
-    position: relative;
+  .file:not(.closed) .cover {
+    transform: rotateY(-180deg);
+  }
+  .cover.gone {
+    visibility: hidden;
+  }
+  .cv-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 0 22px 22px 0;
+    backface-visibility: hidden;
+  }
+  .cv-front {
     display: grid;
     align-content: center;
     justify-items: start;
     gap: 14px;
-    min-height: 600px;
     padding: 48px 40px;
+    background:
+      var(--grain),
+      var(--fibres),
+      linear-gradient(90deg, transparent 0 34px, rgba(90, 66, 30, 0.10) 36px, rgba(255, 250, 235, 0.22) 38px, transparent 41px),
+      var(--worn),
+      linear-gradient(135deg, #e7d8ba, #d6c199);
+    background-size: 220px 220px, 600px 600px, auto, auto, auto;
+    color: var(--paper-ink);
+    box-shadow:
+      inset 10px 0 18px -10px rgba(29, 26, 22, 0.35),
+      inset 0 0 0 1px rgba(120, 90, 45, 0.18);
+  }
+  /* The inside of the cover, seen while it swings over to the left. */
+  .cv-back {
+    transform: rotateY(180deg);
+    border-radius: 22px 0 0 22px;
+    background: var(--grain), var(--fibres), var(--worn), linear-gradient(225deg, #e3d3b4, #cdb78e);
+    background-size: 220px 220px, 600px 600px, auto, auto;
+  }
+  .cv-tab {
+    position: absolute;
+    top: -26px;
+    left: 24px;
+    padding: 6px 18px 8px;
+    border-radius: 12px 12px 0 0;
+    background: var(--grain), #e7d8ba;
+    background-size: 220px 220px, auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
   .cv-meta {
     margin: 0;
@@ -208,7 +264,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     color: #4f463b;
   }
   .cv-title {
-    font-size: clamp(44px, 6vw, 64px);
+    font-size: clamp(40px, 5vw, 60px);
     line-height: 0.95;
     text-wrap: balance;
   }
@@ -251,27 +307,12 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     outline: 3px solid var(--red);
     outline-offset: 3px;
   }
-  .cover.opening {
-    animation: cover-open 0.6s ease-in forwards;
-  }
-  .cover.closing {
-    animation: cover-close 0.55s ease-out;
-  }
-  @keyframes cover-open {
-    to {
-      transform: perspective(2000px) rotateY(-100deg);
-      opacity: 0;
-    }
-  }
-  @keyframes cover-close {
-    from {
-      transform: perspective(2000px) rotateY(-100deg);
-      opacity: 0;
-    }
-  }
 
   /* The open folder. */
   .folder {
+    position: relative;
+    perspective: 2600px;
+    transition: clip-path 0.75s cubic-bezier(0.45, 0.05, 0.25, 1), transform 0.75s cubic-bezier(0.45, 0.05, 0.25, 1);
     display: grid;
     gap: 18px;
     padding: 22px 26px 22px;
@@ -282,15 +323,6 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   }
   .folder[hidden] {
     display: none;
-  }
-  .folder.appear {
-    animation: appear 0.35s ease-out;
-  }
-  @keyframes appear {
-    from {
-      opacity: 0;
-      transform: scale(0.98);
-    }
   }
   .f-meta {
     margin: 0;
@@ -763,8 +795,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     .tab {
       left: 18px;
     }
-    .cv-in {
-      min-height: 440px;
+    .cv-front {
       padding: 40px 24px;
     }
     .cv-stamp {
@@ -862,10 +893,21 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       font-size: 13px;
     }
   }
+  /* One page at a time (phones and narrow screens): the cover is the whole page. */
+  .file:not(.spread) .cover {
+    left: 0;
+  }
+  .file:not(.spread) .cv-face {
+    border-radius: 6px 18px 18px 18px;
+  }
+  .file:not(.spread).closed .folder {
+    min-height: 460px;
+  }
   @media (prefers-reduced-motion: reduce) {
-    .cover.opening,
-    .cover.closing,
-    .folder.appear,
+    .cover,
+    .folder {
+      transition: none;
+    }
     .page.fold-r,
     .page.unfold-l,
     .page.fold-l,
@@ -989,20 +1031,22 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       busy = false;
     };
 
+    const book = file.querySelector<HTMLElement>('[data-book]')!;
+    // Closed: the pages and controls sit under the cover and can't be reached.
+    const setClosed = (closed: boolean) => {
+      file.classList.toggle('closed', closed);
+      book.inert = closed;
+      nav.inert = closed;
+    };
     const open = async () => {
       if (busy) return;
       busy = true;
-      cover.classList.add('opening');
-      await later(560);
-      cover.classList.remove('opening');
-      cover.hidden = true;
-      file.classList.remove('closed');
-      folder.hidden = false;
-      folder.classList.add('appear');
       view = 0;
       sync();
-      await later(350);
-      folder.classList.remove('appear');
+      cover.classList.remove('gone');
+      setClosed(false); // the cover swings left over the spine; the left page slides into view
+      await later(760);
+      cover.classList.add('gone');
       busy = false;
       next.focus({ preventScroll: true });
     };
@@ -1010,15 +1054,15 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       if (busy) return;
       busy = true;
       if (view === views() - 1) read = true;
-      folder.hidden = true;
-      file.classList.add('closed');
-      cover.hidden = false;
-      stamp.textContent = read ? 'Solved' : 'Confidential';
+      stamp.textContent = read ? 'Solved' : 'Case study';
       openBtn.textContent = read ? 'Read it again →' : 'Open the file →';
-      cover.classList.add('closing');
       if (file.getBoundingClientRect().top < 0) file.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
-      await later(550);
-      cover.classList.remove('closing');
+      cover.classList.remove('gone');
+      void cover.offsetWidth; // start from the open position, then swing back from the left
+      setClosed(true);
+      await later(760);
+      view = 0;
+      sync();
       busy = false;
       openBtn.focus({ preventScroll: true });
     };
@@ -1027,12 +1071,11 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     next.addEventListener('click', () => (view === views() - 1 ? close() : go(view + 1)));
     openBtn.addEventListener('click', open);
     file.addEventListener('keydown', (e) => {
-      if (folder.hidden) return;
+      if (file.classList.contains('closed')) return;
       if (e.key === 'ArrowRight') view === views() - 1 ? close() : go(view + 1);
       if (e.key === 'ArrowLeft') go(view - 1);
     });
     let x0 = 0, y0 = 0;
-    const book = file.querySelector<HTMLElement>('[data-book]')!;
     book.addEventListener('touchstart', (e) => ((x0 = e.touches[0].clientX), (y0 = e.touches[0].clientY)), { passive: true });
     book.addEventListener('touchend', (e) => {
       const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
@@ -1040,14 +1083,14 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     });
     wide.addEventListener('change', () => {
       view = Math.min(view, views() - 1);
-      if (!folder.hidden) sync();
+      sync();
     });
 
     // Start closed. Without JavaScript none of this runs, so every page simply shows.
     nav.hidden = false;
-    folder.hidden = true;
     cover.hidden = false;
-    file.classList.add('closed');
+    sync();
+    setClosed(true);
   });
 
   window.addEventListener('resize', drawStrings);
