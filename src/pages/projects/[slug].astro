@@ -395,11 +395,20 @@ const Toy = TOYS[project.id];
       grid-template-columns: 1fr;
       gap: 14px;
     }
+    /* Previous and next stay side by side on phones. */
     .pager {
-      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 48px;
     }
-    .pager .right {
-      text-align: left;
+    .pager a {
+      align-content: start;
+      padding: 14px 14px 16px;
+      min-width: 0;
+    }
+    .pt {
+      font-size: 15px;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
     }
   }
   /* Phones: case-study text with more breathing room. */
