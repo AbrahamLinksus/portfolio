@@ -26,9 +26,18 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     <div class="cover" data-cover hidden>
       <div class="cv-face cv-front">
         <span class="cv-tab" aria-hidden="true">Case {number}</span>
-        <p class="cv-meta">Case file {number}</p>
-        <h2 id={`file-${number}`} class="cv-title display">{f.codename}</h2>
-        <p class="cv-sub">{title}</p>
+        <div class="cv-label">
+          <p class="cv-meta">Case file {number}</p>
+          <h2 id={`file-${number}`} class="cv-title display">{f.codename}</h2>
+          <p class="cv-sub">{title}</p>
+        </div>
+        <svg class="cv-tie" viewBox="0 0 60 150" aria-hidden="true">
+          <path d="M30 28 C 8 50, 52 70, 30 92 C 10 112, 40 130, 34 148" fill="none" stroke="#efe2c6" stroke-width="2.4" stroke-linecap="round" />
+          <circle cx="30" cy="28" r="17" fill="#7a2a1c" />
+          <circle cx="30" cy="28" r="17" fill="none" stroke="rgba(0,0,0,.35)" stroke-width="2" />
+          <circle cx="30" cy="28" r="4" fill="#3b1a10" />
+          <path d="M30 28 L 18 16 M30 28 L 44 18" stroke="#efe2c6" stroke-width="2.2" stroke-linecap="round" />
+        </svg>
         <span class="cv-stamp" data-stamp aria-hidden="true">Case study</span>
         <button type="button" class="cv-open" data-open>Open the file →</button>
       </div>
@@ -149,6 +158,8 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     --paper: #efe4cf;
     --paper-ink: #1d1a16;
     --manila: #e3d3b4;
+    /* The inside of the board: smoother and paler than the outside. */
+    --kraft-inside: linear-gradient(200deg, #d2b182, #c29d6a);
     --red: #c4202f;
     position: relative;
     padding-top: 30px;
@@ -175,7 +186,8 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     left: 28px;
     padding: 6px 18px 10px;
     border-radius: 12px 12px 0 0;
-    background: var(--manila);
+    background: var(--kraft-layers), #cfad7d;
+    background-size: var(--kraft-sizes), auto;
     color: var(--paper-ink);
     font-family: var(--font-mono);
     font-size: 12px;
@@ -186,10 +198,14 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   /* The cover: exactly one page of the open file. Closed on a wide screen it sits over the
      right-hand page with the left half folded away; opening hinges it at the spine. */
   .file {
-    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.27 0 0 0 0 0.15 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    --fibres: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03 0.35' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.22 0 0 0 0 0.1 0 0 0 0.5 -0.22'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
-    /* Worn edges: darker towards the borders, like a much-handled folder. */
-    --worn: radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(110, 82, 40, 0.28) 100%);
+    /* Kraft board: fine grain, long fibres, dark and light flecks of recycled pulp. */
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.25 0 0 0 0 0.16 0 0 0 0 0.07 0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --fibres: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.025 0.4' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.24 0 0 0 0 0.14 0 0 0 0 0.05 0 0 0 1.1 -0.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+    --flecks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='1' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.09 0 0 0 0 0.04 16 0 0 0 -10.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+    --flecks-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='1' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 0.93 0 0 0 0 0.85 0 0 0 0 0.68 16 0 0 0 -11.7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+    --worn: radial-gradient(ellipse 115% 90% at 50% 45%, transparent 50%, rgba(60, 34, 12, 0.38) 100%);
+    --kraft-layers: var(--flecks), var(--flecks-light), var(--grain), var(--fibres);
+    --kraft-sizes: 300px 300px, 300px 300px, 220px 220px, 500px 500px;
   }
   .cover {
     position: absolute;
@@ -221,26 +237,31 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     display: grid;
     align-content: center;
     justify-items: start;
-    gap: 14px;
-    padding: 48px 40px;
+    gap: 30px;
+    padding: 48px 64px 48px 52px;
     background:
-      var(--grain),
-      var(--fibres),
-      linear-gradient(90deg, transparent 0 34px, rgba(90, 66, 30, 0.10) 36px, rgba(255, 250, 235, 0.22) 38px, transparent 41px),
+      var(--kraft-layers),
+      /* Two score creases along the spine. */
+      linear-gradient(90deg, transparent 0 22px, rgba(50, 28, 10, 0.32) 23px, rgba(255, 236, 200, 0.28) 25px, transparent 27px,
+        transparent 34px, rgba(50, 28, 10, 0.28) 35px, rgba(255, 236, 200, 0.24) 37px, transparent 39px),
+      /* A coffee ring someone left on it. */
+      radial-gradient(circle at 74% 84%, rgba(80, 42, 14, 0.06) 0 46px, rgba(80, 42, 14, 0.42) 49px, rgba(80, 42, 14, 0.16) 53px, transparent 56px),
+      radial-gradient(circle at 70% 81%, transparent 0 50px, rgba(80, 42, 14, 0.14) 52px, transparent 55px),
       var(--worn),
-      linear-gradient(135deg, #e7d8ba, #d6c199);
-    background-size: 220px 220px, 600px 600px, auto, auto, auto;
+      linear-gradient(160deg, #c49a66, #a87843 60%, #9a6b38);
+    background-size: var(--kraft-sizes), auto, auto, auto, auto, auto;
     color: var(--paper-ink);
     box-shadow:
-      inset 10px 0 18px -10px rgba(29, 26, 22, 0.35),
-      inset 0 0 0 1px rgba(120, 90, 45, 0.18);
+      inset 12px 0 20px -10px rgba(29, 16, 6, 0.5),
+      inset 0 0 0 1px rgba(60, 34, 12, 0.35),
+      inset 0 2px 0 rgba(255, 236, 200, 0.18);
   }
   /* The inside of the cover, seen while it swings over to the left. */
   .cv-back {
     transform: rotateY(180deg);
     border-radius: 22px 0 0 22px;
-    background: var(--grain), var(--fibres), var(--worn), linear-gradient(225deg, #e3d3b4, #cdb78e);
-    background-size: 220px 220px, 600px 600px, auto, auto;
+    background: var(--kraft-layers), var(--worn), var(--kraft-inside);
+    background-size: var(--kraft-sizes), auto, auto;
   }
   .cv-tab {
     position: absolute;
@@ -248,12 +269,55 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     left: 24px;
     padding: 6px 18px 8px;
     border-radius: 12px 12px 0 0;
-    background: var(--grain), #e7d8ba;
-    background-size: 220px 220px, auto;
+    background: var(--kraft-layers), #b58955;
+    background-size: var(--kraft-sizes), auto;
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+  /* A typed label pasted on the board, held by two strips of tape. */
+  .cv-label {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    max-width: 100%;
+    padding: 22px 24px 20px;
+    background:
+      linear-gradient(transparent 0 calc(100% - 1px), rgba(196, 32, 47, 0.25) 0) 0 0 / 100% 30px,
+      var(--grain),
+      #f3ead6;
+    background-size: 100% 30px, 220px 220px, auto;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15), 0 6px 14px -6px rgba(30, 16, 6, 0.55);
+    transform: rotate(-1.2deg);
+  }
+  .cv-label::before,
+  .cv-label::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    width: 70px;
+    height: 22px;
+    background: rgba(246, 236, 200, 0.55);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  }
+  .cv-label::before {
+    left: -14px;
+    transform: rotate(-24deg);
+  }
+  .cv-label::after {
+    right: -14px;
+    transform: rotate(20deg);
+  }
+  /* String-and-button closure on the opening edge. */
+  .cv-tie {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    width: 58px;
+    height: 150px;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
   }
   .cv-meta {
     margin: 0;
@@ -270,7 +334,6 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   }
   .cv-sub {
     margin: 0;
-    padding-bottom: 18px;
     font-family: var(--font-mono);
     font-size: 14px;
     color: #4f463b;
@@ -317,7 +380,8 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     gap: 18px;
     padding: 22px 26px 22px;
     border-radius: 6px 22px 22px 22px;
-    background: var(--manila);
+    background: var(--kraft-layers), var(--kraft-inside);
+    background-size: var(--kraft-sizes), auto;
     color: var(--paper-ink);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   }
@@ -330,7 +394,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     font-size: 12px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #4f463b;
+    color: #2a1f14;
   }
 
   /* Pages: ruled paper sheets. Two at a time on wide screens, meeting at a spine. */
@@ -773,10 +837,10 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    border: 1.5px solid #5a5045;
+    border: 1.5px solid #2a1f14;
     font-family: var(--font-mono);
     font-size: 11px;
-    color: #5a5045;
+    color: #2a1f14;
   }
   .dots :global(button[aria-current='step']) {
     background: var(--red);
@@ -796,7 +860,12 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       left: 18px;
     }
     .cv-front {
-      padding: 40px 24px;
+      padding: 40px 52px 40px 30px;
+    }
+    .cv-tie {
+      top: 66%;
+      width: 46px;
+      height: 120px;
     }
     .cv-stamp {
       top: 22px;
