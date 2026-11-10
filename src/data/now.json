@@ -1,14 +1,19 @@
 {
- "syncedAt": "2026-11-09T15:17:35.674Z",
+ "syncedAt": "2026-11-10T09:34:31.908Z",
  "source": "list",
  "repos": {
   "AbrahamLinksus/portfolio": {
    "description": "My portfolio site",
    "language": "Astro",
    "branch": "main",
-   "total": 66,
-   "last30": 66,
+   "total": 67,
+   "last30": 67,
    "commits": [
+    {
+     "sha": "c9f2a1e",
+     "date": "2026-11-09T15:19:57+00:00",
+     "subject": "Projects: add Dev Team Setup case study"
+    },
     {
      "sha": "4e2dc35",
      "date": "2026-11-09T14:08:57+00:00",
@@ -28,11 +33,6 @@
      "sha": "43d3ea8",
      "date": "2026-11-09T12:34:10+00:00",
      "subject": "Nav: About, Projects, Now, Skills, Contact"
-    },
-    {
-     "sha": "8e4b55a",
-     "date": "2026-11-09T12:31:10+00:00",
-     "subject": "Now: find repos from GitHub instead of a fixed list"
     }
    ]
   },
@@ -161,9 +161,14 @@
    "description": "",
    "language": "",
    "branch": "master",
-   "total": 1,
-   "last30": 0,
+   "total": 2,
+   "last30": 1,
    "commits": [
+    {
+     "sha": "e1e1428",
+     "date": "2026-11-09T21:43:00+05:30",
+     "subject": "worked on model decisions section"
+    },
     {
      "sha": "a6c6188",
      "date": "2026-09-09T21:42:46+05:30",
@@ -175,33 +180,33 @@
    "description": "",
    "language": "",
    "branch": "main",
-   "total": 15,
-   "last30": 15,
+   "total": 206,
+   "last30": 206,
    "commits": [
     {
-     "sha": "ee52153",
-     "date": "2026-11-09T20:42:54+05:30",
-     "subject": "fix: no XML-like tags in skill/agent descriptions (Claude app validation) (v0.5.1)"
+     "sha": "3246969",
+     "date": "2026-11-10T12:23:48+05:30",
+     "subject": "Merge pull request #75 from AbrahamLinksus/fix/s8-pin-agent-worktree"
     },
     {
-     "sha": "b2d7835",
-     "date": "2026-11-09T17:03:54+05:30",
-     "subject": "bench: replace bench/ with a single bench.py that runs the whole benchmark"
+     "sha": "e4a1d14",
+     "date": "2026-11-10T12:23:20+05:30",
+     "subject": "Merge pull request #74 from AbrahamLinksus/fix/m3-ci-lint"
     },
     {
-     "sha": "4f94b4a",
-     "date": "2026-11-09T16:00:02+05:30",
-     "subject": "bench: rebuild as small + production benchmarks with a step-by-step guide"
+     "sha": "4202365",
+     "date": "2026-11-10T12:23:04+05:30",
+     "subject": "Merge pull request #73 from AbrahamLinksus/fix/m1-regression-test-index"
     },
     {
-     "sha": "89f1b68",
-     "date": "2026-11-09T15:54:17+05:30",
-     "subject": "bench: token_report totals from Claude Code's cost-state (matches /cost)"
+     "sha": "34c37a1",
+     "date": "2026-11-10T10:51:54+05:30",
+     "subject": "Merge pull request #72 from AbrahamLinksus/fix/m7-example-is-dated"
     },
     {
-     "sha": "8a33efc",
-     "date": "2026-11-09T15:52:10+05:30",
-     "subject": "bench: diagnose_logs shows cost-state and request line structure (text cut)"
+     "sha": "1cbe67a",
+     "date": "2026-11-10T10:51:36+05:30",
+     "subject": "Merge pull request #70 from AbrahamLinksus/fix/m5-readme-requirements"
     }
    ]
   },

@@ -2,8 +2,8 @@
  "source": "notes",
  "url": "https://github.com/AbrahamLinksus/notes",
  "branch": "main",
- "commit": "903a13fb3471616210c3ed7baa58a2b06cf14e3e",
- "syncedAt": "2026-11-09T15:17:35.623Z",
+ "commit": "306fa33a320016711bfb1dfd425eff07bc0dd483",
+ "syncedAt": "2026-11-10T09:34:31.872Z",
  "topics": [
   {
    "topic": "ai-engineering/langchain",
@@ -1162,6 +1162,23 @@
    },
    "items": [
     {
+     "title": "ACID properties",
+     "takeaway": "ACID is the set of guarantees a transactional DB gives: all-or-nothing, always valid, isolated from other transactions, and permanent once committed.",
+     "path": "notes/backend/databases/acid-properties.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (p. 3)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/backend/databases/transactions-and-concurrency.md",
+      "notes/sql/schema/constraints.md",
+      "notes/backend/databases/database-migrations.md"
+     ]
+    },
+    {
      "title": "Database migrations",
      "takeaway": "A migration is a controlled change to a database. Schema migrations change its structure step by step, and data migrations move data from one DB to another.",
      "path": "notes/backend/databases/database-migrations.md",
@@ -1179,18 +1196,38 @@
      ]
     },
     {
+     "title": "Database storage internals",
+     "takeaway": "A database keeps rows in small fixed units called pages, moves them between disk and RAM as blocks, caches the hot ones in a buffer cache, and uses B-trees or hash structures to find them fast.",
+     "path": "notes/backend/databases/database-storage-internals.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (p. 1)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/backend/databases/indexing-and-sharding.md",
+      "notes/backend/databases/query-lifecycle.md",
+      "notes/backend/databases/oltp-vs-olap.md",
+      "notes/backend/caching/caching-basics.md"
+     ]
+    },
+    {
      "title": "Indexing vs sharding",
      "takeaway": "An index is an extra data structure that makes lookups on one table fast. Sharding splits a huge database into non-overlapping pieces across machines, which is horizontal scaling.",
      "path": "notes/backend/databases/indexing-and-sharding.md",
      "day": "2026-11-07",
      "kind": "note",
      "status": "done",
-     "source": "Backend.pdf (p. 33)",
+     "source": "Backend.pdf (p. 33); SQL.pdf (pp. 6–7)",
      "firstSeen": "2026-11-07T11:11:59+00:00",
-     "lastChanged": "2026-11-07T11:11:59+00:00",
-     "revisions": 0,
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 1,
      "links": [
       "notes/backend/databases/n-plus-one-problem.md",
+      "notes/backend/databases/query-lifecycle.md",
+      "notes/backend/databases/database-storage-internals.md",
       "notes/backend/databases/database-migrations.md",
       "notes/backend/caching/cache-types.md",
       "notes/backend/architecture/monolith-vs-microservices.md"
@@ -1214,6 +1251,23 @@
      ]
     },
     {
+     "title": "OLTP vs OLAP",
+     "takeaway": "A database's workload is the pattern of how it's used: OLTP handles many small day-to-day operations fast, while OLAP is built for analysis and big business decisions.",
+     "path": "notes/backend/databases/oltp-vs-olap.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (p. 2)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/backend/databases/transactions-and-concurrency.md",
+      "notes/backend/databases/database-storage-internals.md",
+      "notes/backend/databases/indexing-and-sharding.md"
+     ]
+    },
+    {
      "title": "ORM (Object Relational Mapping)",
      "takeaway": "An ORM lets you work with the database through objects instead of raw SQL. That's convenient, but you pay in translation overhead, leaky abstraction and less control.",
      "path": "notes/backend/databases/orm.md",
@@ -1228,6 +1282,40 @@
       "notes/backend/databases/n-plus-one-problem.md",
       "notes/backend/databases/database-migrations.md",
       "notes/backend/databases/indexing-and-sharding.md"
+     ]
+    },
+    {
+     "title": "Query lifecycle",
+     "takeaway": "Every SQL query goes through three internal steps: parse (is the syntax correct?), plan (what's the fastest way to run it?), and execute (run that plan).",
+     "path": "notes/backend/databases/query-lifecycle.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (p. 6)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/backend/databases/indexing-and-sharding.md",
+      "notes/backend/databases/database-storage-internals.md",
+      "notes/sql/queries/basic-select-clauses.md"
+     ]
+    },
+    {
+     "title": "Transactions and concurrency",
+     "takeaway": "A transaction is a bundle of operations that must succeed or fail as one unit. The DB protects it with a transaction log for crashes and with locks or MVCC so others don't see half-finished work.",
+     "path": "notes/backend/databases/transactions-and-concurrency.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (pp. 2–3)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/backend/databases/acid-properties.md",
+      "notes/backend/databases/oltp-vs-olap.md",
+      "notes/backend/architecture/idempotency.md"
      ]
     }
    ]
@@ -2246,6 +2334,808 @@
       "notes/data-science/statistics/descriptive/percentiles-and-outliers.md",
       "notes/data-science/statistics/inferential/confidence-intervals-z-and-t.md",
       "notes/data-science/feature-engineering/feature-engineering-steps.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "frontend/nextjs",
+   "map": {
+    "suggested": true,
+    "skill": "next.js",
+    "region": "frontend"
+   },
+   "items": [
+    {
+     "title": "Next.js data fetching and caching",
+     "takeaway": "Because server components render on the server, they can fetch data directly, without `useState` + `useEffect`. Next.js caches that data automatically in its data cache.",
+     "path": "notes/frontend/nextjs/data-fetching-and-caching.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 31–32)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/nextjs/rendering-strategies.md",
+      "notes/frontend/nextjs/server-and-client-components.md",
+      "notes/frontend/nextjs/rendering-strategies.md",
+      "notes/frontend/nextjs/server-and-client-components.md",
+      "notes/frontend/react/hooks/use-effect.md"
+     ]
+    },
+    {
+     "title": "Next.js file-based routing",
+     "takeaway": "In Next.js the folder structure *is* the router. Each folder is a URL segment, and its `page.tsx` is what renders there.",
+     "path": "notes/frontend/nextjs/file-based-routing.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (p. 30)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/nextjs/server-and-client-components.md",
+      "notes/frontend/react/routing/react-router-basics.md",
+      "notes/frontend/nextjs/why-nextjs.md",
+      "notes/frontend/react/routing/react-router-basics.md",
+      "notes/frontend/nextjs/server-and-client-components.md"
+     ]
+    },
+    {
+     "title": "Next.js rendering strategies (CSR, SSR, static, dynamic)",
+     "takeaway": "CSR renders in the browser and is invisible to search bots. SSR renders on the server for SEO and smaller bundles, either at build time (static) or at request time (dynamic).",
+     "path": "notes/frontend/nextjs/rendering-strategies.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 30–32)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/nextjs/server-and-client-components.md",
+      "notes/frontend/nextjs/server-and-client-components.md",
+      "notes/frontend/nextjs/data-fetching-and-caching.md",
+      "notes/frontend/react/routing/client-vs-server-routing.md"
+     ]
+    },
+    {
+     "title": "Server vs client components",
+     "takeaway": "In the Next.js `app` folder every component is a server component by default. Add `'use client'` at the top of a file to make it a client component that runs in the browser.",
+     "path": "notes/frontend/nextjs/server-and-client-components.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 29, 31)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/nextjs/data-fetching-and-caching.md",
+      "notes/frontend/nextjs/rendering-strategies.md",
+      "notes/frontend/nextjs/data-fetching-and-caching.md",
+      "notes/frontend/nextjs/why-nextjs.md"
+     ]
+    },
+    {
+     "title": "Why Next.js",
+     "takeaway": "Next.js is a React framework that adds what React alone lacks: routing, server-side rendering, static generation and better SEO.",
+     "path": "notes/frontend/nextjs/why-nextjs.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 29–30)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/nextjs/file-based-routing.md",
+      "notes/frontend/nextjs/rendering-strategies.md",
+      "notes/frontend/nextjs/server-and-client-components.md",
+      "notes/frontend/react/core/react-overview.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "frontend/react/architecture",
+   "map": {
+    "suggested": true,
+    "skill": "frontend architecture",
+    "region": "frontend"
+   },
+   "items": [
+    {
+     "title": "React folder architecture",
+     "takeaway": "Pick the folder layout to match what has to scale: business features (feature-first), UI reuse (atomic design), or plain separation of concerns (layered, the default).",
+     "path": "notes/frontend/react/architecture/folder-architecture.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 4–5)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/functional-vs-class-components.md",
+      "notes/frontend/react/hooks/use-context.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "frontend/react/core",
+   "map": {
+    "suggested": true,
+    "skill": "react",
+    "region": "frontend"
+   },
+   "items": [
+    {
+     "title": "Component lifecycle",
+     "takeaway": "Every component goes through three phases: mounting, updating and unmounting. In functional components, `useEffect` covers all three.",
+     "path": "notes/frontend/react/core/component-lifecycle.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 12, 15)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/functional-vs-class-components.md",
+      "notes/frontend/react/hooks/use-effect.md",
+      "notes/frontend/react/hooks/use-effect.md",
+      "notes/frontend/react/core/functional-vs-class-components.md"
+     ]
+    },
+    {
+     "title": "Functional vs class components",
+     "takeaway": "Components bundle UI and logic into reusable building blocks. Functional components with hooks are now preferred over class components.",
+     "path": "notes/frontend/react/core/functional-vs-class-components.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 6–7)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/component-lifecycle.md",
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/hooks/rules-of-hooks.md",
+      "notes/frontend/react/hooks/use-effect.md",
+      "notes/frontend/react/core/props-vs-state.md",
+      "notes/frontend/react/core/component-lifecycle.md",
+      "notes/frontend/react/hooks/rules-of-hooks.md",
+      "notes/frontend/react/core/higher-order-components.md"
+     ]
+    },
+    {
+     "title": "Higher-order components (HOC)",
+     "takeaway": "A HOC is a function that takes a component as an argument and returns a modified one. Stacking many of them leads to wrapper hell, which hooks avoid.",
+     "path": "notes/frontend/react/core/higher-order-components.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (p. 11)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/hooks/rules-of-hooks.md",
+      "notes/frontend/react/hooks/rules-of-hooks.md",
+      "notes/frontend/react/core/functional-vs-class-components.md",
+      "notes/frontend/react/hooks/use-context.md"
+     ]
+    },
+    {
+     "title": "JSX",
+     "takeaway": "JSX lets me write HTML-like markup with JavaScript embedded in it, and it's how components describe their UI.",
+     "path": "notes/frontend/react/core/jsx.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (p. 5)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/functional-vs-class-components.md",
+      "notes/frontend/react/forms/controlled-vs-uncontrolled.md",
+      "notes/frontend/react/core/react-overview.md"
+     ]
+    },
+    {
+     "title": "Keys in lists",
+     "takeaway": "Keys give each list item a stable identity, so React can tell which items changed instead of matching them by position.",
+     "path": "notes/frontend/react/core/keys-in-lists.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 3, 10)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/reconciliation-and-diffing.md",
+      "notes/frontend/react/core/reconciliation-and-diffing.md",
+      "notes/frontend/react/forms/form-inputs.md",
+      "notes/frontend/react/hooks/use-memo-and-use-callback.md"
+     ]
+    },
+    {
+     "title": "Prop drilling",
+     "takeaway": "Prop drilling is passing props down through components that don't use them, just so they reach a deeply nested child.",
+     "path": "notes/frontend/react/core/prop-drilling.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 8–9)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/hooks/use-context.md",
+      "notes/frontend/react/core/props-vs-state.md",
+      "notes/frontend/react/hooks/use-context.md"
+     ]
+    },
+    {
+     "title": "Props vs state",
+     "takeaway": "Props are immutable configuration passed down from a parent. State is mutable data a component owns and manages itself.",
+     "path": "notes/frontend/react/core/props-vs-state.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 7–8)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/prop-drilling.md",
+      "notes/frontend/react/core/prop-drilling.md",
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/core/functional-vs-class-components.md"
+     ]
+    },
+    {
+     "title": "React Fiber",
+     "takeaway": "Fiber splits rendering into small units of work, so React can pause, prioritise and resume rendering instead of doing the whole tree in one go.",
+     "path": "notes/frontend/react/core/react-fiber.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (p. 3)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/hooks/lazy-state-initialization.md",
+      "notes/frontend/react/hooks/use-effect.md",
+      "notes/frontend/react/core/virtual-dom.md",
+      "notes/frontend/react/core/reconciliation-and-diffing.md",
+      "notes/frontend/react/hooks/lazy-state-initialization.md"
+     ]
+    },
+    {
+     "title": "What is React",
+     "takeaway": "React is a declarative, component-based JS library from Meta, and it updates the UI efficiently through a virtual DOM.",
+     "path": "notes/frontend/react/core/react-overview.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (p. 1)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/virtual-dom.md",
+      "notes/frontend/nextjs/why-nextjs.md",
+      "notes/frontend/react/core/virtual-dom.md",
+      "notes/frontend/react/core/jsx.md",
+      "notes/frontend/react/core/functional-vs-class-components.md",
+      "notes/frontend/nextjs/why-nextjs.md"
+     ]
+    },
+    {
+     "title": "Reconciliation and diffing",
+     "takeaway": "On every change, React compares the new tree with the previous one and computes the minimal set of changes for the real DOM. Two heuristics make that O(n) instead of O(n³).",
+     "path": "notes/frontend/react/core/reconciliation-and-diffing.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 2–3)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/keys-in-lists.md",
+      "notes/frontend/react/core/virtual-dom.md",
+      "notes/frontend/react/core/keys-in-lists.md",
+      "notes/frontend/react/core/react-fiber.md"
+     ]
+    },
+    {
+     "title": "Virtual DOM",
+     "takeaway": "React keeps two copies of the DOM in memory, compares them, and writes only the differences to the real DOM.",
+     "path": "notes/frontend/react/core/virtual-dom.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 1–2)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/reconciliation-and-diffing.md",
+      "notes/frontend/react/core/keys-in-lists.md",
+      "notes/frontend/react/core/reconciliation-and-diffing.md",
+      "notes/frontend/react/core/react-fiber.md",
+      "notes/backend/web-fundamentals/browser-rendering.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "frontend/react/forms",
+   "map": {
+    "suggested": true,
+    "skill": "react",
+    "region": "frontend"
+   },
+   "items": [
+    {
+     "title": "Controlled vs uncontrolled components",
+     "takeaway": "A controlled input's value lives in React state (`useState`). An uncontrolled input's value lives in the DOM (`useRef`).",
+     "path": "notes/frontend/react/forms/controlled-vs-uncontrolled.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 10, 19, 22)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/routing/programmatic-navigation.md",
+      "notes/frontend/react/forms/form-inputs.md",
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/hooks/use-ref.md",
+      "notes/frontend/react/forms/yup-validation.md"
+     ]
+    },
+    {
+     "title": "Form inputs: textarea, select, checkbox",
+     "takeaway": "Every input type follows the same controlled pattern: a state value, `value`/`checked` bound to it, and `onChange` calling the setter. Only the field you read changes.",
+     "path": "notes/frontend/react/forms/form-inputs.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 19–21)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/forms/controlled-vs-uncontrolled.md",
+      "notes/frontend/react/core/keys-in-lists.md",
+      "notes/frontend/react/forms/controlled-vs-uncontrolled.md",
+      "notes/frontend/react/core/keys-in-lists.md",
+      "notes/frontend/react/forms/yup-validation.md"
+     ]
+    },
+    {
+     "title": "Form validation with Yup",
+     "takeaway": "Yup lets me define a schema for form data once, chain rules onto each field, and validate against it, either directly or through React Hook Form's `yupResolver`.",
+     "path": "notes/frontend/react/forms/yup-validation.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 26–27)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/forms/controlled-vs-uncontrolled.md",
+      "notes/frontend/react/forms/form-inputs.md",
+      "notes/frontend/react/routing/programmatic-navigation.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "frontend/react/hooks",
+   "map": {
+    "suggested": true,
+    "skill": "react",
+    "region": "frontend"
+   },
+   "items": [
+    {
+     "title": "Lazy state initialization",
+     "takeaway": "Pass `useState` a function instead of a value, and an expensive initial computation runs only once instead of on every render.",
+     "path": "notes/frontend/react/hooks/lazy-state-initialization.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (p. 13)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/hooks/use-memo-and-use-callback.md",
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/hooks/use-memo-and-use-callback.md",
+      "notes/frontend/react/core/react-fiber.md"
+     ]
+    },
+    {
+     "title": "Objects and arrays in state",
+     "takeaway": "Never edit state objects or arrays in place. Build a new copy with the spread operator (or `filter`/`map`) and pass it to the setter.",
+     "path": "notes/frontend/react/hooks/objects-and-arrays-in-state.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 13–14)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/core/keys-in-lists.md",
+      "notes/frontend/react/routing/programmatic-navigation.md"
+     ]
+    },
+    {
+     "title": "Rules of hooks",
+     "takeaway": "Hooks are plain functions that hook into React features without a class, and they must be called at the top level of a component or another hook.",
+     "path": "notes/frontend/react/hooks/rules-of-hooks.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 10–11)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/functional-vs-class-components.md",
+      "notes/frontend/react/core/higher-order-components.md",
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/hooks/use-effect.md",
+      "notes/frontend/react/core/higher-order-components.md"
+     ]
+    },
+    {
+     "title": "useContext",
+     "takeaway": "Create a context, wrap the tree in its `Provider`, and any descendant can read the value with `useContext` instead of receiving it through props.",
+     "path": "notes/frontend/react/hooks/use-context.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 9, 16)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/core/prop-drilling.md",
+      "notes/frontend/react/core/prop-drilling.md",
+      "notes/frontend/react/hooks/rules-of-hooks.md",
+      "notes/frontend/react/architecture/folder-architecture.md"
+     ]
+    },
+    {
+     "title": "useEffect",
+     "takeaway": "`useEffect` runs side effects (anything that isn't describing UI) after render. The dependency array controls when it runs, and the cleanup function stops leaks.",
+     "path": "notes/frontend/react/hooks/use-effect.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 14–15)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/nextjs/data-fetching-and-caching.md",
+      "notes/frontend/react/core/component-lifecycle.md",
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/hooks/use-ref.md",
+      "notes/frontend/nextjs/data-fetching-and-caching.md"
+     ]
+    },
+    {
+     "title": "useMemo and useCallback",
+     "takeaway": "`useMemo` caches a computed **result**, and `useCallback` caches a **function**. Both recompute only when their dependency array changes.",
+     "path": "notes/frontend/react/hooks/use-memo-and-use-callback.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 17–18)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/hooks/use-effect.md",
+      "notes/frontend/react/hooks/lazy-state-initialization.md",
+      "notes/frontend/react/hooks/lazy-state-initialization.md",
+      "notes/frontend/react/hooks/use-effect.md",
+      "notes/frontend/react/core/keys-in-lists.md"
+     ]
+    },
+    {
+     "title": "useRef",
+     "takeaway": "`useRef` gives a mutable box (`.current`) that survives re-renders, and changing it does **not** cause a re-render.",
+     "path": "notes/frontend/react/hooks/use-ref.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 16–17)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/forms/controlled-vs-uncontrolled.md",
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/hooks/use-state.md",
+      "notes/frontend/react/hooks/use-effect.md",
+      "notes/frontend/react/forms/controlled-vs-uncontrolled.md"
+     ]
+    },
+    {
+     "title": "useState",
+     "takeaway": "`useState` gives a component a value plus a setter, and calling the setter is what triggers a re-render.",
+     "path": "notes/frontend/react/hooks/use-state.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 10, 12–13, 17)",
+     "firstSeen": "2026-11-09T16:19:18+00:00",
+     "lastChanged": "2026-11-09T16:19:18+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/hooks/lazy-state-initialization.md",
+      "notes/frontend/react/hooks/objects-and-arrays-in-state.md",
+      "notes/frontend/react/hooks/lazy-state-initialization.md",
+      "notes/frontend/react/hooks/objects-and-arrays-in-state.md",
+      "notes/frontend/react/core/props-vs-state.md",
+      "notes/frontend/react/hooks/rules-of-hooks.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "frontend/react/routing",
+   "map": {
+    "suggested": true,
+    "skill": "react",
+    "region": "frontend"
+   },
+   "items": [
+    {
+     "title": "Client-side vs server-side routing",
+     "takeaway": "Server-side routing fetches a fresh HTML page for every URL. Client-side routing (React Router) loads JS once, then swaps components in the browser with no reload.",
+     "path": "notes/frontend/react/routing/client-vs-server-routing.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 23–24)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/nextjs/rendering-strategies.md",
+      "notes/frontend/react/routing/react-router-basics.md",
+      "notes/frontend/nextjs/rendering-strategies.md",
+      "notes/backend/web-fundamentals/browser-rendering.md"
+     ]
+    },
+    {
+     "title": "Dynamic and nested routes",
+     "takeaway": "`:id` in a path is a placeholder that `useParams` reads. `<Outlet />` marks where a matched child route renders inside a shared parent layout.",
+     "path": "notes/frontend/react/routing/dynamic-and-nested-routes.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 23–24)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/routing/react-router-basics.md",
+      "notes/frontend/react/routing/programmatic-navigation.md",
+      "notes/frontend/nextjs/file-based-routing.md"
+     ]
+    },
+    {
+     "title": "Programmatic navigation",
+     "takeaway": "When navigation has to happen from code (after a form submits, after an auth check), call the function returned by `useNavigate()` instead of rendering a link.",
+     "path": "notes/frontend/react/routing/programmatic-navigation.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 23, 25)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/hooks/rules-of-hooks.md",
+      "notes/frontend/react/routing/react-router-basics.md",
+      "notes/frontend/react/forms/yup-validation.md",
+      "notes/frontend/react/forms/controlled-vs-uncontrolled.md"
+     ]
+    },
+    {
+     "title": "React Router basics",
+     "takeaway": "React Router maps URL paths to components in a single-page app. `Link` changes the URL without a page reload, and `NavLink` adds an active state.",
+     "path": "notes/frontend/react/routing/react-router-basics.md",
+     "day": "2026-11-09",
+     "kind": "note",
+     "status": "done",
+     "source": "React.pdf (pp. 22–23)",
+     "firstSeen": "2026-11-09T16:19:19+00:00",
+     "lastChanged": "2026-11-09T16:19:19+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/frontend/react/routing/client-vs-server-routing.md",
+      "notes/frontend/react/routing/dynamic-and-nested-routes.md",
+      "notes/frontend/react/routing/programmatic-navigation.md",
+      "notes/frontend/nextjs/file-based-routing.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "sql/queries",
+   "map": {
+    "suggested": true,
+    "skill": "sql",
+    "region": "databases"
+   },
+   "items": [
+    {
+     "title": "Basic SELECT clauses",
+     "takeaway": "A basic query answers one question per clause: SELECT which columns, FROM which table, WHERE which rows, ORDER BY how to sort, LIMIT/OFFSET how many, DISTINCT whether to drop duplicates, and AS what to call things.",
+     "path": "notes/sql/queries/basic-select-clauses.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (p. 7)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/sql/queries/filtering-operators.md",
+      "notes/sql/queries/null-handling.md",
+      "notes/backend/databases/query-lifecycle.md"
+     ]
+    },
+    {
+     "title": "CASE expressions",
+     "takeaway": "CASE lets SQL evaluate conditions and return a value based on business rules. A searched CASE uses boolean conditions (good for thresholds), and a simple CASE compares one value for equality.",
+     "path": "notes/sql/queries/case-expressions.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (pp. 10–11)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/sql/queries/null-handling.md",
+      "notes/sql/queries/scalar-functions.md",
+      "notes/sql/queries/filtering-operators.md"
+     ]
+    },
+    {
+     "title": "Filtering operators",
+     "takeaway": "Beyond plain `=`, WHERE can test for NULL (IS NULL), list membership (IN), ranges (BETWEEN) and text patterns (LIKE with `%` and `_`). Each one has a NOT version.",
+     "path": "notes/sql/queries/filtering-operators.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (pp. 8–9)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/sql/queries/basic-select-clauses.md",
+      "notes/sql/queries/null-handling.md",
+      "notes/sql/queries/case-expressions.md"
+     ]
+    },
+    {
+     "title": "NULL handling",
+     "takeaway": "NULL means \"no value\" or \"unknown\". It is not 0 and not an empty string, so you test for it with IS NULL and replace it with IFNULL or COALESCE.",
+     "path": "notes/sql/queries/null-handling.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (pp. 6, 8–10)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/sql/schema/constraints.md",
+      "notes/sql/queries/filtering-operators.md",
+      "notes/sql/queries/scalar-functions.md",
+      "notes/sql/queries/case-expressions.md"
+     ]
+    },
+    {
+     "title": "Scalar functions: ROUND, ABS, GREATEST, LEAST",
+     "takeaway": "Scalar functions work value by value: ROUND trims to a number of decimals (0 by default), ABS drops the sign, and GREATEST/LEAST pick the largest or smallest of their arguments. Any NULL input gives NULL.",
+     "path": "notes/sql/queries/scalar-functions.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (p. 9)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/sql/queries/null-handling.md",
+      "notes/sql/queries/case-expressions.md"
+     ]
+    }
+   ]
+  },
+  {
+   "topic": "sql/schema",
+   "map": {
+    "suggested": true,
+    "skill": "sql",
+    "region": "databases"
+   },
+   "items": [
+    {
+     "title": "Constraints",
+     "takeaway": "Constraints are column rules the DB enforces on every insert: AUTO_INCREMENT fills IDs, NOT NULL makes a value mandatory, UNIQUE blocks duplicates, CHECK validates a condition, and DEFAULT supplies a fallback value.",
+     "path": "notes/sql/schema/constraints.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (pp. 5–6)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/sql/schema/keys.md",
+      "notes/sql/queries/null-handling.md",
+      "notes/backend/databases/acid-properties.md"
+     ]
+    },
+    {
+     "title": "SQL data types",
+     "takeaway": "Every column is declared with a data type, and the core set covers whole numbers (INT, BIGINT), text (VARCHAR(n), TEXT), time (DATE, DATETIME), true/false (BOOLEAN) and exact decimals (DECIMAL).",
+     "path": "notes/sql/schema/data-types.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (p. 4)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/sql/schema/keys.md",
+      "notes/sql/schema/constraints.md"
+     ]
+    },
+    {
+     "title": "Primary, foreign and composite keys",
+     "takeaway": "A primary key uniquely identifies each row (no duplicates, no NULL). A foreign key is another table's primary key stored here to link the two. A composite key uses several columns together as the unique identifier.",
+     "path": "notes/sql/schema/keys.md",
+     "day": "2026-11-10",
+     "kind": "note",
+     "status": "done",
+     "source": "SQL.pdf (pp. 4–5)",
+     "firstSeen": "2026-11-10T04:21:36+00:00",
+     "lastChanged": "2026-11-10T04:21:36+00:00",
+     "revisions": 0,
+     "links": [
+      "notes/sql/schema/constraints.md",
+      "notes/sql/schema/data-types.md",
+      "notes/backend/databases/indexing-and-sharding.md"
      ]
     }
    ]
