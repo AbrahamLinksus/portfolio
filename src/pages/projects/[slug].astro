@@ -364,4 +364,31 @@ const { Content } = await render(project);
       text-align: left;
     }
   }
+  /* Phones: case-study text with more breathing room. */
+  @media (max-width: 640px) {
+    .prose {
+      font-size: 17px;
+      line-height: 1.75;
+    }
+    .prose :global(h2) {
+      margin: 64px 0 18px;
+    }
+    .prose :global(p),
+    .prose :global(ul) {
+      margin-bottom: 22px;
+    }
+    .prose :global(li) {
+      margin-bottom: 16px;
+    }
+    .hl {
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    dd {
+      font-size: 15.5px;
+    }
+    .btn {
+      font-size: 14px;
+    }
+  }
 </style>

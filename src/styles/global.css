@@ -122,3 +122,16 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* Phones: a little more room on the sides and between lines of running text. */
+@media (max-width: 640px) {
+  :root {
+    --gutter-l: max(22px, env(safe-area-inset-left, 0px));
+    --gutter-r: max(22px, env(safe-area-inset-right, 0px));
+  }
+  body {
+    font-size: 17px;
+    line-height: 1.65;
+  }
+}
+
