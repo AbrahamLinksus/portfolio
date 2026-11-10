@@ -80,8 +80,8 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
                       {f.evidence.map((e) => (
                         <tr>
                           <th scope="row">{e.label}</th>
-                          <td>{e.before || '—'}</td>
-                          <td class="after">{e.after}</td>
+                          <td class:list={['before', { none: !e.before }]} data-l="Before">{e.before || '—'}</td>
+                          <td class="after" data-l={e.before ? 'Now' : ''}>{e.after}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -583,6 +583,139 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     }
     .ptab {
       padding: 6px 3px;
+    }
+  }
+  /* Phones: give the paper the width. Thinner folder, no stacked-sheet offset, a lab table that
+     stacks, and page controls on two rows. */
+  @media (max-width: 640px) {
+    .file {
+      margin-inline: -10px;
+    }
+    .tab {
+      left: 18px;
+    }
+    .folder {
+      padding: 20px 8px 14px;
+      gap: 16px;
+      border-radius: 6px 18px 18px 18px;
+    }
+    .f-head {
+      padding-inline: 8px;
+    }
+    .f-title {
+      font-size: 34px;
+    }
+    .page {
+      gap: 14px;
+      padding: 34px 14px 24px 24px;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 0 3px 0 -1px #d9c7a4;
+      background-image:
+        linear-gradient(90deg, transparent 12px, rgba(196, 32, 47, 0.28) 12px, rgba(196, 32, 47, 0.28) 13px, transparent 13px),
+        linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
+    }
+    .clues {
+      gap: 22px;
+      padding-left: 12px;
+    }
+    .clue {
+      gap: 6px;
+      padding: 24px 16px 16px;
+    }
+    .c-fact {
+      font-size: 17px;
+    }
+    .c-meant {
+      font-size: 15px;
+    }
+    .f-exhibits {
+      gap: 26px;
+    }
+    .polaroid {
+      padding: 8px 8px 10px;
+    }
+    /* Lab results: one block per measure, label on top, values side by side. */
+    .lab table,
+    .lab tbody {
+      display: block;
+    }
+    .lab thead {
+      display: none;
+    }
+    .lab tr {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      align-items: baseline;
+      gap: 4px 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(29, 26, 22, 0.2);
+    }
+    .lab th,
+    .lab td {
+      padding: 0;
+      border: 0;
+    }
+    .lab tbody th {
+      grid-column: 1 / -1;
+      font-size: 15px;
+    }
+    .lab td.before.none {
+      display: none;
+    }
+    .lab td.before {
+      color: #6a6155;
+      text-decoration: line-through;
+      text-decoration-color: rgba(196, 32, 47, 0.6);
+    }
+    .lab td.before::after {
+      content: '  →';
+      color: var(--red);
+      text-decoration: none;
+      display: inline-block;
+      margin-left: 8px;
+    }
+    .lab td.after {
+      justify-self: start;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 15px;
+    }
+    .f-verdict {
+      padding: 46px 16px 18px;
+    }
+    .verdict {
+      font-size: 18px;
+    }
+    /* Controls: page dots on top, Back and Turn page side by side below. */
+    .flip {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        'tabs tabs'
+        'prev next';
+      gap: 10px;
+      padding-inline: 4px;
+    }
+    .flip .tabs {
+      grid-area: tabs;
+      gap: 10px;
+    }
+    .turn[data-prev] {
+      grid-area: prev;
+    }
+    .turn.next {
+      grid-area: next;
+    }
+    .turn {
+      padding: 12px 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .ptab {
+      padding: 4px;
+    }
+    .ptab-n {
+      width: 30px;
+      height: 30px;
+      font-size: 13px;
     }
   }
   @media (prefers-reduced-motion: reduce) {
