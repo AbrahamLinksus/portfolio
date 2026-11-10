@@ -1,7 +1,8 @@
 ---
-// A case study told as a detective's case file you page through: the case, the clues (joined
-// by red string), the evidence, and the verdict with a "Solved" stamp. Without JavaScript every
-// page shows, one after another.
+// A case study told as a case file you open like a book. Closed, it's a manila folder. Opened,
+// it shows two pages at a time on wide screens (the case beside the clues, then the evidence
+// beside the verdict) and one page at a time on phones. After the verdict it closes again,
+// stamped "Solved". Without JavaScript the cover stays hidden and every page shows in order.
 import type { Project } from '../lib/projects';
 
 interface Props {
@@ -11,9 +12,8 @@ interface Props {
 }
 const { file: f, number, title } = Astro.props;
 const hasEvidence = f.exhibits.length > 0 || f.evidence.length > 0;
-// With no before values, results read better as stat tiles than as a table with an empty column.
 const hasBefore = f.evidence.some((e) => e.before);
-// Tiles fill the page on their own; the table is kept only beside an exhibit photo.
+// Tiles fill a page on their own; the table is kept only beside an exhibit photo.
 const tiles = !hasBefore || f.exhibits.length === 0;
 const pages = ['The case', 'The clues', ...(hasEvidence ? ['The evidence'] : []), 'The verdict'];
 const pageNo = (name: string) => pages.indexOf(name) + 1;
@@ -21,13 +21,21 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
 
 <section class="file" aria-labelledby={`file-${number}`} data-file>
   <span class="tab" aria-hidden="true">Case {number}</span>
-  <div class="folder">
-    <header class="f-head">
-      <p class="f-meta">Case file {number} · {title}</p>
-      <h2 id={`file-${number}`} class="f-title display">{f.codename}</h2>
-    </header>
 
-    <div class="pages" data-pages>
+  <div class="cover" data-cover hidden>
+    <div class="cv-in">
+      <p class="cv-meta">Case file {number}</p>
+      <h2 id={`file-${number}`} class="cv-title display">{f.codename}</h2>
+      <p class="cv-sub">{title}</p>
+      <span class="cv-stamp" data-stamp aria-hidden="true">Confidential</span>
+      <button type="button" class="cv-open" data-open>Open the file →</button>
+    </div>
+  </div>
+
+  <div class="folder" data-folder>
+    <p class="f-meta">Case file {number} · {title} · {f.codename}</p>
+
+    <div class="book" data-book>
       <article class="page" data-page aria-label={`Page 1 of ${pages.length}: The case`}>
         <span class="folio">Page 1 of {pages.length}</span>
         <h3 class="f-h">The case</h3>
@@ -42,7 +50,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
           <ol class="clues">
             {
               f.clues.map((c, i) => (
-                <li class="clue" style={`--tilt: ${[-2, 1.5, -1, 2][i % 4]}deg`}>
+                <li class="clue" style={`--tilt: ${[-1.5, 1.2, -0.8, 1.5][i % 4]}deg`}>
                   <span class="pin" data-pin aria-hidden="true" />
                   <span class="c-n">Clue {i + 1}</span>
                   <p class="c-fact">{c.fact}</p>
@@ -76,7 +84,11 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
                     {f.evidence.map((e) => (
                       <li>
                         <span class="tv">{e.after}</span>
-                        {e.before && <span class="tb">was <s>{e.before}</s></span>}
+                        {e.before && (
+                          <span class="tb">
+                            was <s>{e.before}</s>
+                          </span>
+                        )}
                         <span class="tl">{e.label}</span>
                       </li>
                     ))}
@@ -98,7 +110,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
                       {f.evidence.map((e) => (
                         <tr>
                           <th scope="row">{e.label}</th>
-                          <td class:list={['before', { none: !e.before }]} data-l="Before">{e.before || '—'}</td>
+                          <td class:list={['before', { none: !e.before }]}>{e.before || '—'}</td>
                           <td class="after">{e.after}</td>
                         </tr>
                       ))}
@@ -119,23 +131,13 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
           <p class="verdict">{f.verdict}</p>
           <p class="lesson"><b>Note to self:</b> {f.lesson}</p>
         </div>
+        <p class="end" aria-hidden="true">— End of file —</p>
       </article>
     </div>
 
     <nav class="flip" aria-label="Case file pages" data-flip hidden>
       <button type="button" class="turn" data-prev>← Back</button>
-      <ol class="tabs">
-        {
-          pages.map((p, i) => (
-            <li>
-              <button type="button" class="ptab" data-go={i} aria-label={`Page ${i + 1}: ${p}`}>
-                <span class="ptab-n">{i + 1}</span>
-                <span class="ptab-l">{p}</span>
-              </button>
-            </li>
-          ))
-        }
-      </ol>
+      <ol class="dots" data-dots></ol>
       <button type="button" class="turn next" data-next>Turn page →</button>
     </nav>
   </div>
@@ -145,13 +147,16 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   .file {
     --paper: #efe4cf;
     --paper-ink: #1d1a16;
+    --manila: #e3d3b4;
     --red: #c4202f;
     position: relative;
     padding-top: 30px;
-    /* A portrait document, like a real case file, centred under the toy. */
     width: 100%;
-    max-width: 760px;
+    max-width: 1120px;
     margin-inline: auto;
+  }
+  .file.closed {
+    max-width: 520px;
   }
   /* Manila folder tab. */
   .tab {
@@ -160,25 +165,132 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     left: 28px;
     padding: 6px 18px 10px;
     border-radius: 12px 12px 0 0;
-    background: #e3d3b4;
+    background: var(--manila);
     color: var(--paper-ink);
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
+
+  /* The closed folder. */
+  .cover {
+    position: relative;
+    z-index: 2;
+    border-radius: 6px 22px 22px 22px;
+    background: linear-gradient(135deg, #e7d8ba, #d6c199);
+    color: var(--paper-ink);
+    box-shadow:
+      6px 6px 0 -2px #efe4cf,
+      12px 12px 0 -4px #e3d3b4,
+      0 16px 40px rgba(0, 0, 0, 0.5);
+    transform-origin: left center;
+    backface-visibility: hidden;
+  }
+  .cover[hidden] {
+    display: none;
+  }
+  .cv-in {
+    position: relative;
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 14px;
+    min-height: 600px;
+    padding: 48px 40px;
+  }
+  .cv-meta {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #4f463b;
+  }
+  .cv-title {
+    font-size: clamp(44px, 6vw, 64px);
+    line-height: 0.95;
+    text-wrap: balance;
+  }
+  .cv-sub {
+    margin: 0;
+    padding-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: #4f463b;
+  }
+  .cv-stamp {
+    position: absolute;
+    top: 38px;
+    right: 28px;
+    padding: 6px 16px 4px;
+    border: 4px solid var(--red);
+    border-radius: 8px;
+    color: var(--red);
+    font-family: var(--font-display);
+    font-size: 30px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transform: rotate(8deg);
+    opacity: 0.85;
+  }
+  .cv-open {
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 14px 22px;
+    border-radius: 12px;
+    background: var(--paper-ink);
+    color: var(--paper);
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 16px;
+    text-transform: uppercase;
+  }
+  .cv-open:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: 3px;
+  }
+  .cover.opening {
+    animation: cover-open 0.6s ease-in forwards;
+  }
+  .cover.closing {
+    animation: cover-close 0.55s ease-out;
+  }
+  @keyframes cover-open {
+    to {
+      transform: perspective(2000px) rotateY(-100deg);
+      opacity: 0;
+    }
+  }
+  @keyframes cover-close {
+    from {
+      transform: perspective(2000px) rotateY(-100deg);
+      opacity: 0;
+    }
+  }
+
+  /* The open folder. */
   .folder {
     display: grid;
-    gap: 26px;
-    padding: 30px 30px 26px;
+    gap: 18px;
+    padding: 22px 26px 22px;
     border-radius: 6px 22px 22px 22px;
-    background: #e3d3b4;
+    background: var(--manila);
     color: var(--paper-ink);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   }
-  .f-head {
-    display: grid;
-    gap: 4px;
+  .folder[hidden] {
+    display: none;
+  }
+  .folder.appear {
+    animation: appear 0.35s ease-out;
+  }
+  @keyframes appear {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
   }
   .f-meta {
     margin: 0;
@@ -188,21 +300,27 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     text-transform: uppercase;
     color: #4f463b;
   }
-  .f-title {
-    font-size: clamp(34px, 5vw, 58px);
-  }
 
-  /* Pages: ruled paper sheets, stacked. A page turns from its left edge, like a booklet. */
-  .pages {
+  /* Pages: ruled paper sheets. Two at a time on wide screens, meeting at a spine. */
+  .book {
+    container-type: inline-size;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 22px;
-    perspective: 1800px;
+    perspective: 2200px;
+  }
+  /* The open spread is two letter-size pages side by side; both pages share its height. */
+  .spread .book {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 0;
   }
   .page {
     position: relative;
     display: grid;
     align-content: start;
     gap: 16px;
+    min-width: 0;
     padding: 34px 28px 32px 40px;
     border-radius: 4px 14px 14px 4px;
     background-color: var(--paper);
@@ -210,50 +328,84 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       linear-gradient(90deg, transparent 22px, rgba(196, 32, 47, 0.28) 22px, rgba(196, 32, 47, 0.28) 23px, transparent 23px),
       linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
     background-size: 100% 100%, 100% 30px;
-    box-shadow:
-      0 1px 0 rgba(0, 0, 0, 0.08),
-      4px 4px 0 -1px #d9c7a4,
-      8px 8px 0 -2px #cfbb95;
-    transform-origin: left center;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 4px 4px 0 -1px #d9c7a4;
     backface-visibility: hidden;
   }
   .page[hidden] {
     display: none;
   }
-  .flipping .page.out {
-    animation: turn-out 0.3s ease-in forwards;
+  .spread .page {
+    /* At least a letter-size sheet (8.5 x 11); extra content makes it taller, never wider. */
+    min-height: calc(50cqw * 11 / 8.5);
+    box-shadow: none;
   }
-  .flipping .page.in {
-    animation: turn-in 0.36s ease-out;
+  .spread .page.left {
+    border-radius: 14px 0 0 14px;
+    background-image:
+      linear-gradient(90deg, transparent calc(100% - 26px), rgba(29, 26, 22, 0.14)),
+      linear-gradient(90deg, transparent 22px, rgba(196, 32, 47, 0.28) 22px, rgba(196, 32, 47, 0.28) 23px, transparent 23px),
+      linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 30px;
+    transform-origin: right center;
   }
-  .flipping .page.out.back {
-    animation-name: back-out;
+  .spread .page.right {
+    border-radius: 0 14px 14px 0;
+    background-image:
+      linear-gradient(90deg, rgba(29, 26, 22, 0.16), transparent 26px),
+      linear-gradient(90deg, transparent 22px, rgba(196, 32, 47, 0.28) 22px, rgba(196, 32, 47, 0.28) 23px, transparent 23px),
+      linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100% 30px;
+    transform-origin: left center;
   }
-  .flipping .page.in.back {
-    animation-name: back-in;
+  /* Page turns. On a spread the right page folds over the spine; one-up pages slide. */
+  .page.fold-r {
+    animation: fold-r 0.32s ease-in forwards;
   }
-  @keyframes turn-out {
+  .page.unfold-l {
+    animation: unfold-l 0.32s ease-out;
+  }
+  .page.fold-l {
+    animation: fold-l 0.32s ease-in forwards;
+  }
+  .page.unfold-r {
+    animation: unfold-r 0.32s ease-out;
+  }
+  @keyframes fold-r {
     to {
-      transform: rotateY(-75deg);
-      opacity: 0.2;
+      transform: rotateY(-90deg);
     }
   }
-  @keyframes turn-in {
+  @keyframes unfold-l {
     from {
-      transform: translateX(14px);
-      opacity: 0.4;
+      transform: rotateY(90deg);
     }
   }
-  @keyframes back-out {
+  @keyframes fold-l {
     to {
-      transform: translateX(24px);
+      transform: rotateY(90deg);
+    }
+  }
+  @keyframes unfold-r {
+    from {
+      transform: rotateY(-90deg);
+    }
+  }
+  .page.slide-out {
+    animation: slide-out 0.26s ease-in forwards;
+  }
+  .page.slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+  @keyframes slide-out {
+    to {
       opacity: 0;
+      transform: translateX(-24px);
     }
   }
-  @keyframes back-in {
+  @keyframes slide-in {
     from {
-      transform: rotateY(-75deg);
-      opacity: 0.2;
+      opacity: 0;
+      transform: translateX(24px);
     }
   }
   .folio {
@@ -282,6 +434,16 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     font-size: 16px;
     line-height: 1.85;
   }
+  .end {
+    margin: auto 0 0;
+    padding-top: 30px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a7f70;
+  }
 
   /* Clues: index cards pinned to the page, joined by red string drawn in script. */
   .board {
@@ -305,26 +467,25 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   .clues {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 14px;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 26px 28px;
+    gap: 22px;
   }
   .clue {
     position: relative;
     z-index: 1;
     display: grid;
-    gap: 8px;
-    padding: 26px 20px 20px;
+    gap: 6px;
+    padding: 24px 18px 16px;
     background: #fffdf7;
-    background-image: linear-gradient(transparent 33px, rgba(196, 32, 47, 0.35) 33px, rgba(196, 32, 47, 0.35) 34px, transparent 34px);
+    background-image: linear-gradient(transparent 31px, rgba(196, 32, 47, 0.35) 31px, rgba(196, 32, 47, 0.35) 32px, transparent 32px);
     border-radius: 3px;
     box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15), 0 8px 18px rgba(0, 0, 0, 0.12);
     transform: rotate(var(--tilt));
   }
   .pin {
     position: absolute;
-    top: 9px;
+    top: 8px;
     left: 50%;
     width: 14px;
     height: 14px;
@@ -345,13 +506,13 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     margin: 0;
     font-family: var(--font-sticker);
     font-weight: 800;
-    font-size: 18px;
+    font-size: 17px;
     line-height: 1.25;
   }
   .c-meant {
     margin: 0;
-    font-size: 15px;
-    line-height: 1.55;
+    font-size: 14.5px;
+    line-height: 1.5;
     color: #3d372f;
   }
   .arrow {
@@ -362,14 +523,13 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   /* Evidence */
   .f-exhibits {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-    gap: 34px;
+    gap: 26px;
     align-items: start;
   }
   .polaroid {
     position: relative;
     margin: 8px 0 0;
-    padding: 12px 12px 14px;
+    padding: 10px 10px 12px;
     background: #fff;
     transform: rotate(var(--tilt));
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
@@ -381,9 +541,9 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     height: auto;
   }
   .polaroid figcaption {
-    padding-top: 10px;
+    padding-top: 8px;
     font-family: var(--font-mono);
-    font-size: 12.5px;
+    font-size: 12px;
     line-height: 1.5;
     color: #3d372f;
   }
@@ -391,11 +551,14 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     position: absolute;
     top: -12px;
     left: 50%;
-    width: 96px;
-    height: 24px;
-    margin-left: -48px;
+    width: 90px;
+    height: 22px;
+    margin-left: -45px;
     background: rgba(246, 210, 58, 0.75);
     transform: rotate(3deg);
+  }
+  .lab {
+    min-width: 0;
   }
   .lab-h {
     margin: 0 0 8px;
@@ -404,23 +567,19 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     font-size: 11.5px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #6a6155;
-  }
-  .lab {
-    min-width: 0;
+    color: #5a5045;
   }
   .lab table {
     width: 100%;
-    max-width: 640px;
     border-collapse: collapse;
     font-variant-numeric: tabular-nums;
   }
   .lab th,
   .lab td {
-    padding: 11px 8px;
+    padding: 10px 6px;
     border-bottom: 1px solid rgba(29, 26, 22, 0.2);
     text-align: left;
-    font-size: 15px;
+    font-size: 14.5px;
     vertical-align: top;
   }
   .lab thead th {
@@ -429,24 +588,25 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #6a6155;
+    color: #5a5045;
   }
   .lab tbody th {
     font-weight: 500;
   }
   .lab td {
     font-family: var(--font-mono);
-    font-size: 14px;
+    font-size: 13.5px;
   }
   .lab td.after {
     font-weight: 600;
+    white-space: nowrap;
   }
   .lab td.after::before {
     content: '';
     display: inline-block;
     width: 8px;
     height: 8px;
-    margin-right: 8px;
+    margin-right: 7px;
     border-radius: 50%;
     background: var(--c);
     vertical-align: 1px;
@@ -457,14 +617,14 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+    gap: 12px;
   }
   .tiles li {
     display: grid;
     align-content: start;
-    gap: 8px;
-    padding: 16px 18px 18px;
+    gap: 6px;
+    padding: 14px 16px 16px;
     border-radius: 4px;
     background: #fffdf7;
     border-top: 5px solid var(--c);
@@ -472,7 +632,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   }
   .tv {
     font-family: var(--font-display);
-    font-size: clamp(26px, 2.6vw, 34px);
+    font-size: clamp(24px, 2.4vw, 32px);
     line-height: 1.05;
     text-transform: uppercase;
     overflow-wrap: anywhere;
@@ -487,7 +647,7 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   }
   .tl {
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11.5px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: #5a5045;
@@ -503,14 +663,14 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   }
   .stamp {
     position: absolute;
-    right: 18px;
+    right: 16px;
     top: -26px;
-    padding: 6px 18px 4px;
+    padding: 6px 16px 4px;
     border: 4px solid var(--red);
     border-radius: 8px;
     color: var(--red);
     font-family: var(--font-display);
-    font-size: 40px;
+    font-size: 36px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     transform: rotate(-9deg);
@@ -519,21 +679,19 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
   }
   .verdict {
     margin: 12px 0;
-    max-width: 62ch;
     font-family: var(--font-sticker);
     font-weight: 800;
-    font-size: 20px;
+    font-size: 19px;
     line-height: 1.35;
   }
   .lesson {
     margin: 0;
-    max-width: 68ch;
-    font-size: 15.5px;
+    font-size: 15px;
     line-height: 1.6;
     color: #3d372f;
   }
 
-  /* Page controls: back / page tabs / turn page. */
+  /* Controls: back / dots / turn page (becomes "Close the file" at the end). */
   .flip {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -555,176 +713,97 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     font-size: 14px;
     text-transform: uppercase;
     white-space: nowrap;
+    text-align: center;
   }
   .turn.next {
     background: var(--paper-ink);
     color: var(--paper);
   }
-  .turn[disabled] {
-    opacity: 0.3;
-    cursor: default;
-  }
   .turn:focus-visible,
-  .ptab:focus-visible {
+  .dots :global(button:focus-visible) {
     outline: 3px solid var(--red);
     outline-offset: 3px;
   }
-  .tabs {
+  .dots {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
-    gap: 6px;
+    gap: 10px;
   }
-  .ptab {
+  .dots :global(button) {
     all: unset;
     pointer-events: auto;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border-radius: 99px;
-    font-family: var(--font-mono);
-    font-size: 11.5px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #5a5045;
-  }
-  .ptab-n {
     display: grid;
     place-items: center;
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    border: 1.5px solid currentColor;
+    border: 1.5px solid #5a5045;
+    font-family: var(--font-mono);
     font-size: 11px;
+    color: #5a5045;
   }
-  .ptab[aria-current='step'] {
-    background: var(--paper);
-    color: var(--paper-ink);
-  }
-  .ptab[aria-current='step'] .ptab-n {
+  .dots :global(button[aria-current='step']) {
     background: var(--red);
     border-color: var(--red);
     color: #fff;
   }
 
-  /* Letter-size sheets (8.5 x 11) on wider screens; a page grows if its content is longer. */
-  @media (min-width: 761px) {
-    .pages {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .page {
-      min-width: 0;
-      aspect-ratio: 8.5 / 11;
-    }
-    .typed {
-      font-size: 18px;
-      line-height: 1.9;
-    }
-    .f-verdict {
-      margin-top: 64px;
-    }
-  }
-  .ptab-l {
-    display: none;
-  }
-  @media (max-width: 760px) {
-    .clues {
-      grid-template-columns: 1fr;
-    }
-  }
   @media (max-width: 640px) {
+    .file {
+      margin-inline: -10px;
+      width: auto;
+    }
+    .file.closed {
+      max-width: none;
+    }
+    .tab {
+      left: 18px;
+    }
+    .cv-in {
+      min-height: 440px;
+      padding: 40px 24px;
+    }
+    .cv-stamp {
+      top: 22px;
+      right: 16px;
+      font-size: 22px;
+    }
     .folder {
-      padding: 24px 12px 18px;
-      gap: 20px;
+      padding: 18px 8px 14px;
+      gap: 14px;
+      border-radius: 6px 18px 18px 18px;
+    }
+    .f-meta {
+      padding-inline: 8px;
     }
     .page {
-      padding: 34px 14px 26px 30px;
+      gap: 14px;
+      padding: 34px 14px 24px 24px;
       background-image:
-        linear-gradient(90deg, transparent 16px, rgba(196, 32, 47, 0.28) 16px, rgba(196, 32, 47, 0.28) 17px, transparent 17px),
+        linear-gradient(90deg, transparent 12px, rgba(196, 32, 47, 0.28) 12px, rgba(196, 32, 47, 0.28) 13px, transparent 13px),
         linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
     }
     .typed {
       font-size: 15px;
     }
     .clues {
-      gap: 30px;
-      padding-left: 14px;
+      padding-left: 12px;
     }
     .f-verdict {
-      padding-top: 46px;
+      padding: 46px 16px 18px;
     }
     .stamp {
       font-size: 28px;
       top: -18px;
       right: 12px;
     }
-    .flip {
-      gap: 6px;
+    .verdict {
+      font-size: 18px;
     }
-    .turn {
-      padding: 10px 11px;
-      font-size: 13px;
-    }
-    .tabs {
-      gap: 0;
-    }
-    .ptab {
-      padding: 6px 3px;
-    }
-  }
-  /* Phones: give the paper the width. Thinner folder, no stacked-sheet offset, a lab table that
-     stacks, and page controls on two rows. */
-  @media (max-width: 640px) {
-    .file {
-      margin-inline: -10px;
-    }
-    .tab {
-      left: 18px;
-    }
-    .folder {
-      padding: 20px 8px 14px;
-      gap: 16px;
-      border-radius: 6px 18px 18px 18px;
-    }
-    .f-head {
-      padding-inline: 8px;
-    }
-    .f-title {
-      font-size: 34px;
-    }
-    .page {
-      gap: 14px;
-      padding: 34px 14px 24px 24px;
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 0 3px 0 -1px #d9c7a4;
-      background-image:
-        linear-gradient(90deg, transparent 12px, rgba(196, 32, 47, 0.28) 12px, rgba(196, 32, 47, 0.28) 13px, transparent 13px),
-        linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
-    }
-    .clues {
-      gap: 22px;
-      padding-left: 12px;
-    }
-    .clue {
-      gap: 6px;
-      padding: 24px 16px 16px;
-    }
-    .c-fact {
-      font-size: 17px;
-    }
-    .c-meant {
-      font-size: 15px;
-    }
-    .f-exhibits {
-      gap: 26px;
-    }
-    .polaroid {
-      padding: 8px 8px 10px;
-    }
-    /* Lab results: one block per measure, label on top, values side by side. */
     .lab table,
     .lab tbody {
       display: block;
@@ -757,35 +836,16 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       text-decoration: line-through;
       text-decoration-color: rgba(196, 32, 47, 0.6);
     }
-    .lab td.before::after {
-      content: '  →';
-      color: var(--red);
-      text-decoration: none;
-      display: inline-block;
-      margin-left: 8px;
-    }
-    .lab td.after {
-      justify-self: start;
-      font-size: 15px;
-    }
-    .f-verdict {
-      padding: 46px 16px 18px;
-    }
-    .verdict {
-      font-size: 18px;
-    }
-    /* Controls: page dots on top, Back and Turn page side by side below. */
     .flip {
       grid-template-columns: 1fr 1fr;
       grid-template-areas:
-        'tabs tabs'
+        'dots dots'
         'prev next';
       gap: 10px;
       padding-inline: 4px;
     }
-    .flip .tabs {
-      grid-area: tabs;
-      gap: 10px;
+    .flip .dots {
+      grid-area: dots;
     }
     .turn[data-prev] {
       grid-area: prev;
@@ -795,29 +855,31 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
     }
     .turn {
       padding: 12px 10px;
-      text-align: center;
-      font-size: 14px;
     }
-    .ptab {
-      padding: 4px;
-    }
-    .ptab-n {
+    .dots :global(button) {
       width: 30px;
       height: 30px;
       font-size: 13px;
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .flipping .page.out,
-    .flipping .page.in {
+    .cover.opening,
+    .cover.closing,
+    .folder.appear,
+    .page.fold-r,
+    .page.unfold-l,
+    .page.fold-l,
+    .page.unfold-r,
+    .page.slide-out,
+    .page.slide-in {
       animation: none;
     }
   }
 </style>
 
 <script>
-  // Red string through the pins. It runs along the pin line at the top of each card and drops
-  // through the gap between columns (or down the left margin on phones), so it never crosses text.
+  // Red string through the pins: along the pin line at the top of each card, joined by a rail
+  // down the left margin, so it never crosses the text.
   const drawStrings = () =>
     document.querySelectorAll<HTMLElement>('[data-board]').forEach((board) => {
       const svg = board.querySelector<SVGSVGElement>('[data-string]')!;
@@ -836,14 +898,12 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       }
       const multi = rows.some((r) => r.length > 1);
       const railX = multi ? (rows[0][0].right + rows[0][1].left) / 2 : 4;
-      const sag = (x0: number, y0: number, x1: number, y1: number) =>
-        ` Q${(x0 + x1) / 2},${Math.max(y0, y1) + Math.min(6, Math.abs(x1 - x0) * 0.03)} ${x1},${y1}`;
       let d = '';
       rows.forEach((row) => {
         const y = row.reduce((s, c) => s + c.y, 0) / row.length;
         const xs = [railX, ...row.map((c) => c.x)].sort((a, b) => a - b);
         d += ` M${xs[0]},${y}`;
-        for (let i = 1; i < xs.length; i++) d += sag(xs[i - 1], y, xs[i], y);
+        for (let i = 1; i < xs.length; i++) d += ` Q${(xs[i - 1] + xs[i]) / 2},${y + 4} ${xs[i]},${y}`;
       });
       const ys = rows.map((r) => r[0].y);
       d += ` M${railX},${Math.min(...ys)} L${railX},${Math.max(...ys)}`;
@@ -851,72 +911,145 @@ const pageNo = (name: string) => pages.indexOf(name) + 1;
       svg.querySelector('path')!.setAttribute('d', d);
     });
 
-  // Page through the file: buttons, page tabs, arrow keys and swipes.
   const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const wide = window.matchMedia('(min-width: 900px)');
+  const later = (ms: number) => new Promise((r) => setTimeout(r, still.matches ? 0 : ms));
+
   document.querySelectorAll<HTMLElement>('[data-file]').forEach((file) => {
+    const cover = file.querySelector<HTMLElement>('[data-cover]')!;
+    const folder = file.querySelector<HTMLElement>('[data-folder]')!;
     const pages = Array.from(file.querySelectorAll<HTMLElement>('[data-page]'));
     const nav = file.querySelector<HTMLElement>('[data-flip]')!;
     const prev = nav.querySelector<HTMLButtonElement>('[data-prev]')!;
     const next = nav.querySelector<HTMLButtonElement>('[data-next]')!;
-    const tabs = Array.from(nav.querySelectorAll<HTMLButtonElement>('[data-go]'));
-    if (pages.length < 2) return;
-    file.querySelector('.folder')!.classList.add('flipping');
-    nav.hidden = false;
-    let at = 0;
-    let busy = false;
+    const dots = nav.querySelector<HTMLElement>('[data-dots]')!;
+    const stamp = cover.querySelector<HTMLElement>('[data-stamp]')!;
+    const openBtn = cover.querySelector<HTMLButtonElement>('[data-open]')!;
+    let view = 0, busy = false, read = false;
+
+    // A view is two pages on wide screens, one on phones.
+    const per = () => (wide.matches ? 2 : 1);
+    const views = () => Math.ceil(pages.length / per());
+    const shown = (v: number) => pages.slice(v * per(), v * per() + per());
 
     const sync = () => {
-      pages.forEach((p, i) => (p.hidden = i !== at));
-      tabs.forEach((t, i) => (i === at ? t.setAttribute('aria-current', 'step') : t.removeAttribute('aria-current')));
-      prev.disabled = at === 0;
-      next.disabled = at === pages.length - 1;
-      next.textContent = at === pages.length - 1 ? 'The end' : 'Turn page →';
+      file.classList.toggle('spread', wide.matches);
+      const on = shown(view);
+      pages.forEach((p) => {
+        const i = on.indexOf(p);
+        p.hidden = i < 0;
+        p.classList.toggle('left', wide.matches && i === 0);
+        p.classList.toggle('right', wide.matches && i === 1);
+      });
+      dots.innerHTML = '';
+      for (let v = 0; v < views(); v++) {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = String(v + 1);
+        const names = shown(v).map((p) => (p.getAttribute('aria-label') ?? '').split(': ')[1]).join(' and ');
+        b.setAttribute('aria-label', names);
+        if (v === view) b.setAttribute('aria-current', 'step');
+        b.addEventListener('click', () => go(v));
+        li.appendChild(b);
+        dots.appendChild(li);
+      }
+      prev.textContent = view === 0 ? '← Close' : '← Back';
+      next.textContent = view === views() - 1 ? 'Close the file' : 'Turn page →';
       requestAnimationFrame(drawStrings);
     };
-    const go = (to: number) => {
-      if (busy || to === at || to < 0 || to >= pages.length) return;
-      const from = pages[at];
-      const back = to < at;
-      if (file.getBoundingClientRect().top < 0) file.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
-      if (still.matches) {
-        at = to;
-        sync();
-        return;
-      }
+
+    const go = async (to: number) => {
+      if (busy || to === view || to < 0 || to >= views()) return;
       busy = true;
-      from.classList.add('out');
-      if (back) from.classList.add('back');
-      window.setTimeout(() => {
-        from.classList.remove('out', 'back');
-        at = to;
+      if (file.getBoundingClientRect().top < 0) file.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
+      const fwd = to > view;
+      const cur = shown(view);
+      if (wide.matches) {
+        const leaving = fwd ? cur[cur.length - 1] : cur[0];
+        leaving.classList.add(fwd ? 'fold-r' : 'fold-l');
+        await later(300);
+        leaving.classList.remove('fold-r', 'fold-l');
+        view = to;
         sync();
-        const p = pages[at];
-        p.classList.add('in');
-        if (back) p.classList.add('back');
-        window.setTimeout(() => {
-          p.classList.remove('in', 'back');
-          busy = false;
-        }, 380);
-      }, 290);
+        const arriving = fwd ? shown(view)[0] : shown(view)[shown(view).length - 1];
+        arriving?.classList.add(fwd ? 'unfold-l' : 'unfold-r');
+        await later(320);
+        arriving?.classList.remove('unfold-l', 'unfold-r');
+      } else {
+        cur[0].classList.add('slide-out');
+        await later(240);
+        cur[0].classList.remove('slide-out');
+        view = to;
+        sync();
+        shown(view)[0].classList.add('slide-in');
+        await later(300);
+        shown(view)[0].classList.remove('slide-in');
+      }
+      busy = false;
     };
-    prev.addEventListener('click', () => go(at - 1));
-    next.addEventListener('click', () => go(at + 1));
-    tabs.forEach((t, i) => t.addEventListener('click', () => go(i)));
+
+    const open = async () => {
+      if (busy) return;
+      busy = true;
+      cover.classList.add('opening');
+      await later(560);
+      cover.classList.remove('opening');
+      cover.hidden = true;
+      file.classList.remove('closed');
+      folder.hidden = false;
+      folder.classList.add('appear');
+      view = 0;
+      sync();
+      await later(350);
+      folder.classList.remove('appear');
+      busy = false;
+      next.focus({ preventScroll: true });
+    };
+    const close = async () => {
+      if (busy) return;
+      busy = true;
+      if (view === views() - 1) read = true;
+      folder.hidden = true;
+      file.classList.add('closed');
+      cover.hidden = false;
+      stamp.textContent = read ? 'Solved' : 'Confidential';
+      openBtn.textContent = read ? 'Read it again →' : 'Open the file →';
+      cover.classList.add('closing');
+      if (file.getBoundingClientRect().top < 0) file.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
+      await later(550);
+      cover.classList.remove('closing');
+      busy = false;
+      openBtn.focus({ preventScroll: true });
+    };
+
+    prev.addEventListener('click', () => (view === 0 ? close() : go(view - 1)));
+    next.addEventListener('click', () => (view === views() - 1 ? close() : go(view + 1)));
+    openBtn.addEventListener('click', open);
     file.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') go(at + 1);
-      if (e.key === 'ArrowLeft') go(at - 1);
+      if (folder.hidden) return;
+      if (e.key === 'ArrowRight') view === views() - 1 ? close() : go(view + 1);
+      if (e.key === 'ArrowLeft') go(view - 1);
     });
     let x0 = 0, y0 = 0;
-    const area = file.querySelector<HTMLElement>('[data-pages]')!;
-    area.addEventListener('touchstart', (e) => ((x0 = e.touches[0].clientX), (y0 = e.touches[0].clientY)), { passive: true });
-    area.addEventListener('touchend', (e) => {
+    const book = file.querySelector<HTMLElement>('[data-book]')!;
+    book.addEventListener('touchstart', (e) => ((x0 = e.touches[0].clientX), (y0 = e.touches[0].clientY)), { passive: true });
+    book.addEventListener('touchend', (e) => {
       const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
-      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(at + (dx < 0 ? 1 : -1));
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(view + (dx < 0 ? 1 : -1));
     });
-    sync();
+    wide.addEventListener('change', () => {
+      view = Math.min(view, views() - 1);
+      if (!folder.hidden) sync();
+    });
+
+    // Start closed. Without JavaScript none of this runs, so every page simply shows.
+    nav.hidden = false;
+    folder.hidden = true;
+    cover.hidden = false;
+    file.classList.add('closed');
   });
 
-  drawStrings();
   window.addEventListener('resize', drawStrings);
   document.fonts?.ready.then(drawStrings);
 </script>
