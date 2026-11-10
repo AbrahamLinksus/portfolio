@@ -120,11 +120,11 @@ const Toy = TOYS[project.id];
 
       <nav class="pager" aria-label="More projects">
         <a href={`/projects/${prev.id}`} style={`--pc: ${colorVar(prev.data.color)}`}>
-          <span class="label">← Previous</span>
+          <span class="label pl"><span class="ar" aria-hidden="true">←</span>Previous</span>
           <span class="pt">{prev.data.title}</span>
         </a>
         <a class="right" href={`/projects/${next.id}`} style={`--pc: ${colorVar(next.data.color)}`}>
-          <span class="label">Next →</span>
+          <span class="label pl">Next<span class="ar" aria-hidden="true">→</span></span>
           <span class="pt">{next.data.title}</span>
         </a>
       </nav>
@@ -379,6 +379,21 @@ const Toy = TOYS[project.id];
   .pager .right {
     text-align: right;
   }
+  .pl {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .pager .right .pl {
+    justify-content: flex-end;
+  }
+  .ar {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1;
+    position: relative;
+    top: -1px;
+  }
   .pt {
     font-family: var(--font-sticker);
     font-weight: 800;
@@ -400,10 +415,14 @@ const Toy = TOYS[project.id];
       gap: 10px;
       margin-top: 48px;
     }
-    .pager a {
+    .pager a,
+    .pager .right {
       align-content: start;
-      padding: 14px 14px 16px;
+      justify-items: center;
+      gap: 8px;
+      padding: 16px 12px 18px;
       min-width: 0;
+      text-align: center;
     }
     .pt {
       font-size: 15px;
