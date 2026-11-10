@@ -1,0 +1,500 @@
+---
+// Toy for Recall Prediction: "schedule a review" on the real memory curve.
+// Data: recall rate by time since last practice, from all 12.85M Duolingo HLR reviews
+// (weighted by trials), smoothed so it only goes down (pool-adjacent-violators).
+const raw = [
+  { h: 1, r: 91.65, t: 8993377 },
+  { h: 3, r: 90.31, t: 668841 },
+  { h: 8, r: 90.06, t: 593039 },
+  { h: 24, r: 90.26, t: 2086256 },
+  { h: 48, r: 90.16, t: 2096886 },
+  { h: 96, r: 89.96, t: 2299021 },
+  { h: 168, r: 89.81, t: 1901172 },
+  { h: 336, r: 89.57, t: 1852040 },
+  { h: 720, r: 89.06, t: 1357796 },
+  { h: 1440, r: 88.35, t: 782098 },
+  { h: 2880, r: 88.16, t: 444976 },
+];
+// Pool adjacent violators, weighted by trials, so recall never rises with time.
+const blocks: { r: number; w: number; n: number }[] = [];
+for (const p of raw) {
+  blocks.push({ r: p.r, w: p.t, n: 1 });
+  while (blocks.length > 1 && blocks[blocks.length - 2].r < blocks[blocks.length - 1].r) {
+    const b = blocks.pop()!, a = blocks.pop()!;
+    blocks.push({ r: (a.r * a.w + b.r * b.w) / (a.w + b.w), w: a.w + b.w, n: a.n + b.n });
+  }
+}
+const smooth = blocks.flatMap((b) => Array(b.n).fill(Math.round(b.r * 100) / 100));
+const curve = raw.map((p, i) => ({ h: p.h, r: smooth[i] }));
+
+const Y0 = 87.8, Y1 = 92;
+// Drawn twice: wide for desktop, taller for phones. The script updates both.
+const SIZES = {
+  wide: { W: 640, H: 340, L: 50, R: 20, T: 24, B: 48, ticks: [1, 24, 168, 720, 2880] },
+  phone: { W: 360, H: 300, L: 46, R: 12, T: 20, B: 48, ticks: [1, 24, 720, 2880] },
+};
+const LABEL: Record<number, string> = { 1: '1 hr', 24: '1 day', 168: '1 wk', 720: '1 mo', 2880: '4 mo' };
+const geo = (k: keyof typeof SIZES) => {
+  const g = SIZES[k];
+  const lx = (h: number) => g.L + (Math.log(h) / Math.log(2880)) * (g.W - g.L - g.R);
+  const ly = (r: number) => g.T + ((Y1 - r) * (g.H - g.T - g.B)) / (Y1 - Y0);
+  const path = curve.map((p, i) => `${i ? 'L' : 'M'}${lx(p.h).toFixed(1)},${ly(p.r).toFixed(1)}`).join('');
+  const area = `${path}L${lx(2880).toFixed(1)},${ly(Y0)}L${lx(1).toFixed(1)},${ly(Y0)}Z`;
+  return { ...g, lx, ly, path, area };
+};
+const yt = [88, 89, 90, 91, 92];
+---
+
+<section class="toy" aria-labelledby="toy-title" data-recall-toy data-curve={JSON.stringify(curve)}>
+  <div class="t-head">
+    <span class="t-kicker">Try it · the real memory curve</span>
+    <h2 id="toy-title" class="t-title display">Schedule a review</h2>
+    <p class="t-lede">
+      Pick how sure a learner should be that they still remember a word. The scheduler reads the curve from 12.85M real
+      Duolingo reviews and finds when to show it again.
+    </p>
+  </div>
+
+  <div class="t-body">
+    <div class="t-plot">
+      {(['wide', 'phone'] as const).map((k) => {
+        const g = geo(k);
+        return (
+          <svg
+            viewBox={`0 0 ${g.W} ${g.H}`}
+            class:list={['plot', k]}
+            role="img"
+            aria-label="Recall rate falls from 91.6% one hour after practice to 88.2% after four months."
+            data-svg
+            data-geo={JSON.stringify({ W: g.W, H: g.H, L: g.L, R: g.R, T: g.T, B: g.B })}
+          >
+            {yt.map((t) => (
+              <g>
+                <line x1={g.L} x2={g.W - g.R} y1={g.ly(t)} y2={g.ly(t)} class="grid" />
+                <text x={g.L - 8} y={g.ly(t) + 4} class="ax" text-anchor="end">{t}%</text>
+              </g>
+            ))}
+            {g.ticks.map((h, i) => (
+              <text x={g.lx(h)} y={g.H - g.B + 22} class="ax" text-anchor={i === 0 ? 'start' : i === g.ticks.length - 1 ? 'end' : 'middle'}>
+                {LABEL[h]}
+              </text>
+            ))}
+            <text x={(g.L + g.W - g.R) / 2} y={g.H - 6} class="ax xl" text-anchor="middle">Time since last practice</text>
+            <path d={g.area} class="area" />
+            <rect class="band base" data-band="base" x="0" y={g.T} width="0" height={g.H - g.T - g.B} />
+            <rect class="band cal" data-band="cal" x="0" y={g.T} width="0" height={g.H - g.T - g.B} />
+            <path d={g.path} class="ln" />
+            {curve.map((p) => <circle cx={g.lx(p.h)} cy={g.ly(p.r)} r="3.5" class="pt" />)}
+            <line class="target" data-target x1={g.L} x2={g.W - g.R} y1="0" y2="0" />
+            <line class="drop" data-drop x1="0" x2="0" y1="0" y2={g.H - g.B} />
+            <circle class="hit" data-hit r="9" cx="0" cy="0" />
+            <text class="tl" data-tl x={g.W - g.R} y="0" text-anchor="end"></text>
+          </svg>
+        );
+      })}
+      <p class="t-src">Real recall rate, weighted by trials, smoothed so it only falls with time. Axis zoomed to 88–92%.</p>
+    </div>
+
+    <div class="t-side">
+      <div class="card" data-card>
+        <span class="c-lang">German · word 1 of 1</span>
+        <span class="c-word">der Hund</span>
+        <span class="c-mean">the dog</span>
+        <span class="c-next">Show again in <b data-when>…</b></span>
+      </div>
+
+      <label class="ctl" for="recall-target">
+        <span class="ctl-l">Keep recall at</span>
+        <output class="ctl-v" for="recall-target" data-out>90.0%</output>
+      </label>
+      <input id="recall-target" type="range" min="88.2" max="91.6" step="0.05" value="90" data-range aria-describedby="toy-hint" />
+      <p id="toy-hint" class="hint">Drag. A single point moves the review from hours to months.</p>
+
+      <dl class="err">
+        <div>
+          <dt><i class="sw base" aria-hidden="true"></i>If the probability is off by the baseline's error (±0.17 pts)</dt>
+          <dd data-err-base>…</dd>
+        </div>
+        <div>
+          <dt><i class="sw cal" aria-hidden="true"></i>Off by the calibrated model's error (±0.055 pts)</dt>
+          <dd data-err-cal>…</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <p class="t-moral">
+    <b>Why this mattered:</b> on a curve this flat, a tiny error in the predicted probability sends the review days or weeks
+    off. So the goal wasn't just ranking words well. It was a probability you can schedule on, and calibration cut the error
+    to a third.
+  </p>
+</section>
+
+<style>
+  .toy {
+    display: grid;
+    gap: 22px;
+    padding: 28px 28px 26px;
+    border-radius: 26px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: inset 0 6px 0 var(--c);
+  }
+  .t-head {
+    display: grid;
+    gap: 8px;
+  }
+  .t-kicker {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c);
+  }
+  .t-title {
+    font-size: clamp(40px, 6vw, 72px);
+  }
+  .t-lede {
+    margin: 0;
+    max-width: 62ch;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .t-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 26px;
+    align-items: start;
+  }
+  .plot.wide {
+    display: block;
+  }
+  .plot.phone {
+    display: none;
+  }
+  .t-plot svg {
+    width: 100%;
+    height: auto;
+    cursor: ns-resize;
+  }
+  .grid {
+    stroke: var(--line);
+  }
+  .ax {
+    fill: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+  }
+  .area {
+    fill: color-mix(in srgb, var(--c) 14%, transparent);
+  }
+  .ln {
+    fill: none;
+    stroke: var(--c);
+    stroke-width: 3.5;
+    stroke-linejoin: round;
+  }
+  .pt {
+    fill: var(--bg);
+    stroke: var(--c);
+    stroke-width: 2;
+  }
+  .band.base {
+    fill: color-mix(in srgb, var(--pink) 22%, transparent);
+  }
+  .band.cal {
+    fill: color-mix(in srgb, var(--lime) 40%, transparent);
+  }
+  .target {
+    stroke: var(--fg);
+    stroke-width: 2;
+    stroke-dasharray: 6 5;
+  }
+  .drop {
+    stroke: var(--fg);
+    stroke-width: 1.5;
+  }
+  .hit {
+    fill: var(--fg);
+    stroke: var(--bg);
+    stroke-width: 3;
+  }
+  .tl {
+    fill: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    paint-order: stroke;
+    stroke: var(--surface);
+    stroke-width: 5px;
+  }
+  .t-src {
+    margin: 8px 0 0;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .t-side {
+    display: grid;
+    gap: 14px;
+  }
+  /* The flashcard, on the same cream as the rest of the site's paper. */
+  .card {
+    display: grid;
+    gap: 4px;
+    padding: 20px 20px 18px;
+    border-radius: 16px;
+    background: var(--panel);
+    color: var(--ink);
+    transform: rotate(-1.5deg);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+    transition: transform 0.25s ease;
+  }
+  .card.bump {
+    transform: rotate(-1.5deg) translateY(-3px);
+  }
+  .c-lang {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #5e5a55;
+  }
+  .c-word {
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 40px;
+    line-height: 1.05;
+  }
+  .c-mean {
+    font-size: 15px;
+    color: #4a4642;
+  }
+  .c-next {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1.5px dashed rgba(17, 17, 18, 0.3);
+    font-size: 15px;
+  }
+  .c-next b {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 30px;
+    display: block;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .ctl {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: 6px;
+  }
+  .ctl-l {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ctl-v {
+    font-family: var(--font-display);
+    font-size: 30px;
+    color: var(--c);
+  }
+  input[type='range'] {
+    width: 100%;
+    accent-color: var(--c);
+    height: 28px;
+    cursor: pointer;
+  }
+  input[type='range']:focus-visible {
+    outline: 2px solid var(--c);
+    outline-offset: 4px;
+  }
+  .hint {
+    margin: -6px 0 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .err {
+    margin: 4px 0 0;
+    display: grid;
+    gap: 10px;
+  }
+  .err div {
+    display: grid;
+    gap: 2px;
+  }
+  .err dt {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .err dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .sw {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    margin-right: 7px;
+    vertical-align: 0;
+  }
+  .sw.base {
+    background: color-mix(in srgb, var(--pink) 60%, transparent);
+  }
+  .sw.cal {
+    background: var(--lime);
+  }
+  .t-moral {
+    margin: 0;
+    max-width: 72ch;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .t-moral b {
+    color: var(--c);
+  }
+
+  @media (max-width: 860px) {
+    .t-body {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .toy {
+      padding: 22px 16px 20px;
+      border-radius: 20px;
+    }
+    .plot.wide {
+      display: none;
+    }
+    .plot.phone {
+      display: block;
+    }
+    .ax {
+      font-size: 12px;
+    }
+    .tl {
+      font-size: 12.5px;
+    }
+    .t-src {
+      font-size: 12px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Interpolates the curve in log-time and turns a target recall into a review time.
+  document.querySelectorAll<HTMLElement>('[data-recall-toy]').forEach((root) => {
+    const curve: { h: number; r: number }[] = JSON.parse(root.dataset.curve!);
+    const svgs = Array.from(root.querySelectorAll<SVGSVGElement>('[data-svg]'));
+    const range = root.querySelector<HTMLInputElement>('[data-range]')!;
+    const $ = (s: string) => root.querySelector<SVGElement & HTMLElement>(s)!;
+    const Y0 = 87.8, Y1 = 92;
+    type Geo = { W: number; H: number; L: number; R: number; T: number; B: number };
+    const scales = (g: Geo) => ({
+      lx: (h: number) => g.L + (Math.log(h) / Math.log(2880)) * (g.W - g.L - g.R),
+      ly: (r: number) => g.T + ((Y1 - r) * (g.H - g.T - g.B)) / (Y1 - Y0),
+      rFromY: (y: number) => Y1 - ((y - g.T) * (Y1 - Y0)) / (g.H - g.T - g.B),
+    });
+
+    // Latest time at which recall is still at or above the target.
+    const hoursFor = (target: number) => {
+      if (target >= curve[0].r) return curve[0].h;
+      if (target <= curve[curve.length - 1].r) return curve[curve.length - 1].h;
+      let best = curve[0].h;
+      for (let i = 0; i < curve.length - 1; i++) {
+        const a = curve[i], b = curve[i + 1];
+        if (a.r >= target && b.r >= target) best = b.h;
+        else if (a.r >= target && b.r < target) {
+          const f = (a.r - target) / (a.r - b.r);
+          best = Math.exp(Math.log(a.h) + f * (Math.log(b.h) - Math.log(a.h)));
+          break;
+        }
+      }
+      return best;
+    };
+    const human = (h: number) => {
+      if (h < 1.5) return '1 hour';
+      if (h < 24) return `${Math.round(h)} hours`;
+      const d = h / 24;
+      if (d < 1.5) return '1 day';
+      if (d < 14) return `${Math.round(d)} days`;
+      if (d < 60) return `${Math.round(d / 7)} weeks`;
+      return `${Math.round(d / 30)} months`;
+    };
+    const band = (sel: string, target: number, err: number) => {
+      const a = hoursFor(Math.min(curve[0].r, target + err)), b = hoursFor(Math.max(curve[curve.length - 1].r, target - err));
+      svgs.forEach((svg) => {
+        const { lx } = scales(JSON.parse(svg.dataset.geo!));
+        const el = svg.querySelector(sel)!;
+        el.setAttribute('x', String(lx(a)));
+        el.setAttribute('width', String(Math.max(2, lx(b) - lx(a))));
+      });
+      return human(a) === human(b) ? human(a) : `${human(a)} to ${human(b)}`;
+    };
+    const card = $('[data-card]');
+    let bumpT = 0;
+    const draw = () => {
+      const target = Number(range.value);
+      const h = hoursFor(target);
+      svgs.forEach((svg) => {
+        const { lx, ly } = scales(JSON.parse(svg.dataset.geo!));
+        const y = ly(target), x = lx(h);
+        const q = (sel: string) => svg.querySelector(sel)!;
+        q('[data-target]').setAttribute('y1', String(y));
+        q('[data-target]').setAttribute('y2', String(y));
+        q('[data-drop]').setAttribute('x1', String(x));
+        q('[data-drop]').setAttribute('x2', String(x));
+        q('[data-drop]').setAttribute('y1', String(y));
+        q('[data-hit]').setAttribute('cx', String(x));
+        q('[data-hit]').setAttribute('cy', String(y));
+        q('[data-tl]').setAttribute('y', String(y - 9));
+        q('[data-tl]').textContent = `target ${target.toFixed(1)}%`;
+      });
+      $('[data-out]').textContent = `${target.toFixed(1)}%`;
+      $('[data-when]').textContent = human(h);
+      $('[data-err-base]').textContent = band('[data-band="base"]', target, 0.168);
+      $('[data-err-cal]').textContent = band('[data-band="cal"]', target, 0.055);
+      card.classList.add('bump');
+      clearTimeout(bumpT);
+      bumpT = window.setTimeout(() => card.classList.remove('bump'), 160);
+    };
+    range.addEventListener('input', draw);
+
+    // Drag the target line on the chart itself.
+    let dragging = false;
+    svgs.forEach((svg) => {
+      const { rFromY } = scales(JSON.parse(svg.dataset.geo!));
+      const fromPointer = (e: PointerEvent) => {
+        const pt = svg.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const p = pt.matrixTransform(svg.getScreenCTM()!.inverse());
+        const v = Math.min(Number(range.max), Math.max(Number(range.min), rFromY(p.y)));
+        range.value = (Math.round(v / 0.05) * 0.05).toFixed(2);
+        draw();
+      };
+      // Mouse and pen drag the line; on touch screens the slider does it, so the page still scrolls.
+      svg.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'touch') return;
+        dragging = true;
+        svg.setPointerCapture(e.pointerId);
+        fromPointer(e);
+      });
+      svg.addEventListener('pointermove', (e) => dragging && fromPointer(e));
+      svg.addEventListener('pointerup', () => (dragging = false));
+    });
+    draw();
+  });
+</script>

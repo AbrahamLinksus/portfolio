@@ -4,6 +4,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getProjects, colorVar } from '../../lib/projects';
 import { skillSlug } from '../../data/skills';
 import CaseVisuals from '../../components/CaseVisuals.astro';
+import CaseFile from '../../components/CaseFile.astro';
+import RecallToy from '../../components/toys/RecallToy.astro';
+
+// Projects with a playable toy. The toy leads the page; the case file sits below it.
+const TOYS: Record<string, any> = { 'recall-prediction': RecallToy };
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -21,6 +26,7 @@ export async function getStaticPaths() {
 const { project, index, prev, next } = Astro.props;
 const p = project.data;
 const { Content } = await render(project);
+const Toy = TOYS[project.id];
 ---
 
 <BaseLayout title={p.title} description={p.summary}>
@@ -47,7 +53,7 @@ const { Content } = await render(project);
     </header>
 
     {
-      p.highlights.length > 0 && (
+      !Toy && p.highlights.length > 0 && (
         <section class="container">
           <ul class="highlights">
             {p.highlights.map((h) => (
@@ -61,7 +67,16 @@ const { Content } = await render(project);
       )
     }
 
-    <CaseVisuals visual={p.visual} />
+    {
+      Toy ? (
+        <div class="container toy-wrap">
+          <Toy />
+          {p.caseFile && <CaseFile file={p.caseFile} number={String(index + 1).padStart(2, '0')} title={p.title} />}
+        </div>
+      ) : (
+        <CaseVisuals visual={p.visual} />
+      )
+    }
 
     <div class="container">
       <details class="story">
@@ -449,5 +464,10 @@ const { Content } = await render(project);
   }
   .story[open] .prose {
     padding: 12px 0 28px;
+  }
+  .toy-wrap {
+    display: grid;
+    gap: 56px;
+    padding-top: 8px;
   }
 </style>

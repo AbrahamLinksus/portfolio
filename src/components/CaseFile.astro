@@ -1,0 +1,413 @@
+---
+// A case study told as a detective's case file: the case, the clues (joined by red string),
+// pinned exhibits, the lab results, and the verdict with a "Solved" stamp.
+import type { Project } from '../lib/projects';
+
+interface Props {
+  file: NonNullable<Project['data']['caseFile']>;
+  number: string;
+  title: string;
+}
+const { file: f, number, title } = Astro.props;
+---
+
+<section class="file" aria-labelledby="file-title">
+  <span class="tab" aria-hidden="true">Case {number}</span>
+  <div class="folder">
+    <header class="f-head">
+      <p class="f-meta">Case file {number} · {title}</p>
+      <h2 id="file-title" class="f-title display">{f.codename}</h2>
+    </header>
+
+    <div class="f-case">
+      <h3 class="f-h">The case</h3>
+      <p class="typed">{f.case}</p>
+    </div>
+
+    <div class="f-clues">
+      <h3 class="f-h">The clues</h3>
+      <div class="board" data-board>
+        <svg class="string" data-string aria-hidden="true"><path d="" /></svg>
+        <ol class="clues">
+          {
+            f.clues.map((c, i) => (
+              <li class="clue" style={`--tilt: ${[-2, 1.5, -1, 2][i % 4]}deg`}>
+                <span class="pin" data-pin aria-hidden="true" />
+                <span class="c-n">Clue {i + 1}</span>
+                <p class="c-fact">{c.fact}</p>
+                <p class="c-meant">
+                  <span class="arrow" aria-hidden="true">→</span> {c.meant}
+                </p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+
+    {
+      (f.exhibits.length > 0 || f.evidence.length > 0) && (
+        <div class="f-exhibits">
+          {f.exhibits.map((e) => (
+            <figure class="polaroid">
+              <span class="tape" aria-hidden="true" />
+              <img src={e.src} alt={e.alt} loading="lazy" />
+              <figcaption>{e.caption}</figcaption>
+            </figure>
+          ))}
+          {f.evidence.length > 0 && (
+            <div class="lab">
+              <h3 class="f-h">Lab results</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Measure</th>
+                    <th scope="col">Baseline</th>
+                    <th scope="col">Final</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {f.evidence.map((e) => (
+                    <tr>
+                      <th scope="row">{e.label}</th>
+                      <td>{e.before || '—'}</td>
+                      <td class="after">{e.after}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    <div class="f-verdict">
+      <span class="stamp" aria-hidden="true">Solved</span>
+      <h3 class="f-h">Verdict</h3>
+      <p class="verdict">{f.verdict}</p>
+      <p class="lesson"><b>Note to self:</b> {f.lesson}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .file {
+    --paper: #efe4cf;
+    --paper-ink: #1d1a16;
+    --red: #c4202f;
+    position: relative;
+    padding-top: 30px;
+  }
+  /* Manila folder tab. */
+  .tab {
+    position: absolute;
+    top: 0;
+    left: 28px;
+    padding: 6px 18px 10px;
+    border-radius: 12px 12px 0 0;
+    background: #e3d3b4;
+    color: var(--paper-ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .folder {
+    display: grid;
+    gap: 34px;
+    padding: 30px 30px 34px;
+    border-radius: 6px 22px 22px 22px;
+    background-color: var(--paper);
+    background-image: linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
+    background-size: 100% 30px;
+    color: var(--paper-ink);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+  .f-head {
+    display: grid;
+    gap: 4px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--paper-ink);
+  }
+  .f-meta {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6a6155;
+  }
+  .f-title {
+    font-size: clamp(34px, 5vw, 58px);
+  }
+  .f-h {
+    margin: 0 0 12px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .typed {
+    margin: 0;
+    max-width: 70ch;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  /* Clues: index cards pinned to the folder, joined by red string drawn in script. */
+  .board {
+    position: relative;
+  }
+  .string {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 2;
+  }
+  .string path {
+    fill: none;
+    stroke: var(--red);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .clues {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 26px 28px;
+  }
+  .clue {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 8px;
+    padding: 26px 20px 20px;
+    background: #fffdf7;
+    background-image: linear-gradient(transparent 33px, rgba(196, 32, 47, 0.35) 33px, rgba(196, 32, 47, 0.35) 34px, transparent 34px);
+    border-radius: 3px;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15), 0 8px 18px rgba(0, 0, 0, 0.12);
+    transform: rotate(var(--tilt));
+  }
+  .pin {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    margin-left: -7px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff6b74, var(--red) 60%, #7d1019);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.35);
+    z-index: 3;
+  }
+  .c-n {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .c-fact {
+    margin: 0;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .c-meant {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #3d372f;
+  }
+  .arrow {
+    color: var(--red);
+    font-weight: 700;
+  }
+
+  /* Exhibits */
+  .f-exhibits {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 34px;
+    align-items: start;
+  }
+  .polaroid {
+    position: relative;
+    margin: 0;
+    padding: 12px 12px 14px;
+    background: #fff;
+    transform: rotate(-2.5deg);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  }
+  .polaroid img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+  .polaroid figcaption {
+    padding-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #3d372f;
+  }
+  .tape {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    width: 96px;
+    height: 24px;
+    margin-left: -48px;
+    background: rgba(246, 210, 58, 0.75);
+    transform: rotate(3deg);
+  }
+  .lab table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .lab th,
+  .lab td {
+    padding: 11px 8px;
+    border-bottom: 1px solid rgba(29, 26, 22, 0.2);
+    text-align: left;
+    font-size: 15px;
+  }
+  .lab thead th {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6a6155;
+  }
+  .lab tbody th {
+    font-weight: 500;
+  }
+  .lab td {
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .lab td.after {
+    font-weight: 600;
+    color: var(--paper-ink);
+    background: color-mix(in srgb, var(--c) 35%, transparent);
+  }
+
+  /* Verdict with a rubber stamp. */
+  .f-verdict {
+    position: relative;
+    padding: 22px 22px 22px;
+    border: 2px solid var(--paper-ink);
+    border-radius: 4px;
+  }
+  .stamp {
+    position: absolute;
+    right: 18px;
+    top: -26px;
+    padding: 6px 18px 4px;
+    border: 4px solid var(--red);
+    border-radius: 8px;
+    color: var(--red);
+    font-family: var(--font-display);
+    font-size: 40px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transform: rotate(-9deg);
+    background: color-mix(in srgb, var(--paper) 80%, transparent);
+    opacity: 0.92;
+  }
+  .verdict {
+    margin: 0 0 12px;
+    max-width: 62ch;
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 1.35;
+  }
+  .lesson {
+    margin: 0;
+    max-width: 68ch;
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: #3d372f;
+  }
+
+  @media (max-width: 760px) {
+    .clues,
+    .f-exhibits {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .folder {
+      padding: 24px 18px 28px;
+      gap: 30px;
+    }
+    .typed {
+      font-size: 15px;
+    }
+    .clues {
+      gap: 30px;
+      padding-left: 14px;
+    }
+    .stamp {
+      font-size: 32px;
+      top: -22px;
+    }
+  }
+</style>
+
+<script>
+  // Red string through the pins. It runs along the pin line at the top of each card and drops
+  // through the gap between columns (or down the left margin on phones), so it never crosses text.
+  const boards = Array.from(document.querySelectorAll<HTMLElement>('[data-board]'));
+  const draw = () =>
+    boards.forEach((board) => {
+      const svg = board.querySelector<SVGSVGElement>('[data-string]')!;
+      const box = board.getBoundingClientRect();
+      const cards = Array.from(board.querySelectorAll<HTMLElement>('.clue')).map((c) => {
+        const pin = c.querySelector<HTMLElement>('[data-pin]')!.getBoundingClientRect();
+        const r = c.getBoundingClientRect();
+        return { x: pin.left + pin.width / 2 - box.left, y: pin.top + pin.height / 2 - box.top, left: r.left - box.left, right: r.right - box.left };
+      });
+      if (cards.length < 2) return;
+      // Group cards into rows by pin height.
+      const rows: (typeof cards)[] = [];
+      for (const c of cards) {
+        const row = rows.find((r) => Math.abs(r[0].y - c.y) < 30);
+        row ? row.push(c) : rows.push([c]);
+      }
+      const multi = rows.some((r) => r.length > 1);
+      const railX = multi ? (rows[0][0].right + rows[0][1].left) / 2 : 4;
+      const sag = (x0: number, y0: number, x1: number, y1: number) =>
+        ` Q${(x0 + x1) / 2},${Math.max(y0, y1) + Math.min(6, Math.abs(x1 - x0) * 0.03)} ${x1},${y1}`;
+      let d = '';
+      rows.forEach((row) => {
+        const y = row.reduce((s, c) => s + c.y, 0) / row.length;
+        // Along the row: rail to the first pin, then pin to pin.
+        const xs = [railX, ...row.map((c) => c.x)].sort((a, b) => a - b);
+        d += ` M${xs[0]},${y}`;
+        for (let i = 1; i < xs.length; i++) d += sag(xs[i - 1], y, xs[i], y);
+      });
+      // The rail joining the rows.
+      const ys = rows.map((r) => r[0].y);
+      d += ` M${railX},${Math.min(...ys)} L${railX},${Math.max(...ys)}`;
+      svg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
+      svg.querySelector('path')!.setAttribute('d', d);
+    });
+  draw();
+  window.addEventListener('resize', draw);
+  document.fonts?.ready.then(draw);
+</script>

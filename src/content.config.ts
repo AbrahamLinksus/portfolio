@@ -24,6 +24,18 @@ const projects = defineCollection({
     letter: z.string().length(1),
     color: z.enum(['pink', 'teal', 'yellow', 'orange', 'lime']),
     highlights: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
+    // The case file under the toy: the problem as the case, clues, exhibits and the verdict.
+    caseFile: z
+      .object({
+        codename: z.string(),
+        case: z.string(),
+        clues: z.array(z.object({ fact: z.string(), meant: z.string() })),
+        exhibits: z.array(z.object({ src: z.string(), caption: z.string(), alt: z.string() })).default([]),
+        evidence: z.array(z.object({ label: z.string(), before: z.string(), after: z.string() })).default([]),
+        verdict: z.string(),
+        lesson: z.string(),
+      })
+      .optional(),
     // The visual "at a glance" opening of a case study. All parts are optional.
     visual: z
       .object({
