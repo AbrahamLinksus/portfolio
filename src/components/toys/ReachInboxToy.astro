@@ -1,0 +1,419 @@
+---
+// Toy for ReachInbox: a small simulation of the scheduler. Crash workers mid-send and watch
+// Postgres (the outbox) and the reconciler put the email back. Turn the outbox off and the
+// same crash loses the email.
+import ToyShell from './ToyShell.astro';
+const N = 30;
+---
+
+<ToyShell
+  kicker="Try it · a simulation of the design"
+  title="Crash a worker"
+  lede="30 emails, 4 workers, and a cap of 6 sends per sender per hour (an hour here lasts 4 seconds). Start it, then crash workers while they're sending."
+>
+  <div class="rb" data-rb data-n={N}>
+    <div class="bar">
+      <button type="button" class="btn go" data-start>Start sending</button>
+      <button type="button" class="btn crash" data-crash disabled>Crash a worker</button>
+      <button type="button" class="btn" data-reset>Reset</button>
+      <label class="tog">
+        <input type="checkbox" data-outbox checked />
+        <span>Outbox on <small>Postgres is the source of truth</small></span>
+      </label>
+    </div>
+
+    <div class="stage">
+      <div class="col">
+        <span class="lbl">Emails</span>
+        <ol class="mail" aria-hidden="true">
+          {Array.from({ length: N }, (_, i) => <li class="m outbox" data-m={i} />)}
+        </ol>
+        <p class="key" aria-hidden="true">
+          <i class="m outbox" /> waiting <i class="m queued" /> queued <i class="m sending" /> sending <i class="m sent" /> sent <i class="m lost" /> lost
+        </p>
+      </div>
+      <div class="col">
+        <span class="lbl">Workers</span>
+        <ul class="workers">
+          {[1, 2, 3, 4].map((n) => (
+            <li class="w" data-w>
+              <span class="wn">Worker {n}</span>
+              <span class="ws" data-ws>idle</span>
+            </li>
+          ))}
+        </ul>
+        <div class="cap">
+          <span class="lbl">This hour</span>
+          <span class="capbar" aria-hidden="true"><i data-capbar /></span>
+          <span class="capn" data-cap>0 / 6</span>
+        </div>
+      </div>
+    </div>
+
+    <dl class="stats">
+      <div><dt>Sent</dt><dd data-sent>0 / {N}</dd></div>
+      <div class="bad"><dt>Lost</dt><dd data-lost>0</dd></div>
+      <div class="bad"><dt>Sent twice</dt><dd data-dup>0</dd></div>
+      <div><dt>Crashes</dt><dd data-crashes>0</dd></div>
+    </dl>
+    <p class="log" data-log aria-live="polite">Press start, then crash a worker or two.</p>
+  </div>
+  <Fragment slot="moral">
+    <b>Why it holds:</b> Redis only does the timing. Every email lives in a Postgres table first, so when a worker dies
+    mid-send, a reconciler notices the email never finished and puts it back in the queue. In the real system that
+    held for 2,000 emails across 4 workers: none lost, none sent twice.
+  </Fragment>
+</ToyShell>
+
+<style>
+  .rb {
+    display: grid;
+    gap: 18px;
+  }
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn {
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 14px;
+    text-transform: uppercase;
+  }
+  .btn.go {
+    background: var(--c);
+    border-color: var(--c);
+    color: var(--ink);
+  }
+  .btn.crash {
+    background: #c4202f;
+    border-color: #c4202f;
+    color: #fff;
+  }
+  .btn[disabled] {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .btn:focus-visible,
+  .tog input:focus-visible + span {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+  }
+  .tog {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .tog input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--c);
+  }
+  .tog small {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 24px;
+  }
+  .col {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .lbl {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .mail {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+  }
+  .m {
+    display: inline-block;
+    aspect-ratio: 4 / 3;
+    border-radius: 4px;
+    border: 1.5px solid var(--line);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .m.outbox {
+    background: transparent;
+    border-color: var(--panel-grid);
+  }
+  .m.queued {
+    background: #3a3a3d;
+    border-color: #3a3a3d;
+  }
+  .m.sending {
+    background: color-mix(in srgb, var(--c) 45%, transparent);
+    border-color: var(--c);
+  }
+  .m.sent {
+    background: var(--c);
+    border-color: var(--c);
+  }
+  .m.lost {
+    background: repeating-linear-gradient(45deg, #c4202f 0 3px, transparent 3px 6px);
+    border-color: #c4202f;
+  }
+  .key {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .key .m {
+    width: 16px;
+  }
+  .workers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .w {
+    display: grid;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid var(--line);
+  }
+  .w.busy {
+    border-color: var(--c);
+  }
+  .w.down {
+    border-color: #c4202f;
+    background: color-mix(in srgb, #c4202f 18%, transparent);
+  }
+  .wn {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+  .ws {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .cap {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 10px;
+  }
+  .capbar {
+    height: 10px;
+    border-radius: 99px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .capbar i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--c);
+    transition: width 0.2s ease;
+  }
+  .capn {
+    font-family: var(--font-mono);
+    font-size: 13px;
+  }
+  .stats {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .stats div {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--bg);
+  }
+  .stats dt {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .stats dd {
+    margin: 4px 0 0;
+    font-family: var(--font-display);
+    font-size: 34px;
+    line-height: 1;
+  }
+  .stats .bad dd.hot {
+    color: #ff6b74;
+  }
+  .log {
+    margin: 0;
+    min-height: 1.6em;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  @media (max-width: 760px) {
+    .stage {
+      grid-template-columns: 1fr;
+    }
+    .tog {
+      margin-left: 0;
+    }
+  }
+  @media (max-width: 640px) {
+    .stats {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+
+<script>
+  type Status = 'outbox' | 'queued' | 'sending' | 'stranded' | 'sent' | 'lost';
+  document.querySelectorAll<HTMLElement>('[data-rb]').forEach((root) => {
+    const N = Number(root.dataset.n);
+    const CAP = 6, HOUR = 16, TICK = 250, SEND = 3, DOWN = 10, RECONCILE = 4;
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const mails = Array.from(root.querySelectorAll<HTMLElement>('[data-m]'));
+    const wEls = Array.from(root.querySelectorAll<HTMLElement>('[data-w]'));
+    const start = q<HTMLButtonElement>('[data-start]'), crash = q<HTMLButtonElement>('[data-crash]');
+    const outbox = q<HTMLInputElement>('[data-outbox]');
+    let status: Status[], stranded: number[], workers: { job: number | null; t: number; down: number }[];
+    let tick = 0, hourSent = 0, lost = 0, crashes = 0, timer = 0, sentCount = 0;
+
+    const say = (t: string) => (q('[data-log]').textContent = t);
+    const reset = () => {
+      clearInterval(timer);
+      timer = 0;
+      status = Array(N).fill(outbox.checked ? 'outbox' : 'queued');
+      stranded = Array(N).fill(0);
+      workers = [0, 1, 2, 3].map(() => ({ job: null, t: 0, down: 0 }));
+      tick = hourSent = lost = crashes = sentCount = 0;
+      start.textContent = 'Start sending';
+      crash.disabled = true;
+      say(outbox.checked ? 'Press start, then crash a worker or two.' : 'Outbox off: emails live only in Redis. Press start and crash a worker.');
+      paint();
+    };
+    const paint = () => {
+      mails.forEach((m, i) => (m.className = 'm ' + (status[i] === 'stranded' ? 'sending' : status[i])));
+      workers.forEach((w, i) => {
+        const el = wEls[i];
+        el.className = 'w' + (w.down ? ' down' : w.job !== null ? ' busy' : '');
+        el.querySelector('[data-ws]')!.textContent = w.down ? `crashed · back in ${Math.ceil((w.down * TICK) / 1000)}s` : w.job !== null ? `sending email ${w.job + 1}` : 'idle';
+      });
+      q('[data-sent]').textContent = `${sentCount} / ${N}`;
+      const l = q('[data-lost]');
+      l.textContent = String(lost);
+      l.classList.toggle('hot', lost > 0);
+      q('[data-dup]').textContent = '0';
+      q('[data-crashes]').textContent = String(crashes);
+      q('[data-cap]').textContent = `${hourSent} / ${CAP}`;
+      q<HTMLElement>('[data-capbar]').style.width = `${(hourSent / CAP) * 100}%`;
+    };
+    const step = () => {
+      tick++;
+      if (tick % HOUR === 0) hourSent = 0;
+      // Relay: due emails move from the Postgres outbox into the Redis queue.
+      let moved = 0;
+      for (let i = 0; i < N && moved < 3; i++) if (status[i] === 'outbox') (status[i] = 'queued'), moved++;
+      // Reconciler: an email stuck mid-send with no live worker goes back in the queue.
+      for (let i = 0; i < N; i++) if (status[i] === 'stranded' && --stranded[i] <= 0) status[i] = 'queued';
+      let capped = false;
+      workers.forEach((w) => {
+        if (w.down) {
+          w.down--;
+          return;
+        }
+        if (w.job !== null) {
+          if (--w.t <= 0) {
+            status[w.job] = 'sent';
+            sentCount++;
+            w.job = null;
+          }
+          return;
+        }
+        const next = status.indexOf('queued');
+        if (next < 0) return;
+        if (hourSent >= CAP) return void (capped = true);
+        hourSent++;
+        status[next] = 'sending';
+        w.job = next;
+        w.t = SEND;
+      });
+      if (capped && tick % 4 === 0) say('Hourly cap reached. Waiting emails move to the next hour instead of failing.');
+      paint();
+      if (status.every((s) => s === 'sent' || s === 'lost')) {
+        clearInterval(timer);
+        timer = 0;
+        crash.disabled = true;
+        start.textContent = 'Run again';
+        say(lost ? `Done. ${lost} email${lost > 1 ? 's' : ''} lost: with no outbox, a crash takes the email with it.` : `Done. ${N} sent, none lost, none twice, through ${crashes} crash${crashes === 1 ? '' : 'es'}.`);
+      }
+    };
+
+    start.addEventListener('click', () => {
+      if (start.textContent === 'Run again') reset();
+      if (timer) {
+        clearInterval(timer);
+        timer = 0;
+        start.textContent = 'Resume';
+        crash.disabled = true;
+        return;
+      }
+      timer = window.setInterval(step, TICK);
+      start.textContent = 'Pause';
+      crash.disabled = false;
+    });
+    crash.addEventListener('click', () => {
+      const busy = workers.filter((w) => !w.down && w.job !== null);
+      const up = workers.filter((w) => !w.down);
+      const w = busy[0] ?? up[0];
+      if (!w) return say('Every worker is already down. Give them a second.');
+      crashes++;
+      if (w.job !== null) {
+        const j = w.job;
+        hourSent = Math.max(0, hourSent - 1);
+        if (outbox.checked) {
+          status[j] = 'stranded';
+          stranded[j] = RECONCILE;
+          say(`Worker crashed mid-send. Email ${j + 1} is still unfinished in Postgres, so the reconciler puts it back in the queue.`);
+        } else {
+          status[j] = 'lost';
+          lost++;
+          say(`Worker crashed mid-send. Email ${j + 1} only existed in Redis, so it's gone.`);
+        }
+      } else say('Crashed an idle worker. Nothing was in flight.');
+      w.job = null;
+      w.down = DOWN;
+      paint();
+    });
+    q('[data-reset]').addEventListener('click', reset);
+    outbox.addEventListener('change', reset);
+    reset();
+  });
+</script>

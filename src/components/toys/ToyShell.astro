@@ -1,0 +1,69 @@
+---
+// Shared frame for a project toy: kicker, title, short instructions, the toy, and the moral.
+interface Props {
+  kicker: string;
+  title: string;
+  lede: string;
+}
+const { kicker, title, lede } = Astro.props;
+const id = `toy-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+---
+
+<section class="toy" aria-labelledby={id}>
+  <div class="t-head">
+    <span class="t-kicker">{kicker}</span>
+    <h2 id={id} class="t-title display">{title}</h2>
+    <p class="t-lede">{lede}</p>
+  </div>
+  <slot />
+  {Astro.slots.has('moral') && <p class="t-moral"><slot name="moral" /></p>}
+</section>
+
+<style>
+  .toy {
+    display: grid;
+    gap: 22px;
+    padding: 28px 28px 26px;
+    border-radius: 26px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: inset 0 6px 0 var(--c);
+    min-width: 0;
+  }
+  .t-head {
+    display: grid;
+    gap: 8px;
+  }
+  .t-kicker {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c);
+  }
+  .t-title {
+    font-size: clamp(40px, 6vw, 72px);
+  }
+  .t-lede {
+    margin: 0;
+    max-width: 64ch;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .t-moral {
+    margin: 0;
+    max-width: 72ch;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .t-moral :global(b) {
+    color: var(--c);
+  }
+  @media (max-width: 640px) {
+    .toy {
+      padding: 22px 16px 20px;
+      border-radius: 20px;
+    }
+  }
+</style>

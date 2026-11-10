@@ -1,6 +1,7 @@
 ---
-// A case study told as a detective's case file: the case, the clues (joined by red string),
-// pinned exhibits, the lab results, and the verdict with a "Solved" stamp.
+// A case study told as a detective's case file you page through: the case, the clues (joined
+// by red string), the evidence, and the verdict with a "Solved" stamp. Without JavaScript every
+// page shows, one after another.
 import type { Project } from '../lib/projects';
 
 interface Props {
@@ -9,85 +10,116 @@ interface Props {
   title: string;
 }
 const { file: f, number, title } = Astro.props;
+const hasEvidence = f.exhibits.length > 0 || f.evidence.length > 0;
+const pages = ['The case', 'The clues', ...(hasEvidence ? ['The evidence'] : []), 'The verdict'];
+const pageNo = (name: string) => pages.indexOf(name) + 1;
 ---
 
-<section class="file" aria-labelledby="file-title">
+<section class="file" aria-labelledby={`file-${number}`} data-file>
   <span class="tab" aria-hidden="true">Case {number}</span>
   <div class="folder">
     <header class="f-head">
       <p class="f-meta">Case file {number} · {title}</p>
-      <h2 id="file-title" class="f-title display">{f.codename}</h2>
+      <h2 id={`file-${number}`} class="f-title display">{f.codename}</h2>
     </header>
 
-    <div class="f-case">
-      <h3 class="f-h">The case</h3>
-      <p class="typed">{f.case}</p>
-    </div>
+    <div class="pages" data-pages>
+      <article class="page" data-page aria-label={`Page 1 of ${pages.length}: The case`}>
+        <span class="folio">Page 1 of {pages.length}</span>
+        <h3 class="f-h">The case</h3>
+        <p class="typed">{f.case}</p>
+      </article>
 
-    <div class="f-clues">
-      <h3 class="f-h">The clues</h3>
-      <div class="board" data-board>
-        <svg class="string" data-string aria-hidden="true"><path d="" /></svg>
-        <ol class="clues">
-          {
-            f.clues.map((c, i) => (
-              <li class="clue" style={`--tilt: ${[-2, 1.5, -1, 2][i % 4]}deg`}>
-                <span class="pin" data-pin aria-hidden="true" />
-                <span class="c-n">Clue {i + 1}</span>
-                <p class="c-fact">{c.fact}</p>
-                <p class="c-meant">
-                  <span class="arrow" aria-hidden="true">→</span> {c.meant}
-                </p>
-              </li>
-            ))
-          }
-        </ol>
-      </div>
-    </div>
-
-    {
-      (f.exhibits.length > 0 || f.evidence.length > 0) && (
-        <div class="f-exhibits">
-          {f.exhibits.map((e) => (
-            <figure class="polaroid">
-              <span class="tape" aria-hidden="true" />
-              <img src={e.src} alt={e.alt} loading="lazy" />
-              <figcaption>{e.caption}</figcaption>
-            </figure>
-          ))}
-          {f.evidence.length > 0 && (
-            <div class="lab">
-              <h3 class="f-h">Lab results</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th scope="col">Measure</th>
-                    <th scope="col">Baseline</th>
-                    <th scope="col">Final</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {f.evidence.map((e) => (
-                    <tr>
-                      <th scope="row">{e.label}</th>
-                      <td>{e.before || '—'}</td>
-                      <td class="after">{e.after}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+      <article class="page" data-page aria-label={`Page 2 of ${pages.length}: The clues`}>
+        <span class="folio">Page 2 of {pages.length}</span>
+        <h3 class="f-h">The clues</h3>
+        <div class="board" data-board>
+          <svg class="string" data-string aria-hidden="true"><path d="" /></svg>
+          <ol class="clues">
+            {
+              f.clues.map((c, i) => (
+                <li class="clue" style={`--tilt: ${[-2, 1.5, -1, 2][i % 4]}deg`}>
+                  <span class="pin" data-pin aria-hidden="true" />
+                  <span class="c-n">Clue {i + 1}</span>
+                  <p class="c-fact">{c.fact}</p>
+                  <p class="c-meant">
+                    <span class="arrow" aria-hidden="true">→</span> {c.meant}
+                  </p>
+                </li>
+              ))
+            }
+          </ol>
         </div>
-      )
-    }
+      </article>
 
-    <div class="f-verdict">
-      <span class="stamp" aria-hidden="true">Solved</span>
-      <h3 class="f-h">Verdict</h3>
-      <p class="verdict">{f.verdict}</p>
-      <p class="lesson"><b>Note to self:</b> {f.lesson}</p>
+      {
+        hasEvidence && (
+          <article class="page" data-page aria-label={`Page ${pageNo('The evidence')} of ${pages.length}: The evidence`}>
+            <span class="folio">Page {pageNo('The evidence')} of {pages.length}</span>
+            <h3 class="f-h">The evidence</h3>
+            <div class="f-exhibits">
+              {f.exhibits.map((e, i) => (
+                <figure class="polaroid" style={`--tilt: ${i % 2 ? 2 : -2.5}deg`}>
+                  <span class="tape" aria-hidden="true" />
+                  <img src={e.src} alt={e.alt} loading="lazy" />
+                  <figcaption>{e.caption}</figcaption>
+                </figure>
+              ))}
+              {f.evidence.length > 0 && (
+                <div class="lab">
+                  <h4 class="lab-h">Lab results</h4>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">Measure</th>
+                        <th scope="col">Before</th>
+                        <th scope="col">Result</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {f.evidence.map((e) => (
+                        <tr>
+                          <th scope="row">{e.label}</th>
+                          <td>{e.before || '—'}</td>
+                          <td class="after">{e.after}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </article>
+        )
+      }
+
+      <article class="page" data-page aria-label={`Page ${pages.length} of ${pages.length}: The verdict`}>
+        <span class="folio">Page {pages.length} of {pages.length}</span>
+        <div class="f-verdict">
+          <span class="stamp" aria-hidden="true">Solved</span>
+          <h3 class="f-h">The verdict</h3>
+          <p class="verdict">{f.verdict}</p>
+          <p class="lesson"><b>Note to self:</b> {f.lesson}</p>
+        </div>
+      </article>
     </div>
+
+    <nav class="flip" aria-label="Case file pages" data-flip hidden>
+      <button type="button" class="turn" data-prev>← Back</button>
+      <ol class="tabs">
+        {
+          pages.map((p, i) => (
+            <li>
+              <button type="button" class="ptab" data-go={i} aria-label={`Page ${i + 1}: ${p}`}>
+                <span class="ptab-n">{i + 1}</span>
+                <span class="ptab-l">{p}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+      <button type="button" class="turn next" data-next>Turn page →</button>
+    </nav>
   </div>
 </section>
 
@@ -115,20 +147,16 @@ const { file: f, number, title } = Astro.props;
   }
   .folder {
     display: grid;
-    gap: 34px;
-    padding: 30px 30px 34px;
+    gap: 26px;
+    padding: 30px 30px 26px;
     border-radius: 6px 22px 22px 22px;
-    background-color: var(--paper);
-    background-image: linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
-    background-size: 100% 30px;
+    background: #e3d3b4;
     color: var(--paper-ink);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   }
   .f-head {
     display: grid;
     gap: 4px;
-    padding-bottom: 14px;
-    border-bottom: 2px solid var(--paper-ink);
   }
   .f-meta {
     margin: 0;
@@ -141,8 +169,83 @@ const { file: f, number, title } = Astro.props;
   .f-title {
     font-size: clamp(34px, 5vw, 58px);
   }
+
+  /* Pages: ruled paper sheets, stacked. A page turns from its left edge, like a booklet. */
+  .pages {
+    display: grid;
+    gap: 22px;
+    perspective: 1800px;
+  }
+  .page {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 16px;
+    padding: 34px 28px 32px 40px;
+    border-radius: 4px 14px 14px 4px;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(90deg, transparent 22px, rgba(196, 32, 47, 0.28) 22px, rgba(196, 32, 47, 0.28) 23px, transparent 23px),
+      linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 30px;
+    box-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.08),
+      4px 4px 0 -1px #d9c7a4,
+      8px 8px 0 -2px #cfbb95;
+    transform-origin: left center;
+    backface-visibility: hidden;
+  }
+  .page[hidden] {
+    display: none;
+  }
+  .flipping .page.out {
+    animation: turn-out 0.3s ease-in forwards;
+  }
+  .flipping .page.in {
+    animation: turn-in 0.36s ease-out;
+  }
+  .flipping .page.out.back {
+    animation-name: back-out;
+  }
+  .flipping .page.in.back {
+    animation-name: back-in;
+  }
+  @keyframes turn-out {
+    to {
+      transform: rotateY(-75deg);
+      opacity: 0.2;
+    }
+  }
+  @keyframes turn-in {
+    from {
+      transform: translateX(14px);
+      opacity: 0.4;
+    }
+  }
+  @keyframes back-out {
+    to {
+      transform: translateX(24px);
+      opacity: 0;
+    }
+  }
+  @keyframes back-in {
+    from {
+      transform: rotateY(-75deg);
+      opacity: 0.2;
+    }
+  }
+  .folio {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a7f70;
+  }
   .f-h {
-    margin: 0 0 12px;
+    margin: 0;
     font-family: var(--font-mono);
     font-weight: 500;
     font-size: 12px;
@@ -152,13 +255,13 @@ const { file: f, number, title } = Astro.props;
   }
   .typed {
     margin: 0;
-    max-width: 70ch;
+    max-width: 66ch;
     font-family: var(--font-mono);
-    font-size: 15px;
-    line-height: 1.75;
+    font-size: 16px;
+    line-height: 1.85;
   }
 
-  /* Clues: index cards pinned to the folder, joined by red string drawn in script. */
+  /* Clues: index cards pinned to the page, joined by red string drawn in script. */
   .board {
     position: relative;
   }
@@ -234,19 +337,19 @@ const { file: f, number, title } = Astro.props;
     font-weight: 700;
   }
 
-  /* Exhibits */
+  /* Evidence */
   .f-exhibits {
     display: grid;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
     gap: 34px;
     align-items: start;
   }
   .polaroid {
     position: relative;
-    margin: 0;
+    margin: 8px 0 0;
     padding: 12px 12px 14px;
     background: #fff;
-    transform: rotate(-2.5deg);
+    transform: rotate(var(--tilt));
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
   }
   .polaroid img {
@@ -272,6 +375,15 @@ const { file: f, number, title } = Astro.props;
     background: rgba(246, 210, 58, 0.75);
     transform: rotate(3deg);
   }
+  .lab-h {
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6a6155;
+  }
   .lab table {
     width: 100%;
     border-collapse: collapse;
@@ -283,6 +395,7 @@ const { file: f, number, title } = Astro.props;
     border-bottom: 1px solid rgba(29, 26, 22, 0.2);
     text-align: left;
     font-size: 15px;
+    vertical-align: top;
   }
   .lab thead th {
     font-family: var(--font-mono);
@@ -301,14 +414,14 @@ const { file: f, number, title } = Astro.props;
   }
   .lab td.after {
     font-weight: 600;
-    color: var(--paper-ink);
     background: color-mix(in srgb, var(--c) 35%, transparent);
   }
 
   /* Verdict with a rubber stamp. */
   .f-verdict {
     position: relative;
-    padding: 22px 22px 22px;
+    margin-top: 18px;
+    padding: 22px;
     border: 2px solid var(--paper-ink);
     border-radius: 4px;
   }
@@ -329,7 +442,7 @@ const { file: f, number, title } = Astro.props;
     opacity: 0.92;
   }
   .verdict {
-    margin: 0 0 12px;
+    margin: 12px 0;
     max-width: 62ch;
     font-family: var(--font-sticker);
     font-weight: 800;
@@ -344,16 +457,104 @@ const { file: f, number, title } = Astro.props;
     color: #3d372f;
   }
 
+  /* Page controls: back / page tabs / turn page. */
+  .flip {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+  }
+  .flip[hidden] {
+    display: none;
+  }
+  .turn {
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: 2px solid var(--paper-ink);
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 14px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .turn.next {
+    background: var(--paper-ink);
+    color: var(--paper);
+  }
+  .turn[disabled] {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .turn:focus-visible,
+  .ptab:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: 3px;
+  }
+  .tabs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+  }
+  .ptab {
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 99px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #5a5045;
+  }
+  .ptab-n {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    font-size: 11px;
+  }
+  .ptab[aria-current='step'] {
+    background: var(--paper);
+    color: var(--paper-ink);
+  }
+  .ptab[aria-current='step'] .ptab-n {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+
+  @media (max-width: 900px) {
+    .ptab-l {
+      display: none;
+    }
+  }
   @media (max-width: 760px) {
-    .clues,
-    .f-exhibits {
+    .clues {
       grid-template-columns: 1fr;
     }
   }
   @media (max-width: 640px) {
     .folder {
-      padding: 24px 18px 28px;
-      gap: 30px;
+      padding: 24px 12px 18px;
+      gap: 20px;
+    }
+    .page {
+      padding: 34px 14px 26px 30px;
+      background-image:
+        linear-gradient(90deg, transparent 16px, rgba(196, 32, 47, 0.28) 16px, rgba(196, 32, 47, 0.28) 17px, transparent 17px),
+        linear-gradient(rgba(29, 26, 22, 0.06) 1px, transparent 1px);
     }
     .typed {
       font-size: 15px;
@@ -366,24 +567,42 @@ const { file: f, number, title } = Astro.props;
       font-size: 32px;
       top: -22px;
     }
+    .flip {
+      gap: 6px;
+    }
+    .turn {
+      padding: 10px 11px;
+      font-size: 13px;
+    }
+    .tabs {
+      gap: 0;
+    }
+    .ptab {
+      padding: 6px 3px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flipping .page.out,
+    .flipping .page.in {
+      animation: none;
+    }
   }
 </style>
 
 <script>
   // Red string through the pins. It runs along the pin line at the top of each card and drops
   // through the gap between columns (or down the left margin on phones), so it never crosses text.
-  const boards = Array.from(document.querySelectorAll<HTMLElement>('[data-board]'));
-  const draw = () =>
-    boards.forEach((board) => {
+  const drawStrings = () =>
+    document.querySelectorAll<HTMLElement>('[data-board]').forEach((board) => {
       const svg = board.querySelector<SVGSVGElement>('[data-string]')!;
       const box = board.getBoundingClientRect();
+      if (!box.width) return;
       const cards = Array.from(board.querySelectorAll<HTMLElement>('.clue')).map((c) => {
         const pin = c.querySelector<HTMLElement>('[data-pin]')!.getBoundingClientRect();
         const r = c.getBoundingClientRect();
         return { x: pin.left + pin.width / 2 - box.left, y: pin.top + pin.height / 2 - box.top, left: r.left - box.left, right: r.right - box.left };
       });
       if (cards.length < 2) return;
-      // Group cards into rows by pin height.
       const rows: (typeof cards)[] = [];
       for (const c of cards) {
         const row = rows.find((r) => Math.abs(r[0].y - c.y) < 30);
@@ -396,18 +615,82 @@ const { file: f, number, title } = Astro.props;
       let d = '';
       rows.forEach((row) => {
         const y = row.reduce((s, c) => s + c.y, 0) / row.length;
-        // Along the row: rail to the first pin, then pin to pin.
         const xs = [railX, ...row.map((c) => c.x)].sort((a, b) => a - b);
         d += ` M${xs[0]},${y}`;
         for (let i = 1; i < xs.length; i++) d += sag(xs[i - 1], y, xs[i], y);
       });
-      // The rail joining the rows.
       const ys = rows.map((r) => r[0].y);
       d += ` M${railX},${Math.min(...ys)} L${railX},${Math.max(...ys)}`;
       svg.setAttribute('viewBox', `0 0 ${box.width} ${box.height}`);
       svg.querySelector('path')!.setAttribute('d', d);
     });
-  draw();
-  window.addEventListener('resize', draw);
-  document.fonts?.ready.then(draw);
+
+  // Page through the file: buttons, page tabs, arrow keys and swipes.
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll<HTMLElement>('[data-file]').forEach((file) => {
+    const pages = Array.from(file.querySelectorAll<HTMLElement>('[data-page]'));
+    const nav = file.querySelector<HTMLElement>('[data-flip]')!;
+    const prev = nav.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = nav.querySelector<HTMLButtonElement>('[data-next]')!;
+    const tabs = Array.from(nav.querySelectorAll<HTMLButtonElement>('[data-go]'));
+    if (pages.length < 2) return;
+    file.querySelector('.folder')!.classList.add('flipping');
+    nav.hidden = false;
+    let at = 0;
+    let busy = false;
+
+    const sync = () => {
+      pages.forEach((p, i) => (p.hidden = i !== at));
+      tabs.forEach((t, i) => (i === at ? t.setAttribute('aria-current', 'step') : t.removeAttribute('aria-current')));
+      prev.disabled = at === 0;
+      next.disabled = at === pages.length - 1;
+      next.textContent = at === pages.length - 1 ? 'The end' : 'Turn page →';
+      requestAnimationFrame(drawStrings);
+    };
+    const go = (to: number) => {
+      if (busy || to === at || to < 0 || to >= pages.length) return;
+      const from = pages[at];
+      const back = to < at;
+      if (file.getBoundingClientRect().top < 0) file.scrollIntoView({ behavior: still.matches ? 'auto' : 'smooth', block: 'start' });
+      if (still.matches) {
+        at = to;
+        sync();
+        return;
+      }
+      busy = true;
+      from.classList.add('out');
+      if (back) from.classList.add('back');
+      window.setTimeout(() => {
+        from.classList.remove('out', 'back');
+        at = to;
+        sync();
+        const p = pages[at];
+        p.classList.add('in');
+        if (back) p.classList.add('back');
+        window.setTimeout(() => {
+          p.classList.remove('in', 'back');
+          busy = false;
+        }, 380);
+      }, 290);
+    };
+    prev.addEventListener('click', () => go(at - 1));
+    next.addEventListener('click', () => go(at + 1));
+    tabs.forEach((t, i) => t.addEventListener('click', () => go(i)));
+    file.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') go(at + 1);
+      if (e.key === 'ArrowLeft') go(at - 1);
+    });
+    let x0 = 0, y0 = 0;
+    const area = file.querySelector<HTMLElement>('[data-pages]')!;
+    area.addEventListener('touchstart', (e) => ((x0 = e.touches[0].clientX), (y0 = e.touches[0].clientY)), { passive: true });
+    area.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(at + (dx < 0 ? 1 : -1));
+    });
+    sync();
+  });
+
+  drawStrings();
+  window.addEventListener('resize', drawStrings);
+  document.fonts?.ready.then(drawStrings);
 </script>

@@ -1,0 +1,283 @@
+---
+// Toy for Study Copilot: drag the time-decay strength and watch four course files re-rank for
+// one question. The scoring rule is the real one (similarity x recency, decay set per document
+// type); the four files and their similarities are an example.
+import ToyShell from './ToyShell.astro';
+const docs = [
+  { id: 'old', name: 'Midterm topics (first draft)', meta: 'Week 3 slides', sim: 0.86, weeks: 9, rate: 1, verdict: 'Out of date' },
+  { id: 'new', name: 'Midterm topics (revised)', meta: 'Week 9 slides', sim: 0.82, weeks: 3, rate: 1, verdict: 'The right answer' },
+  { id: 'syl', name: 'Course syllabus', meta: 'Week 1 · decays slowly', sim: 0.62, weeks: 11, rate: 0.2, verdict: 'Still valid, too general' },
+  { id: 'lab', name: 'Lab 6 handout', meta: 'Week 11 slides', sim: 0.48, weeks: 1, rate: 1, verdict: 'Newest, off-topic' },
+];
+---
+
+<ToyShell
+  kicker="Try it · the real scoring rule"
+  title="Turn the decay dial"
+  lede="A student asks: “What topics are on the midterm?” Four course files match. Drag the dial to weigh recent files more and watch the ranking change."
+>
+  <div class="sc" data-sc data-docs={JSON.stringify(docs)}>
+    <div class="q">
+      <span class="q-l">Question</span>
+      <span class="q-t">What topics are on the midterm?</span>
+    </div>
+
+    <div class="dial">
+      <label for="decay" class="d-l">Decay strength</label>
+      <input id="decay" type="range" min="0" max="0.5" step="0.01" value="0" data-range />
+      <output for="decay" class="d-v" data-out>0.00</output>
+      <div class="marks" aria-hidden="true">
+        <button type="button" data-set="0">Off</button>
+        <button type="button" data-set="0.05">Light · 0.05</button>
+        <button type="button" data-set="0.4">Aggressive · 0.40</button>
+      </div>
+    </div>
+
+    <ol class="rank" data-rank>
+      {
+        docs.map((d) => (
+          <li class="doc" data-doc={d.id}>
+            <span class="pos" data-pos>1</span>
+            <span class="body">
+              <span class="name">{d.name}</span>
+              <span class="meta">{d.meta} · similarity {d.sim.toFixed(2)}</span>
+            </span>
+            <span class="score" data-score>0.00</span>
+            <span class="bar" aria-hidden="true"><i data-bar /></span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="top" data-top aria-live="polite"></p>
+  </div>
+  <Fragment slot="moral">
+    <b>What the full evaluation found:</b> light decay (0.05) raised correct answers on time-sensitive questions from
+    67.2% to 95.3%, without hurting recall. Aggressive decay (0.40) got every time question right but pushed the
+    relevant material down. Decay should break ties, not override relevance.
+  </Fragment>
+</ToyShell>
+
+<style>
+  .sc {
+    display: grid;
+    gap: 18px;
+  }
+  .q {
+    display: grid;
+    gap: 4px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: var(--panel);
+    color: var(--ink);
+  }
+  .q-l {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5e5a55;
+  }
+  .q-t {
+    font-family: var(--font-sticker);
+    font-weight: 800;
+    font-size: 20px;
+  }
+  .dial {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px 14px;
+  }
+  .d-l {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  input[type='range'] {
+    width: 100%;
+    height: 28px;
+    accent-color: var(--c);
+    cursor: pointer;
+  }
+  input[type='range']:focus-visible {
+    outline: 2px solid var(--c);
+    outline-offset: 4px;
+  }
+  .d-v {
+    font-family: var(--font-display);
+    font-size: 30px;
+    color: var(--c);
+    min-width: 2.6em;
+    text-align: right;
+  }
+  .marks {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .marks button {
+    all: unset;
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: 1.5px solid var(--line);
+    font-size: 13px;
+  }
+  .marks button:focus-visible {
+    outline: 2px solid var(--c);
+    outline-offset: 2px;
+  }
+  .rank {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    height: calc(4 * 78px);
+  }
+  .doc {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 70px;
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 64px;
+    grid-template-rows: 1fr auto;
+    align-items: center;
+    column-gap: 14px;
+    padding: 10px 16px 8px;
+    border-radius: 14px;
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.2s ease;
+  }
+  .doc.first {
+    border-color: var(--c);
+  }
+  .doc.first.wrong {
+    border-color: #ff6b74;
+  }
+  .pos {
+    font-family: var(--font-display);
+    font-size: 30px;
+    color: var(--muted);
+  }
+  .doc.first .pos {
+    color: var(--c);
+  }
+  .doc.first.wrong .pos {
+    color: #ff6b74;
+  }
+  .body {
+    display: grid;
+    min-width: 0;
+  }
+  .name {
+    font-weight: 600;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .meta {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .score {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .bar {
+    grid-column: 2 / 4;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .bar i {
+    display: block;
+    height: 100%;
+    background: var(--c);
+    transition: width 0.3s ease;
+  }
+  .top {
+    margin: 0;
+    font-size: 16px;
+    min-height: 1.6em;
+  }
+  .top b.ok {
+    color: var(--c);
+  }
+  .top b.bad {
+    color: #ff6b74;
+  }
+  @media (max-width: 640px) {
+    .rank {
+      height: calc(4 * 84px);
+    }
+    .doc {
+      height: 76px;
+      grid-template-columns: 32px minmax(0, 1fr) 52px;
+      column-gap: 10px;
+      padding: 10px 12px 8px;
+    }
+    .name {
+      font-size: 15px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .doc,
+    .bar i {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-sc]').forEach((root) => {
+    type Doc = { id: string; name: string; sim: number; weeks: number; rate: number; verdict: string };
+    const docs: Doc[] = JSON.parse(root.dataset.docs!);
+    const range = root.querySelector<HTMLInputElement>('[data-range]')!;
+    const rows = new Map(docs.map((d) => [d.id, root.querySelector<HTMLElement>(`[data-doc="${d.id}"]`)!]));
+    const draw = () => {
+      const s = Number(range.value);
+      // Score = similarity x recency weight; the decay rate depends on the document type.
+      const scored = docs
+        .map((d) => ({ ...d, score: d.sim * Math.pow(1 - s * d.rate, d.weeks) }))
+        .sort((a, b) => b.score - a.score);
+      const step = rows.get(docs[0].id)!.offsetHeight + 8;
+      scored.forEach((d, i) => {
+        const el = rows.get(d.id)!;
+        el.style.transform = `translateY(${i * step}px)`;
+        el.querySelector('[data-pos]')!.textContent = String(i + 1);
+        el.querySelector('[data-score]')!.textContent = d.score.toFixed(2);
+        el.querySelector<HTMLElement>('[data-bar]')!.style.width = `${(d.score / 0.86) * 100}%`;
+        el.classList.toggle('first', i === 0);
+        el.classList.toggle('wrong', i === 0 && d.id !== 'new');
+      });
+      root.querySelector('[data-out]')!.textContent = s.toFixed(2);
+      const top = scored[0];
+      root.querySelector('[data-top]')!.innerHTML =
+        `Top result: <b class="${top.id === 'new' ? 'ok' : 'bad'}">${top.name}</b>. ${top.verdict}.`;
+    };
+    range.addEventListener('input', draw);
+    root.querySelectorAll<HTMLButtonElement>('[data-set]').forEach((b) =>
+      b.addEventListener('click', () => {
+        range.value = b.dataset.set!;
+        draw();
+      }),
+    );
+    window.addEventListener('resize', draw);
+    draw();
+  });
+</script>
